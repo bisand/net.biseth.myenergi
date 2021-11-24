@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- The '/homey.js' script must be included in your settings view to work -->
+    <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <h1 data-i18n="settings.title">
+        <!-- This will be filled with the translated string with key 'settings.title'. -->
+    </h1>
+    <p data-i18n="settings.subtitle">
+        <!-- This field will also be translated -->
+    </p>
+
+    <fieldset class="fieldset">
+        <legend>myenergi Hub</legend>
+
+        <div class="field row">
+            <label for="hubname">Hub name</label>
+            <input id="hubname" name="hubname" type="text" value="" />
+        </div>
+        <div class="field row">
+            <label for="username">Serial no</label>
+            <input id="username" name="username" type="text" value="" />
+        </div>
+        <div class="field row">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" value="" />
+        </div>
+    </fieldset>
+
+    <button id="addHub" class="left">Add Hub</button>
+    <button id="saveHubs" class="right">Save changes</button>
+
+    <textarea id="log" rows="10"></textarea>
+
+    <script type="text/javascript">
+        // a method named 'onHomeyReady' must be present in your code
+        function onHomeyReady(Homey) {
+            // Tell Homey we're ready to be displayed
+            Homey.ready();
+
+
+
+            //Function to replicate fields in the form
+            function replicateFields() {
+                var elementToReplicate = $('.fieldset').first(), //Only clone first group of inputs
+                    clonedElement = elementToReplicate.clone();//Cloned the element
+                clonedElement.find('input').val(''); //Clear cloned elements value on each new addition
+                clonedElement.insertBefore($('#addHub'));
+            }
+
+            function populateFields(myenergiHubs) {
+                var i = 0;
+                $('.fieldset').each(function () {
+                    const hub = myenergiHubs[i++];
+                    $(this).find('input[name="hubname"]').val(hub.hubname);
+                    $(this).find('input[name="username"]').val(hub.username);
+                    $(this).find('input[name="password"]').val(hub.password);
+                });
+            }
+
+            //Calling function on click
+            $('#addHub').click(function () {
+                replicateFields();
+            });
+
+            //Go through inputs filling up the array of arrays.
+            $('#saveHubs').click(function () {
+                var myenergiHubs = [];
+                $('.fieldset').each(function () {
+                    myenergiHubs.push({
+                        hubname: $(this).find('input[name="hubname"]').val(),
+                        username: $(this).find('input[name="username"]').val(),
+                        password: $(this).find('input[name="password"]').val()
+                    });
+                });
+                $('#log').val(JSON.stringify(myenergiHubs));
+                Homey.set("myenergiHubs", myenergiHubs, function (err) {
+                    if (err) return Homey.alert(err);
+                });
+            });
+
+            Homey.get("myenergiHubs", function (err, myenergiHubs) {
+                if (err) return Homey.alert(err);
+                if (!myenergiHubs || myenergiHubs.length < 1)
+                    return;
+                const hubCount = myenergiHubs.length;
+                for (let i = 1; i < hubCount; i++) {
+                    replicateFields();
+                }
+                populateFields(myenergiHubs)
+            });
+
+
+            // var usernameElement = document.getElementById("username");
+            // var passwordElement = document.getElementById("password");
+            // var saveElement = document.getElementById("save");
+
+            // Homey.get("username", function (err, username) {
+            //     if (err) return Homey.alert(err);
+            //     usernameElement.value = username;
+            // });
+
+            // Homey.get("password", function (err, password) {
+            //     if (err) return Homey.alert(err);
+            //     passwordElement.value = password;
+            // });
+
+            // saveElement.addEventListener("click", function (e) {
+            //     Homey.set("username", usernameElement.value, function (err) {
+            //         if (err) return Homey.alert(err);
+            //     });
+            //     Homey.set("password", passwordElement.value, function (err) {
+            //         if (err) return Homey.alert(err);
+            //     });
+            // });
+        }
+    </script>
+</body>
+
+</html>

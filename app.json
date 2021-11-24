@@ -26,5 +26,32 @@
   "author": {
     "name": "André Biseth",
     "email": "andre@biseth.net"
-  }
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "zappi"
+      },
+      "class": "other",
+      "capabilities": [
+        "measure_current",
+        "meter_power",
+        "measure_power",
+        "onoff",
+        "measure_voltage"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "images": {
+        "small": "/drivers/zappi/assets/images/small.png",
+        "large": "/drivers/zappi/assets/images/large.png",
+        "xlarge": "/drivers/zappi/assets/images/xlarge.png"
+      },
+      "id": "zappi"
+    }
+  ]
 }
