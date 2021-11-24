@@ -1,6 +1,7 @@
 'use strict';
 
 const { Device } = require('homey');
+const { ZappiChargeMode } = require('myenergi-api/dist/MyEnergi');
 
 class ZappiDevice extends Device {
 
@@ -8,6 +9,13 @@ class ZappiDevice extends Device {
    * onInit is called when the device is initialized.
    */
   async onInit() {
+    this.deviceId = this.getData().id;
+    this.log(`Device ID: ${this.deviceId}`);
+    this.myenergiClientId = this.getStoreValue('myenergiClientId');
+    this.myenergiClient = this.homey.app.clients[this.myenergiClientId];
+    this.registerCapabilityListener('onoff', async value => {
+      await this.myenergiClient.setZappiChargeMode(this.deviceId, value ? ZappiChargeMode.Fast : ZappiChargeMode.Off);
+    });
     this.log('ZappiDevice has been initialized');
   }
 

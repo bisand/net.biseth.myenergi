@@ -14,6 +14,7 @@ class ZappiDriver extends Driver {
       const zappis = await client.getStatusZappiAll();
       zappis.forEach(zappi => {
         if (this.zappiDevices.findIndex(z => z.sno === zappi.sno) === -1) {
+          zappi['myenergiClientId'] = key;
           this.zappiDevices.push(zappi);
         }
       });
@@ -28,6 +29,10 @@ class ZappiDriver extends Driver {
         name: `Zappi ${v.sno}`,
         data: { id: v.sno },
         icon: '/my_icon.svg', // relative to: /drivers/<driver_id>/assets/
+        store: {
+          // For example store the IP address of your device
+          myenergiClientId: v.myenergiClientId,
+        },
         capabilities: ['onoff'],
         capabilitiesOptions: {
         },
