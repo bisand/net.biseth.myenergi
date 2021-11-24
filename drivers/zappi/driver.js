@@ -28,9 +28,8 @@ class ZappiDriver extends Driver {
       return {
         name: `Zappi ${v.sno}`,
         data: { id: v.sno },
-        icon: '/my_icon.svg', // relative to: /drivers/<driver_id>/assets/
+        icon: 'images/zappi.svg', // relative to: /drivers/<driver_id>/assets/
         store: {
-          // For example store the IP address of your device
           myenergiClientId: v.myenergiClientId,
         },
         capabilities: ['onoff'],

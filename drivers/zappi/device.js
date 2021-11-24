@@ -12,11 +12,29 @@ class ZappiDevice extends Device {
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
-    this.myenergiClient = this.homey.app.clients[this.myenergiClientId];
-    this.registerCapabilityListener('onoff', async value => {
-      await this.myenergiClient.setZappiChargeMode(this.deviceId, value ? ZappiChargeMode.Fast : ZappiChargeMode.Off);
-    });
+    try {
+      this.myenergiClient = this.homey.app.clients[this.myenergiClientId];
+    } catch (error) {
+      this.error(error);
+    }
+
+    this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
+
     this.log('ZappiDevice has been initialized');
+  }
+
+  async onCapabilityOnoff(value, opts) {
+    try {
+      let result = await this.myenergiClient.setZappiChargeMode(this.deviceId, value ? ZappiChargeMode.Fast : ZappiChargeMode.Off);
+      result = JSON.parse(result);
+      if (result.status !== 0) {
+        throw new Error(result);
+      }
+      this.log(`Zappi was switched ${value ? 'on' : 'off'}`);
+    } catch (error) {
+      this.error(error);
+      throw new Error(`Switching the Zappi ${value ? 'on' : 'off'} failed!`);
+    }
   }
 
   /**
