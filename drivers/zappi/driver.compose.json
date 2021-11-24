@@ -11,10 +11,27 @@
     "measure_voltage"
   ],
   "platforms": [
-    "local"
+    "local",
+    "cloud"
   ],
   "connectivity": [
-    "lan"
+    "cloud"
+  ],
+  "pair": [
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      },
+      "options": {
+        "singular": true
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
   ],
   "images": {
     "small": "{{driverAssetsPath}}/images/small.png",

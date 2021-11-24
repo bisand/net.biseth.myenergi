@@ -20,11 +20,11 @@
 
         <div class="field row">
             <label for="hubname">Hub name</label>
-            <input id="hubname" name="hubname" type="text" value="" />
+            <input id="hubname" name="hubname" type="text" value="" required pattern="[a-zA-Z0-9]+" />
         </div>
         <div class="field row">
             <label for="username">Serial no</label>
-            <input id="username" name="username" type="text" value="" />
+            <input id="username" name="username" type="text" value="" required pattern="[0-9]*" inputmode="numeric" />
         </div>
         <div class="field row">
             <label for="password">Password</label>
@@ -72,10 +72,14 @@
             $('#saveHubs').click(function () {
                 var myenergiHubs = [];
                 $('.fieldset').each(function () {
+                    const hubName = ('' + $(this).find('input[name="hubname"]').val() + '').replace(/[\W_]+/g, "_");
+                    const userName = $(this).find('input[name="username"]').val();
+                    const password = $(this).find('input[name="password"]').val();
+                    $(this).find('input[name="hubname"]').val(hubName);
                     myenergiHubs.push({
-                        hubname: $(this).find('input[name="hubname"]').val(),
-                        username: $(this).find('input[name="username"]').val(),
-                        password: $(this).find('input[name="password"]').val()
+                        hubname: hubName,
+                        username: userName,
+                        password: password
                     });
                 });
                 $('#log').val(JSON.stringify(myenergiHubs));
