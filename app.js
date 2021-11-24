@@ -8,14 +8,14 @@ class MyEnergiApp extends Homey.App {
   async initClients(myenergiHubs) {
     if (this.clients) {
       Object.keys(this.clients).forEach((key, i, arr) => {
-        console.log(key);
+        this.log(key);
         delete this.clients[key];
       });
     }
     if (myenergiHubs) {
       this.clients = {};
       myenergiHubs.forEach(hub => {
-        console.log(hub);
+        this.log(hub);
         this.clients[`${hub.hubname}_${hub.username}`] = new MyEnergi(hub.username, hub.password);
       });
     }
