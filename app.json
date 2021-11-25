@@ -30,6 +30,30 @@
   "drivers": [
     {
       "name": {
+        "en": "eddi"
+      },
+      "class": "heater",
+      "capabilities": [
+        "measure_current",
+        "meter_power",
+        "measure_power",
+        "onoff",
+        "measure_voltage"
+      ],
+      "platforms": [
+        "local",
+        "cloud"
+      ],
+      "connectivity": [],
+      "images": {
+        "small": "/drivers/eddi/assets/images/small.png",
+        "large": "/drivers/eddi/assets/images/large.png",
+        "xlarge": "/drivers/eddi/assets/images/xlarge.png"
+      },
+      "id": "eddi"
+    },
+    {
+      "name": {
         "en": "zappi"
       },
       "class": "other",

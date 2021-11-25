@@ -9,21 +9,28 @@ class ZappiDriver extends Driver {
    */
   async onInit() {
     this.zappiDevices = [];
-    Object.keys(this.homey.app.clients).forEach(async (key, i, arr) => {
-      const client = this.homey.app.clients[key];
-      const zappis = await client.getStatusZappiAll();
-      zappis.forEach(zappi => {
-        if (this.zappiDevices.findIndex(z => z.sno === zappi.sno) === -1) {
-          zappi['myenergiClientId'] = key;
-          this.zappiDevices.push(zappi);
-        }
-      });
-    });
-
     this.log('ZappiDriver has been initialized');
   }
 
-  getZappiDevices() {
+  async loadZappiDevices() {
+    const res = new Promise((resolve, reject) => {
+      Object.keys(this.homey.app.clients).forEach(async (key, i, arr) => {
+        const client = this.homey.app.clients[key];
+        const zappis = await client.getStatusZappiAll();
+        zappis.forEach(zappi => {
+          if (this.zappiDevices.findIndex(z => z.sno === zappi.sno) === -1) {
+            zappi['myenergiClientId'] = key;
+            this.zappiDevices.push(zappi);
+          }
+        });
+        resolve(this.zappiDevices);
+      });
+    });
+    return res;
+  }
+
+  async getZappiDevices() {
+    await this.loadZappiDevices();
     return this.zappiDevices.map((v, i, a) => {
       return {
         name: `Zappi ${v.sno}`,
