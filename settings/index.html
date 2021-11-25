@@ -30,6 +30,10 @@
             <label for="password">Password</label>
             <input id="password" name="password" type="password" value="" />
         </div>
+        <div class="field row">
+            <label for="pollInterval">Server poll interval (sec)</label>
+            <input id="pollInterval" name="pollInterval" type="number" min="5" max="86400" value="" />
+        </div>
     </fieldset>
 
     <button id="addHub" class="left">Add Hub</button>
@@ -42,8 +46,6 @@
         function onHomeyReady(Homey) {
             // Tell Homey we're ready to be displayed
             Homey.ready();
-
-
 
             //Function to replicate fields in the form
             function replicateFields() {
@@ -60,6 +62,7 @@
                     $(this).find('input[name="hubname"]').val(hub.hubname);
                     $(this).find('input[name="username"]').val(hub.username);
                     $(this).find('input[name="password"]').val(hub.password);
+                    $(this).find('input[name="pollInterval"]').val(hub.pollInterval ? hub.pollInterval : 60);
                 });
             }
 
@@ -75,11 +78,13 @@
                     const hubName = ('' + $(this).find('input[name="hubname"]').val() + '').replace(/[\W_]+/g, "_");
                     const userName = $(this).find('input[name="username"]').val();
                     const password = $(this).find('input[name="password"]').val();
+                    const pollInterval = $(this).find('input[name="pollInterval"]').val();
                     $(this).find('input[name="hubname"]').val(hubName);
                     myenergiHubs.push({
                         hubname: hubName,
                         username: userName,
-                        password: password
+                        password: password,
+                        pollInterval: pollInterval
                     });
                 });
                 $('#log').val(JSON.stringify(myenergiHubs));
@@ -98,30 +103,6 @@
                 }
                 populateFields(myenergiHubs)
             });
-
-
-            // var usernameElement = document.getElementById("username");
-            // var passwordElement = document.getElementById("password");
-            // var saveElement = document.getElementById("save");
-
-            // Homey.get("username", function (err, username) {
-            //     if (err) return Homey.alert(err);
-            //     usernameElement.value = username;
-            // });
-
-            // Homey.get("password", function (err, password) {
-            //     if (err) return Homey.alert(err);
-            //     passwordElement.value = password;
-            // });
-
-            // saveElement.addEventListener("click", function (e) {
-            //     Homey.set("username", usernameElement.value, function (err) {
-            //         if (err) return Homey.alert(err);
-            //     });
-            //     Homey.set("password", passwordElement.value, function (err) {
-            //         if (err) return Homey.alert(err);
-            //     });
-            // });
         }
     </script>
 </body>

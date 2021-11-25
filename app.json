@@ -27,12 +27,6 @@
     "name": "André Biseth",
     "email": "andre@biseth.net"
   },
-  "homepage": "https://myenergi.com",
-  "source": "https://github.com/bisand/net.biseth.myenergi",
-  "support": "https://github.com/bisand/net.biseth.myenergi/issues",
-  "bugs": {
-    "url": "https://github.com/bisand/net.biseth.myenergi/issues"
-  },
   "drivers": [
     {
       "name": {
