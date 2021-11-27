@@ -1,0 +1,36 @@
+{
+    "type": "enum",
+    "title": {
+        "en": "Charge Mode"
+    },
+    "getable": true,
+    "setable": true,
+    "uiComponent": "picker",
+    "icon": "/assets/charge_mode.svg",
+    "values": [
+        {
+            "id": "1",
+            "title": {
+                "en": "Fast"
+            }
+        },
+        {
+            "id": "2",
+            "title": {
+                "en": "Eco"
+            }
+        },
+        {
+            "id": "3",
+            "title": {
+                "en": "Eco+"
+            }
+        },
+        {
+            "id": "4",
+            "title": {
+                "en": "Off"
+            }
+        }
+    ]
+}

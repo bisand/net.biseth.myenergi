@@ -4,10 +4,12 @@
   },
   "class": "other",
   "capabilities": [
-    "measure_current",
-    "meter_power",
-    "measure_power",
     "onoff",
+    "charge_mode",
+    "charge_mode_selector",
+    "meter_power",
+    "measure_current",
+    "measure_power",
     "measure_voltage"
   ],
   "platforms": [

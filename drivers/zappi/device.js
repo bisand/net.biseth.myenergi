@@ -5,6 +5,8 @@ const { ZappiChargeMode } = require('myenergi-api/dist/MyEnergi');
 
 class ZappiDevice extends Device {
 
+  _chargeMode = ZappiChargeMode.Fast;
+
   /**
    * onInit is called when the device is initialized.
    */
@@ -14,27 +16,48 @@ class ZappiDevice extends Device {
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
     try {
       this.myenergiClient = this.homey.app.clients[this.myenergiClientId];
+      const zappi = await this.myenergiClient.getStatusZappi(this.deviceId);
+      this._chargeMode = zappi.zmo;
     } catch (error) {
       this.error(error);
     }
 
+    this.setCapabilityValue('onoff', this._chargeMode !== ZappiChargeMode.Off).catch(this.error);
+    this.setCapabilityValue('charge_mode', this._chargeMode.toString()).catch(this.error);
+    this.setCapabilityValue('charge_mode_selector', this._chargeMode.toString()).catch(this.error);
+
     this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
+    this.registerCapabilityListener('charge_mode_selector', this.onCapabilityChargeMode.bind(this));
 
     this.log('ZappiDevice has been initialized');
   }
 
-  async onCapabilityOnoff(value, opts) {
+  async setChargeMode(isOn) {
     try {
-      let result = await this.myenergiClient.setZappiChargeMode(this.deviceId, value ? ZappiChargeMode.Fast : ZappiChargeMode.Off);
-      result = JSON.parse(result);
+      const result = await this.myenergiClient.setZappiChargeMode(this.deviceId, isOn ? this._chargeMode : ZappiChargeMode.Off);
       if (result.status !== 0) {
         throw new Error(result);
       }
-      this.log(`Zappi was switched ${value ? 'on' : 'off'}`);
+      this.log(`Zappi was switched ${isOn ? 'on' : 'off'}`);
     } catch (error) {
       this.error(error);
-      throw new Error(`Switching the Zappi ${value ? 'on' : 'off'} failed!`);
+      throw new Error(`Switching the Zappi ${isOn ? 'on' : 'off'} failed!`);
     }
+  }
+
+  async onCapabilityChargeMode(value, opts) {
+    this.log(`Charge Mode: ${value}`);
+    this._chargeMode = Number(value);
+    await this.setChargeMode(this._chargeMode !== ZappiChargeMode.Off);
+    this.setCapabilityValue('onoff', this._chargeMode !== ZappiChargeMode.Off).catch(this.error);
+    this.setCapabilityValue('charge_mode', `${this._chargeMode}`).catch(this.error);
+  }
+
+  async onCapabilityOnoff(value, opts) {
+    this.log(`onoff: ${value}`);
+    await this.setChargeMode(value);
+    this.setCapabilityValue('charge_mode', value ? `${this._chargeMode}` : `${ZappiChargeMode.Off}`).catch(this.error);
+    this.setCapabilityValue('charge_mode_selector', value ? `${this._chargeMode}` : `${ZappiChargeMode.Off}`).catch(this.error);
   }
 
   /**
