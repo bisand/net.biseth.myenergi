@@ -23,8 +23,8 @@ class ZappiDevice extends Device {
     }
 
     this.setCapabilityValue('onoff', this._chargeMode !== ZappiChargeMode.Off).catch(this.error);
-    this.setCapabilityValue('charge_mode', this._chargeMode.toString()).catch(this.error);
-    this.setCapabilityValue('charge_mode_selector', this._chargeMode.toString()).catch(this.error);
+    this.setCapabilityValue('charge_mode', `${this._chargeMode}`).catch(this.error);
+    this.setCapabilityValue('charge_mode_selector', `${this._chargeMode}`).catch(this.error);
 
     this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
     this.registerCapabilityListener('charge_mode_selector', this.onCapabilityChargeMode.bind(this));
