@@ -65,21 +65,25 @@ class ZappiDevice extends Device {
     if (data) {
       data.forEach(zappi => {
         if (zappi && zappi.sno === this.deviceId) {
-          if (zappi.zmo !== ZappiChargeMode.Off) {
-            this.#lastOnState = zappi.zmo;
+          try {
+            if (zappi.zmo !== ZappiChargeMode.Off) {
+              this.#lastOnState = zappi.zmo;
+            }
+            this.#chargeMode = zappi.zmo;
+            this.#chargerStatus = zappi.pst;
+            this.#chargingPower = zappi.ectp1 ? zappi.ectp1 : 0;
+            this.#chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
+            this.#chargingCurrent = (this.#chargingVoltage > 0) ? (this.#chargingPower / this.#chargingVoltage) : 0; // P=U*I -> I=P/U
+            this.setCapabilityValue('onoff', this.#chargeMode !== ZappiChargeMode.Off).catch(this.error);
+            this.setCapabilityValue('charge_mode', `${this.#chargeMode}`).catch(this.error);
+            this.setCapabilityValue('charge_mode_selector', `${this.#chargeMode}`).catch(this.error);
+            this.setCapabilityValue('charger_status', `${this.#chargerStatus}`).catch(this.error);
+            this.setCapabilityValue('measure_power', this.#chargingPower).catch(this.error);
+            this.setCapabilityValue('measure_voltage', this.#chargingVoltage).catch(this.error);
+            this.setCapabilityValue('measure_current', this.#chargingCurrent).catch(this.error);
+          } catch (error) {
+            this.error(error);
           }
-          this.#chargeMode = zappi.zmo;
-          this.#chargerStatus = zappi.pst;
-          this.#chargingPower = zappi.ectp1 ? zappi.ectp1 : 0;
-          this.#chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
-          this.#chargingCurrent = (this.#chargingVoltage > 0) ? (this.#chargingPower / this.#chargingVoltage) : 0; // P=U*I -> I=P/U
-          this.setCapabilityValue('onoff', this.#chargeMode !== ZappiChargeMode.Off).catch(this.error);
-          this.setCapabilityValue('charge_mode', `${this.#chargeMode}`).catch(this.error);
-          this.setCapabilityValue('charge_mode_selector', `${this.#chargeMode}`).catch(this.error);
-          this.setCapabilityValue('charger_status', `${this.#chargerStatus}`).catch(this.error);
-          this.setCapabilityValue('measure_power', this.#chargingPower).catch(this.error);
-          this.setCapabilityValue('measure_voltage', this.#chargingVoltage).catch(this.error);
-          this.setCapabilityValue('measure_current', this.#chargingCurrent).catch(this.error);
         }
       });
     }
