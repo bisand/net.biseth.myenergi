@@ -62,6 +62,7 @@
         "onoff",
         "charge_mode",
         "charge_mode_selector",
+        "charger_status",
         "meter_power",
         "measure_current",
         "measure_power",
@@ -167,6 +168,54 @@
           "id": "4",
           "title": {
             "en": "Off"
+          }
+        }
+      ]
+    },
+    "charger_status": {
+      "type": "enum",
+      "title": {
+        "en": "Charger Status"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/accessories.svg",
+      "values": [
+        {
+          "id": "A",
+          "title": {
+            "en": "EV Disconnected"
+          }
+        },
+        {
+          "id": "B1",
+          "title": {
+            "en": "EV Connected"
+          }
+        },
+        {
+          "id": "B2",
+          "title": {
+            "en": "Waiting for EV"
+          }
+        },
+        {
+          "id": "C1",
+          "title": {
+            "en": "EV ready to charge"
+          }
+        },
+        {
+          "id": "C2",
+          "title": {
+            "en": "Charging"
+          }
+        },
+        {
+          "id": "F",
+          "title": {
+            "en": "Fault"
           }
         }
       ]

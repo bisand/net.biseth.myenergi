@@ -7,6 +7,7 @@
     "onoff",
     "charge_mode",
     "charge_mode_selector",
+    "charger_status",
     "meter_power",
     "measure_current",
     "measure_power",
