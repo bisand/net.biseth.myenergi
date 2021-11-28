@@ -5,6 +5,10 @@ const { MyEnergi } = require('myenergi-api');
 
 class MyEnergiApp extends Homey.App {
 
+  #dataUpdateInterval = 60 * 1000;
+  #dataUpdateId;
+  #dataUpdateCallbacks = [];
+
   async initClients(myenergiHubs) {
     if (this.clients) {
       Object.keys(this.clients).forEach((key, i, arr) => {
@@ -14,11 +18,36 @@ class MyEnergiApp extends Homey.App {
     }
     if (myenergiHubs) {
       this.clients = {};
-      myenergiHubs.forEach(hub => {
+      myenergiHubs.forEach((hub, index) => {
         this.log(hub);
         this.clients[`${hub.hubname}_${hub.username}`] = new MyEnergi(hub.username, hub.password);
+        if (index === 0) {
+          this.#dataUpdateInterval = hub.pollInterval * 1000;
+        }
       });
     }
+  }
+
+  registerDataUpdateCallback(callback) {
+    this.#dataUpdateCallbacks.push(callback);
+  }
+
+  runDataUpdate() {
+    const updateInterval = this.#dataUpdateInterval / 1000;
+    this.log(`Starting scheduled data update. Running every ${updateInterval} seconds.`);
+    clearTimeout(this.#dataUpdateId);
+    if (this.clients) {
+      Object.keys(this.clients).forEach(async client => {
+        this.log(`Fetching data for ${client}`);
+        const data = await this.clients[client].getStatusAll().catch(this.error);
+        this.#dataUpdateCallbacks.forEach(callback => {
+          callback(data);
+        });
+      });
+    }
+    this.#dataUpdateId = setTimeout(() => {
+      this.runDataUpdate();
+    }, this.#dataUpdateInterval);
   }
 
   /**
@@ -33,6 +62,7 @@ class MyEnergiApp extends Homey.App {
         this.initClients(myenergiHubs);
       }
     });
+    this.runDataUpdate();
     this.log('myenergi app has been initialized');
   }
 

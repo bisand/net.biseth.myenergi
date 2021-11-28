@@ -11,6 +11,7 @@ class ZappiDevice extends Device {
    * onInit is called when the device is initialized.
    */
   async onInit() {
+    this.driver.registerDataUpdateCallback(data => this.dataUpdated(data));
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
@@ -30,6 +31,20 @@ class ZappiDevice extends Device {
     this.registerCapabilityListener('charge_mode_selector', this.onCapabilityChargeMode.bind(this));
 
     this.log('ZappiDevice has been initialized');
+  }
+
+  dataUpdated(data) {
+    this.log('Received data from driver.');
+    if (data) {
+      data.forEach(zappi => {
+        if (zappi && zappi.sno === this.deviceId) {
+          this._chargeMode = zappi.zmo;
+          this.setCapabilityValue('onoff', this._chargeMode !== ZappiChargeMode.Off).catch(this.error);
+          this.setCapabilityValue('charge_mode', `${this._chargeMode}`).catch(this.error);
+          this.setCapabilityValue('charge_mode_selector', `${this._chargeMode}`).catch(this.error);
+        }
+      });
+    }
   }
 
   async setChargeMode(isOn) {

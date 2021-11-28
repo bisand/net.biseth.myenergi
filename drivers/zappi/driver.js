@@ -4,12 +4,32 @@ const { Driver } = require('homey');
 
 class ZappiDriver extends Driver {
 
+  #dataUpdateCallbacks = [];
+
   /**
    * onInit is called when the driver is initialized.
    */
   async onInit() {
     this.zappiDevices = [];
+    this.homey.app.registerDataUpdateCallback(data => this.dataUpdated(data));
     this.log('ZappiDriver has been initialized');
+  }
+
+  registerDataUpdateCallback(callback) {
+    this.#dataUpdateCallbacks.push(callback);
+  }
+
+  dataUpdated(data) {
+    this.log('Received data from app. Relaying to devices.');
+    if (data) {
+      data.forEach(d => {
+        if (d.zappi) {
+          this.#dataUpdateCallbacks.forEach(callback => {
+            callback(d.zappi);
+          });
+        }
+      });
+    }
   }
 
   async loadZappiDevices() {
