@@ -55,6 +55,29 @@
     },
     {
       "name": {
+        "en": "Harvi"
+      },
+      "class": "sensor",
+      "capabilities": [
+        "measure_current",
+        "meter_power",
+        "measure_power",
+        "measure_voltage"
+      ],
+      "platforms": [
+        "local",
+        "cloud"
+      ],
+      "connectivity": [],
+      "images": {
+        "small": "/drivers/harvi/assets/images/small.png",
+        "large": "/drivers/harvi/assets/images/large.png",
+        "xlarge": "/drivers/harvi/assets/images/xlarge.png"
+      },
+      "id": "harvi"
+    },
+    {
+      "name": {
         "en": "Zappi"
       },
       "class": "other",
