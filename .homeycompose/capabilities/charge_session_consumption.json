@@ -1,0 +1,17 @@
+{
+    "type": "number",
+    "title": {
+        "en": "Charge added last session",
+        "no": "Siste lading"
+    },
+    "getable": true,
+    "setable": true,
+    "uiComponent": "sensor",
+    "units": {
+        "en": "kWh",
+        "no": "kWh"
+    },
+    "icon": "/assets/charge_session_consumption.svg",
+    "min": 0,
+    "decimals": 2
+}

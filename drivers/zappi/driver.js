@@ -59,7 +59,7 @@ class ZappiDriver extends Driver {
         store: {
           myenergiClientId: v.myenergiClientId,
         },
-        capabilities: ['onoff', 'charge_mode_selector', 'charge_mode', 'charger_status', 'measure_current', 'measure_power', 'measure_voltage'],
+        capabilities: ['onoff', 'charge_mode_selector', 'charge_mode', 'charger_status', 'charge_session_consumption', 'measure_power', 'measure_current', 'measure_voltage'],
         capabilitiesOptions: {
         },
       };

@@ -21,6 +21,7 @@ class ZappiDevice extends Device {
   #chargingPower = 0;
   #chargingVoltage = 0;
   #chargingCurrent = 0;
+  #chargeAdded = 0;
 
   /**
    * onInit is called when the device is initialized.
@@ -37,6 +38,7 @@ class ZappiDevice extends Device {
       this.#chargerStatus = zappi.pst;
       this.#chargingPower = zappi.ectp1 ? zappi.ectp1 : 0;
       this.#chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
+      this.#chargeAdded = zappi.che ? zappi.che : 0;
       this.#chargingCurrent = (this.#chargingVoltage > 0) ? (this.#chargingPower / this.#chargingVoltage) : 0; // P=U*I -> I=P/U
       if (this.#chargeMode !== ZappiChargeMode.Off) {
         this.#lastOnState = this.#chargeMode;
@@ -52,6 +54,7 @@ class ZappiDevice extends Device {
     this.setCapabilityValue('measure_power', this.#chargingPower).catch(this.error);
     this.setCapabilityValue('measure_voltage', this.#chargingVoltage).catch(this.error);
     this.setCapabilityValue('measure_current', this.#chargingCurrent).catch(this.error);
+    this.setCapabilityValue('charge_session_consumption', this.#chargeAdded).catch(this.error);
     this.log(`Status: ${this.#chargerStatus}`);
 
     this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
@@ -73,6 +76,7 @@ class ZappiDevice extends Device {
             this.#chargerStatus = zappi.pst;
             this.#chargingPower = zappi.ectp1 ? zappi.ectp1 : 0;
             this.#chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
+            this.#chargeAdded = zappi.che ? zappi.che : 0;
             this.#chargingCurrent = (this.#chargingVoltage > 0) ? (this.#chargingPower / this.#chargingVoltage) : 0; // P=U*I -> I=P/U
             this.setCapabilityValue('onoff', this.#chargeMode !== ZappiChargeMode.Off).catch(this.error);
             this.setCapabilityValue('charge_mode', `${this.#chargeMode}`).catch(this.error);
@@ -81,6 +85,7 @@ class ZappiDevice extends Device {
             this.setCapabilityValue('measure_power', this.#chargingPower).catch(this.error);
             this.setCapabilityValue('measure_voltage', this.#chargingVoltage).catch(this.error);
             this.setCapabilityValue('measure_current', this.#chargingCurrent).catch(this.error);
+            this.setCapabilityValue('charge_session_consumption', this.#chargeAdded).catch(this.error);
           } catch (error) {
             this.error(error);
           }

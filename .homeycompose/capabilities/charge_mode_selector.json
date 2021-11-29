@@ -1,7 +1,8 @@
 {
     "type": "enum",
     "title": {
-        "en": "Charge Mode"
+        "en": "Charge Mode",
+        "no": "Lademodus"
     },
     "getable": true,
     "setable": true,
@@ -11,25 +12,29 @@
         {
             "id": "1",
             "title": {
-                "en": "Fast"
+                "en": "Fast",
+                "no": "Rask"
             }
         },
         {
             "id": "2",
             "title": {
-                "en": "Eco"
+                "en": "Eco",
+                "no": "Eco"
             }
         },
         {
             "id": "3",
             "title": {
-                "en": "Eco+"
+                "en": "Eco+",
+                "no": "Eco+"
             }
         },
         {
             "id": "4",
             "title": {
-                "en": "Off"
+                "en": "Off",
+                "no": "Av"
             }
         }
     ]

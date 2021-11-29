@@ -1,6 +1,6 @@
 {
   "name": {
-    "en": "zappi"
+    "en": "Zappi"
   },
   "class": "other",
   "capabilities": [
@@ -8,10 +8,11 @@
     "charge_mode",
     "charge_mode_selector",
     "charger_status",
-    "meter_power",
-    "measure_current",
+    "charge_session_consumption",
     "measure_power",
-    "measure_voltage"
+    "measure_voltage",
+    "measure_current",
+    "meter_power"
   ],
   "platforms": [
     "local",
