@@ -71,8 +71,7 @@
       "connectivity": [],
       "images": {
         "small": "/drivers/harvi/assets/images/small.png",
-        "large": "/drivers/harvi/assets/images/large.png",
-        "xlarge": "/drivers/harvi/assets/images/xlarge.png"
+        "large": "/drivers/harvi/assets/images/large.png"
       },
       "id": "harvi"
     },
