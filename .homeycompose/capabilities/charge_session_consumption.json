@@ -5,7 +5,7 @@
         "no": "Siste lading"
     },
     "getable": true,
-    "setable": true,
+    "setable": false,
     "uiComponent": "sensor",
     "units": {
         "en": "kWh",

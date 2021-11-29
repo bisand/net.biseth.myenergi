@@ -4,16 +4,36 @@
   },
   "class": "sensor",
   "capabilities": [
-    "measure_current",
-    "meter_power",
-    "measure_power",
-    "measure_voltage"
+    "ct1_type",
+    "measure_power_ct1",
+    "ct2_type",
+    "measure_power_ct2",
+    "ct3_type",
+    "measure_power_ct3"
   ],
   "platforms": [
     "local",
     "cloud"
   ],
-  "connectivity": [],
+  "connectivity": [
+    "cloud"
+  ],
+  "pair": [
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      },
+      "options": {
+        "singular": true
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
   "images": {
     "small": "{{driverAssetsPath}}/images/small.png",
     "large": "{{driverAssetsPath}}/images/large.png"

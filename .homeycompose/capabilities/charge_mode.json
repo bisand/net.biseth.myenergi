@@ -5,7 +5,7 @@
         "no": "Lademodus"
     },
     "getable": true,
-    "setable": true,
+    "setable": false,
     "uiComponent": "sensor",
     "icon": "/assets/charge_mode.svg",
     "values": [

@@ -4,11 +4,69 @@ const { Device } = require('homey');
 
 class HarviDevice extends Device {
 
+  #ectp1 = 0;
+  #ectp2 = 0;
+  #ectp3 = 0;
+  #ectt1 = '';
+  #ectt2 = '';
+  #ectt3 = '';
+
   /**
    * onInit is called when the device is initialized.
    */
   async onInit() {
+    this.driver.registerDataUpdateCallback(data => this.dataUpdated(data));
+    this.deviceId = this.getData().id;
+    this.log(`Device ID: ${this.deviceId}`);
+    this.myenergiClientId = this.getStoreValue('myenergiClientId');
+    try {
+      this.myenergiClient = this.homey.app.clients[this.myenergiClientId];
+      const harvi = await this.myenergiClient.getStatusHarvi(this.deviceId);
+      this.#ectp1 = harvi.ectp1;
+      this.#ectp2 = harvi.ectp2;
+      this.#ectp3 = harvi.ectp3;
+      this.#ectt1 = harvi.ectt1;
+      this.#ectt2 = harvi.ectt2;
+      this.#ectt3 = harvi.ectt3;
+    } catch (error) {
+      this.error(error);
+    }
+
+    this.setCapabilityValue('measure_power_ct1', this.#ectp1).catch(this.error);
+    this.setCapabilityValue('measure_power_ct2', this.#ectp2).catch(this.error);
+    this.setCapabilityValue('measure_power_ct3', this.#ectp3).catch(this.error);
+    this.setCapabilityValue('ct1_type', this.#ectt1).catch(this.error);
+    this.setCapabilityValue('ct2_type', this.#ectt2).catch(this.error);
+    this.setCapabilityValue('ct3_type', this.#ectt3).catch(this.error);
+
     this.log('HarviDevice has been initialized');
+  }
+
+  dataUpdated(data) {
+    this.log('Received data from driver.');
+    if (data) {
+      data.forEach(harvi => {
+        if (harvi && harvi.sno === this.deviceId) {
+          try {
+            this.#ectp1 = harvi.ectp1;
+            this.#ectp2 = harvi.ectp2;
+            this.#ectp3 = harvi.ectp3;
+            this.#ectt1 = harvi.ectt1;
+            this.#ectt2 = harvi.ectt2;
+            this.#ectt3 = harvi.ectt3;
+
+            this.setCapabilityValue('measure_power_ct1', this.#ectp1).catch(this.error);
+            this.setCapabilityValue('measure_power_ct2', this.#ectp2).catch(this.error);
+            this.setCapabilityValue('measure_power_ct3', this.#ectp3).catch(this.error);
+            this.setCapabilityValue('ct1_type', this.#ectt1).catch(this.error);
+            this.setCapabilityValue('ct2_type', this.#ectt2).catch(this.error);
+            this.setCapabilityValue('ct3_type', this.#ectt3).catch(this.error);
+          } catch (error) {
+            this.error(error);
+          }
+        }
+      });
+    }
   }
 
   /**

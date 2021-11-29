@@ -5,7 +5,7 @@
         "no": "Ladetatus"
     },
     "getable": true,
-    "setable": true,
+    "setable": false,
     "uiComponent": "sensor",
     "icon": "/assets/accessories.svg",
     "values": [

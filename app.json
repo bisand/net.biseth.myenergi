@@ -59,16 +59,36 @@
       },
       "class": "sensor",
       "capabilities": [
-        "measure_current",
-        "meter_power",
-        "measure_power",
-        "measure_voltage"
+        "ct1_type",
+        "measure_power_ct1",
+        "ct2_type",
+        "measure_power_ct2",
+        "ct3_type",
+        "measure_power_ct3"
       ],
       "platforms": [
         "local",
         "cloud"
       ],
-      "connectivity": [],
+      "connectivity": [
+        "cloud"
+      ],
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          },
+          "options": {
+            "singular": true
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
       "images": {
         "small": "/drivers/harvi/assets/images/small.png",
         "large": "/drivers/harvi/assets/images/large.png"
@@ -130,7 +150,7 @@
         "no": "Lademodus"
       },
       "getable": true,
-      "setable": true,
+      "setable": false,
       "uiComponent": "sensor",
       "icon": "/assets/charge_mode.svg",
       "values": [
@@ -212,7 +232,7 @@
         "no": "Siste lading"
       },
       "getable": true,
-      "setable": true,
+      "setable": false,
       "uiComponent": "sensor",
       "units": {
         "en": "kWh",
@@ -229,7 +249,7 @@
         "no": "Ladetatus"
       },
       "getable": true,
-      "setable": true,
+      "setable": false,
       "uiComponent": "sensor",
       "icon": "/assets/accessories.svg",
       "values": [
@@ -276,6 +296,168 @@
           }
         }
       ]
+    },
+    "ct1_type": {
+      "type": "string",
+      "title": {
+        "en": "CT1"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/ct_clamp1.svg"
+    },
+    "ct2_type": {
+      "type": "string",
+      "title": {
+        "en": "CT2"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/ct_clamp1.svg"
+    },
+    "ct3_type": {
+      "type": "string",
+      "title": {
+        "en": "CT3"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/ct_clamp1.svg"
+    },
+    "measure_power_ct1": {
+      "type": "number",
+      "title": {
+        "en": "Power CT1",
+        "nl": "Vermogen CT1",
+        "de": "Leistung CT1",
+        "fr": "Puissance CT1",
+        "it": "Potenza CT1",
+        "sv": "Effekt CT1",
+        "no": "Effekt CT1",
+        "es": "Potencia CT1",
+        "da": "Effekt CT1"
+      },
+      "units": {
+        "en": "W"
+      },
+      "icon": "/assets/ct_clamp2.svg",
+      "insights": true,
+      "desc": {
+        "en": "Power in Watt (W)",
+        "nl": "Vermogen in Watt (W)",
+        "de": "Leistung in Watt (W)",
+        "fr": "Puissance  en Watt (W)",
+        "it": "Potenza in Watt (W)",
+        "sv": "Effekt i watt (W)",
+        "no": "Effekt i watt (W)",
+        "es": "Potencia en vatios (W)",
+        "da": "Effekt i Watt (W)"
+      },
+      "options": {
+        "isApproximated": {
+          "type": "boolean",
+          "default": false,
+          "desc": {
+            "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+          }
+        }
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "measure_power_ct2": {
+      "type": "number",
+      "title": {
+        "en": "Power CT2",
+        "nl": "Vermogen CT2",
+        "de": "Leistung CT2",
+        "fr": "Puissance CT2",
+        "it": "Potenza CT2",
+        "sv": "Effekt CT2",
+        "no": "Effekt CT2",
+        "es": "Potencia CT2",
+        "da": "Effekt CT2"
+      },
+      "units": {
+        "en": "W"
+      },
+      "icon": "/assets/ct_clamp2.svg",
+      "insights": true,
+      "desc": {
+        "en": "Power in Watt (W)",
+        "nl": "Vermogen in Watt (W)",
+        "de": "Leistung in Watt (W)",
+        "fr": "Puissance  en Watt (W)",
+        "it": "Potenza in Watt (W)",
+        "sv": "Effekt i watt (W)",
+        "no": "Effekt i watt (W)",
+        "es": "Potencia en vatios (W)",
+        "da": "Effekt i Watt (W)"
+      },
+      "options": {
+        "isApproximated": {
+          "type": "boolean",
+          "default": false,
+          "desc": {
+            "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+          }
+        }
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "measure_power_ct3": {
+      "type": "number",
+      "title": {
+        "en": "Power CT3",
+        "nl": "Vermogen CT3",
+        "de": "Leistung CT3",
+        "fr": "Puissance CT3",
+        "it": "Potenza CT3",
+        "sv": "Effekt CT3",
+        "no": "Effekt CT3",
+        "es": "Potencia CT3",
+        "da": "Effekt CT3"
+      },
+      "units": {
+        "en": "W"
+      },
+      "icon": "/assets/ct_clamp2.svg",
+      "insights": true,
+      "desc": {
+        "en": "Power in Watt (W)",
+        "nl": "Vermogen in Watt (W)",
+        "de": "Leistung in Watt (W)",
+        "fr": "Puissance  en Watt (W)",
+        "it": "Potenza in Watt (W)",
+        "sv": "Effekt i watt (W)",
+        "no": "Effekt i watt (W)",
+        "es": "Potencia en vatios (W)",
+        "da": "Effekt i Watt (W)"
+      },
+      "options": {
+        "isApproximated": {
+          "type": "boolean",
+          "default": false,
+          "desc": {
+            "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+          }
+        }
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
     }
   }
 }
