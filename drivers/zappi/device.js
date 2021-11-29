@@ -15,6 +15,7 @@ Object.freeze(ZappiStatus);
 
 class ZappiDevice extends Device {
 
+  #callbackId = -1;
   #chargeMode = ZappiChargeMode.Fast;
   #lastOnState = ZappiChargeMode.Fast;
   #chargerStatus = ZappiStatus.ev_disconnected;
@@ -27,7 +28,7 @@ class ZappiDevice extends Device {
    * onInit is called when the device is initialized.
    */
   async onInit() {
-    this.driver.registerDataUpdateCallback(data => this.dataUpdated(data));
+    this.#callbackId = this.driver.registerDataUpdateCallback(data => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
@@ -157,6 +158,7 @@ class ZappiDevice extends Device {
    * onDeleted is called when the user deleted the device.
    */
   async onDeleted() {
+    this.driver.removeDataUpdateCallback(this.#callbackId);
     this.log('ZappiDevice has been deleted');
   }
 

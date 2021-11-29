@@ -4,6 +4,7 @@ const { Device } = require('homey');
 
 class HarviDevice extends Device {
 
+  #callbackId = -1;
   #ectp1 = 0;
   #ectp2 = 0;
   #ectp3 = 0;
@@ -15,7 +16,7 @@ class HarviDevice extends Device {
    * onInit is called when the device is initialized.
    */
   async onInit() {
-    this.driver.registerDataUpdateCallback(data => this.dataUpdated(data));
+    this.#callbackId = this.driver.registerDataUpdateCallback(data => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
@@ -101,6 +102,7 @@ class HarviDevice extends Device {
    * onDeleted is called when the user deleted the device.
    */
   async onDeleted() {
+    this.driver.removeDataUpdateCallback(this.#callbackId);
     this.log('HarviDevice has been deleted');
   }
 

@@ -16,7 +16,11 @@ class ZappiDriver extends Driver {
   }
 
   registerDataUpdateCallback(callback) {
-    this.#dataUpdateCallbacks.push(callback);
+    return this.#dataUpdateCallbacks.push(callback);
+  }
+
+  removeDataUpdateCallback(callbackId) {
+    this.#dataUpdateCallbacks.splice(callbackId, 1);
   }
 
   dataUpdated(data) {
