@@ -4,10 +4,12 @@
   },
   "class": "heater",
   "capabilities": [
-    "measure_current",
-    "meter_power",
-    "measure_power",
     "onoff",
+    "heater_status",
+    "heater_session_transferred",
+    "measure_power",
+    "measure_power_generated",
+    "measure_current",
     "measure_voltage"
   ],
   "platforms": [

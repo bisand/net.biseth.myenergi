@@ -1,0 +1,54 @@
+{
+    "type": "enum",
+    "title": {
+        "en": "Heater Status",
+        "no": "Varmerstatus"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "icon": "/assets/water_heater.svg",
+    "values": [
+        {
+            "id": 1,
+            "title": {
+                "en": "Paused",
+                "no": "Pauset"
+            }
+        },
+        {
+            "id": 2,
+            "title": {
+                "en": "Unknown",
+                "no": "Ukjent"
+            }
+        },
+        {
+            "id": 3,
+            "title": {
+                "en": "Diverting",
+                "no": "Omdirigerer"
+            }
+        },
+        {
+            "id": 4,
+            "title": {
+                "en": "Boost"
+            }
+        },
+        {
+            "id": 5,
+            "title": {
+                "en": "Max Temp Reached",
+                "no": "Max Temp Oppnådd"
+            }
+        },
+        {
+            "id": 6,
+            "title": {
+                "en": "Stopped",
+                "no": "Stoppet"
+            }
+        }
+    ]
+}

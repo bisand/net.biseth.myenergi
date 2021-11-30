@@ -2,7 +2,7 @@
     "type": "enum",
     "title": {
         "en": "Charger Status",
-        "no": "Ladetatus"
+        "no": "Ladestatus"
     },
     "getable": true,
     "setable": false,
