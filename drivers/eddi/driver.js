@@ -63,7 +63,19 @@ class EddiDriver extends Driver {
         store: {
           myenergiClientId: v.myenergiClientId,
         },
-        capabilities: ['onoff', 'heater_status', 'heater_session_transferred', 'measure_power', 'measure_power_generated', 'measure_current', 'measure_voltage'],
+        capabilities: [
+          'onoff', 
+          'heater_status', 
+          'heater_session_transferred', 
+          'measure_power_ct1', 
+          'measure_power_ct2', 
+          'measure_power_generated', 
+          'measure_current_ct1', 
+          'measure_current_ct2', 
+          'measure_voltage',
+          'heater_1_name',
+          'heater_2_name'
+        ],
         capabilitiesOptions: {
         },
       };

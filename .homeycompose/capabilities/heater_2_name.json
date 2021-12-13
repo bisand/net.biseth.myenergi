@@ -1,0 +1,21 @@
+{
+    "title": {
+      "en": "Heater 2",
+      "no": "Varmeelement 2"
+    },
+    "type": "string",
+    "getable": true,
+    "setable": false,
+    "uiComponent": "media",
+    "$flow": {
+      "triggers": [
+        {
+          "id": "heater_name_changed",
+          "title": {
+            "en": "The name changed",
+            "no": "Navnet ble endret"
+          }
+        }
+      ]
+    }
+  }

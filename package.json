@@ -13,6 +13,6 @@
     "eslint-config-athom": "^3.0.1"
   },
   "dependencies": {
-    "myenergi-api": "^0.9.1"
+    "myenergi-api": "^0.9.2"
   }
 }

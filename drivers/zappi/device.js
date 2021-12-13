@@ -1,7 +1,7 @@
 'use strict';
 
 const { Device } = require('homey');
-const { ZappiChargeMode } = require('myenergi-api/dist/MyEnergi');
+const { ZappiChargeMode } = require('myenergi-api/dist');
 
 const ZappiStatus = {
   ev_disconnected: 'A',
