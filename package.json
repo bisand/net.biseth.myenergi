@@ -8,11 +8,11 @@
   "devDependencies": {
     "@tsconfig/node12": "^1.0.9",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.2.2",
-    "@types/node": "^16.11.9",
-    "eslint": "^7.32.0",
+    "@types/node": "^12.16.1",
+    "eslint": "^8.4.1",
     "eslint-config-athom": "^3.0.1"
   },
   "dependencies": {
-    "myenergi-api": "^0.8.0"
+    "myenergi-api": "^0.9.1"
   }
 }

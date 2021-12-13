@@ -10,41 +10,41 @@
     "icon": "/assets/water_heater.svg",
     "values": [
         {
-            "id": 1,
+            "id": "1",
             "title": {
                 "en": "Paused",
                 "no": "Pauset"
             }
         },
         {
-            "id": 2,
+            "id": "2",
             "title": {
                 "en": "Unknown",
                 "no": "Ukjent"
             }
         },
         {
-            "id": 3,
+            "id": "3",
             "title": {
                 "en": "Diverting",
                 "no": "Omdirigerer"
             }
         },
         {
-            "id": 4,
+            "id": "4",
             "title": {
                 "en": "Boost"
             }
         },
         {
-            "id": 5,
+            "id": "5",
             "title": {
                 "en": "Max Temp Reached",
                 "no": "Max Temp Oppnådd"
             }
         },
         {
-            "id": 6,
+            "id": "6",
             "title": {
                 "en": "Stopped",
                 "no": "Stoppet"

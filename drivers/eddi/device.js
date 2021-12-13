@@ -29,7 +29,7 @@ class EddiDevice extends Device {
       this.#chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
       this.#chargeAdded = zappi.che ? zappi.che : 0;
       this.#chargingCurrent = (this.#chargingVoltage > 0) ? (this.#chargingPower / this.#chargingVoltage) : 0; // P=U*I -> I=P/U
-      if (this.#chargeMode !== ZappiChargeMode.Off) {
+      if (this.#chargeMode !== EddiMode.Off) {
         this.#lastOnState = this.#chargeMode;
       }
     } catch (error) {
@@ -55,7 +55,7 @@ class EddiDevice extends Device {
       data.forEach(zappi => {
         if (zappi && zappi.sno === this.deviceId) {
           try {
-            if (zappi.zmo !== ZappiChargeMode.Off) {
+            if (zappi.zmo !== EddiMode.Off) {
               this.#lastOnState = zappi.zmo;
             }
             this.#chargeMode = zappi.zmo;
@@ -80,7 +80,7 @@ class EddiDevice extends Device {
 
   async setChargeMode(isOn) {
     try {
-      const result = await this.myenergiClient.setZappiChargeMode(this.deviceId, isOn ? this.#lastOnState : ZappiChargeMode.Off);
+      const result = await this.myenergiClient.setZappiChargeMode(this.deviceId, isOn ? this.#lastOnState : EddiMode.Off);
       if (result.status !== 0) {
         throw new Error(result);
       }
@@ -94,8 +94,8 @@ class EddiDevice extends Device {
   async onCapabilityOnoff(value, opts) {
     this.log(`onoff: ${value}`);
     await this.setChargeMode(value);
-    this.setCapabilityValue('charge_mode', value ? `${this.#chargeMode}` : `${ZappiChargeMode.Off}`).catch(this.error);
-    this.setCapabilityValue('charge_mode_selector', value ? `${this.#chargeMode}` : `${ZappiChargeMode.Off}`).catch(this.error);
+    this.setCapabilityValue('charge_mode', value ? `${this.#chargeMode}` : `${EddiMode.Off}`).catch(this.error);
+    this.setCapabilityValue('charge_mode_selector', value ? `${this.#chargeMode}` : `${EddiMode.Off}`).catch(this.error);
   }
 
   /**

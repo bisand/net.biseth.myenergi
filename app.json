@@ -35,10 +35,12 @@
       },
       "class": "heater",
       "capabilities": [
-        "measure_current",
-        "meter_power",
-        "measure_power",
         "onoff",
+        "heater_status",
+        "heater_session_transferred",
+        "measure_power",
+        "measure_power_generated",
+        "measure_current",
         "measure_voltage"
       ],
       "platforms": [
@@ -235,8 +237,7 @@
       "setable": false,
       "uiComponent": "sensor",
       "units": {
-        "en": "kWh",
-        "no": "kWh"
+        "en": "kWh"
       },
       "icon": "/assets/charge_session_consumption.svg",
       "min": 0,
@@ -246,7 +247,7 @@
       "type": "enum",
       "title": {
         "en": "Charger Status",
-        "no": "Ladetatus"
+        "no": "Ladestatus"
       },
       "getable": true,
       "setable": false,
@@ -326,6 +327,76 @@
       "setable": false,
       "uiComponent": "sensor",
       "icon": "/assets/ct_clamp1.svg"
+    },
+    "heater_session_transferred": {
+      "type": "number",
+      "title": {
+        "en": "Transferred last session",
+        "no": "Overført siste økt"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "kWh"
+      },
+      "icon": "/assets/charge_session_consumption.svg",
+      "min": 0,
+      "decimals": 2
+    },
+    "heater_status": {
+      "type": "enum",
+      "title": {
+        "en": "Heater Status",
+        "no": "Varmerstatus"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/water_heater.svg",
+      "values": [
+        {
+          "id": "1",
+          "title": {
+            "en": "Paused",
+            "no": "Pauset"
+          }
+        },
+        {
+          "id": "2",
+          "title": {
+            "en": "Unknown",
+            "no": "Ukjent"
+          }
+        },
+        {
+          "id": "3",
+          "title": {
+            "en": "Diverting",
+            "no": "Omdirigerer"
+          }
+        },
+        {
+          "id": "4",
+          "title": {
+            "en": "Boost"
+          }
+        },
+        {
+          "id": "5",
+          "title": {
+            "en": "Max Temp Reached",
+            "no": "Max Temp Oppnådd"
+          }
+        },
+        {
+          "id": "6",
+          "title": {
+            "en": "Stopped",
+            "no": "Stoppet"
+          }
+        }
+      ]
     },
     "measure_power_ct1": {
       "type": "number",
@@ -458,6 +529,22 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor"
+    },
+    "measure_power_generated": {
+      "type": "number",
+      "title": {
+        "en": "Power generated",
+        "no": "Generert kraft"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "kWh"
+      },
+      "icon": "/assets/solar_panel.svg",
+      "min": 0,
+      "decimals": 2
     }
   }
 }
