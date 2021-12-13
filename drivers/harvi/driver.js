@@ -64,12 +64,12 @@ class HarviDriver extends Driver {
           myenergiClientId: v.myenergiClientId,
         },
         capabilities: [
-          'ct1_type', 
-          'measure_power_ct1', 
-          'ct2_type', 
-          'measure_power_ct2', 
-          'ct3_type', 
-          'measure_power_ct3'
+          'ct1_type',
+          'measure_power_ct1',
+          'ct2_type',
+          'measure_power_ct2',
+          'ct3_type',
+          'measure_power_ct3',
         ],
         capabilitiesOptions: {
         },
