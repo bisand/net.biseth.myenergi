@@ -1,7 +1,7 @@
 'use strict';
 
 const { Device } = require('homey');
-const { EddiMode, EddiBoost, EddiHeaterStatus } = require('myenergi-api/dist');
+const { EddiMode, EddiHeaterStatus } = require('myenergi-api/dist');
 
 class EddiDevice extends Device {
 
@@ -49,6 +49,8 @@ class EddiDevice extends Device {
 
     this.setCapabilityValue('onoff', this.#onOff !== EddiMode.Off).catch(this.error);
     this.setCapabilityValue('heater_status', `${this.#heaterStatus}`).catch(this.error);
+    this.setCapabilityValue('heater_1_name', `${this.#heater1Name}`).catch(this.error);
+    this.setCapabilityValue('heater_2_name', `${this.#heater2Name}`).catch(this.error);
     this.setCapabilityValue('measure_voltage', this.#systemVoltage).catch(this.error);
     this.setCapabilityValue('measure_power_ct1', this.#heater1Power).catch(this.error);
     this.setCapabilityValue('measure_power_ct2', this.#heater2Power).catch(this.error);
@@ -66,24 +68,33 @@ class EddiDevice extends Device {
   dataUpdated(data) {
     this.log('Received data from driver.');
     if (data) {
-      data.forEach(zappi => {
-        if (zappi && zappi.sno === this.deviceId) {
+      data.forEach(eddi => {
+        if (eddi && eddi.sno === this.deviceId) {
           try {
-            if (zappi.zmo !== EddiMode.Off) {
-              this.#lastOnState = zappi.zmo;
+            if (eddi.zmo !== EddiMode.Off) {
+              this.#lastOnState = eddi.zmo;
             }
-            this.#chargeMode = zappi.zmo;
-            this.#chargerStatus = zappi.pst;
-            this.#heater1Power = zappi.ectp1 ? zappi.ectp1 : 0;
-            this.#systemVoltage = zappi.vol ? (zappi.vol / 10) : 0;
-            this.#energyTransferred = zappi.che ? zappi.che : 0;
+            this.#heaterStatus = eddi.sta;
+            this.#heater1Power = eddi.ectp1 ? eddi.ectp1 : 0;
+            this.#heater2Power = eddi.ectp2 ? eddi.ectp2 : 0;
+            this.#heater1Name = eddi.ht1 ? eddi.ht1 : this.#heater1Name;
+            this.#heater2Name = eddi.ht2 ? eddi.ht2 : this.#heater2Name;
+            this.#systemVoltage = eddi.vol ? (eddi.vol / 10) : 0;
+            this.#generatedPower = eddi.gen ? eddi.gen : 0;
+            this.#energyTransferred = eddi.che ? eddi.che : 0;
             this.#heater1Current = (this.#systemVoltage > 0) ? (this.#heater1Power / this.#systemVoltage) : 0; // P=U*I -> I=P/U
+            this.#heater2Current = (this.#systemVoltage > 0) ? (this.#heater2Power / this.#systemVoltage) : 0; // P=U*I -> I=P/U
             this.setCapabilityValue('onoff', this.#onOff !== EddiMode.Off).catch(this.error);
             this.setCapabilityValue('heater_status', `${this.#heaterStatus}`).catch(this.error);
-            this.setCapabilityValue('measure_power', this.#heater1Power).catch(this.error);
+            this.setCapabilityValue('heater_1_name', `${this.#heater1Name}`).catch(this.error);
+            this.setCapabilityValue('heater_2_name', `${this.#heater2Name}`).catch(this.error);
             this.setCapabilityValue('measure_voltage', this.#systemVoltage).catch(this.error);
-            this.setCapabilityValue('measure_current', this.#heater1Current).catch(this.error);
-            this.setCapabilityValue('charge_session_consumption', this.#energyTransferred).catch(this.error);
+            this.setCapabilityValue('measure_power_ct1', this.#heater1Power).catch(this.error);
+            this.setCapabilityValue('measure_power_ct2', this.#heater2Power).catch(this.error);
+            this.setCapabilityValue('measure_current_ct1', this.#heater1Current).catch(this.error);
+            this.setCapabilityValue('measure_current_ct2', this.#heater2Current).catch(this.error);
+            this.setCapabilityValue('measure_power_generated', this.#generatedPower).catch(this.error);
+            this.setCapabilityValue('heater_session_transferred', this.#energyTransferred).catch(this.error);
           } catch (error) {
             this.error(error);
           }
@@ -94,14 +105,14 @@ class EddiDevice extends Device {
 
   async setChargeMode(isOn) {
     try {
-      const result = await this.myenergiClient.setZappiChargeMode(this.deviceId, isOn ? this.#lastOnState : EddiMode.Off);
+      const result = await this.myenergiClient.setEddiMode(this.deviceId, isOn ? EddiMode.On : EddiMode.Off);
       if (result.status !== 0) {
         throw new Error(result);
       }
-      this.log(`Zappi was switched ${isOn ? 'on' : 'off'}`);
+      this.log(`Eddi was switched ${isOn ? 'on' : 'off'}`);
     } catch (error) {
       this.error(error);
-      throw new Error(`Switching the Zappi ${isOn ? 'on' : 'off'} failed!`);
+      throw new Error(`Switching the Eddi ${isOn ? 'on' : 'off'} failed!`);
     }
   }
 
