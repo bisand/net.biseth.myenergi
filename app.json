@@ -13,7 +13,8 @@
     "en": "myenergi"
   },
   "description": {
-    "en": "Adds support for myenergi products like Zappi, Eddi, Harvy and more."
+    "en": "Sustainable future through eco-smart technology.",
+    "no": "Bærekraftig fremtid gjennom øko-smart teknologi."
   },
   "category": [
     "energy"
@@ -27,48 +28,6 @@
   "author": {
     "name": "André Biseth",
     "email": "andre@biseth.net"
-  },
-  "flow": {
-    "triggers": [
-      {
-        "title": {
-          "en": "Charging starts",
-          "no": "Lading starter"
-        },
-        "hint": {
-          "en": "When Zappi starts charging the connected car.",
-          "no": "Når Zappi starter lading av den tilkoblede bilen."
-        },
-        "id": "charging_start"
-      },
-      {
-        "title": {
-          "en": "Charging stopped",
-          "no": "Lading stoppet"
-        },
-        "hint": {
-          "en": "When Zappi stops charging the connected car.",
-          "no": "Når Zappi stopper ladingen av den tilkoblede bilen."
-        },
-        "id": "charging_stop"
-      }
-    ],
-    "actions": [
-      {
-        "title": {
-          "en": "Start charging the car.",
-          "no": "Start lading av bilen."
-        },
-        "id": "start_charging"
-      },
-      {
-        "title": {
-          "en": "Stop charging the car.",
-          "no": "Stopp lading av bilen."
-        },
-        "id": "stop_charging"
-      }
-    ]
   },
   "drivers": [
     {
@@ -204,6 +163,96 @@
       "id": "zappi"
     }
   ],
+  "flow": {
+    "triggers": [
+      {
+        "id": "charging_started",
+        "title": {
+          "en": "Charging started",
+          "no": "Lading startet"
+        },
+        "hint": {
+          "en": "When Zappi starts charging the connected car.",
+          "no": "Når Zappi starter lading av den tilkoblede bilen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "charging_stopped",
+        "title": {
+          "en": "Charging stopped",
+          "no": "Lading stoppet"
+        },
+        "hint": {
+          "en": "When Zappi stops charging the connected car.",
+          "no": "Når Zappi stopper ladingen av den tilkoblede bilen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "is_charging",
+        "title": {
+          "en": "Car !{{is|isn't}} charging",
+          "no": "Bilen !{{lader|lader ikke}}"
+        },
+        "hint": {
+          "en": "Checks if the car is currently being charged by Zappi.",
+          "no": "Sjekker om bilen blir laded av Zappi"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "start_charging",
+        "title": {
+          "en": "Start charging the car.",
+          "no": "Start lading av bilen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "stop_charging",
+        "title": {
+          "en": "Stop charging the car.",
+          "no": "Stopp lading av bilen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      }
+    ]
+  },
   "capabilities": {
     "charge_mode": {
       "type": "enum",
