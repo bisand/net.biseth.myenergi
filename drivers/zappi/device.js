@@ -8,6 +8,7 @@ class ZappiDevice extends Device {
   #callbackId = -1;
   #chargeMode = ZappiChargeMode.Fast;
   #lastOnState = ZappiChargeMode.Fast;
+  #lastChargingStarted = false;
   #chargerStatus = ZappiStatus.EvDisconnected;
   #chargingPower = 0;
   #chargingVoltage = 0;
@@ -33,6 +34,7 @@ class ZappiDevice extends Device {
       this.#chargingCurrent = (this.#chargingVoltage > 0) ? (this.#chargingPower / this.#chargingVoltage) : 0; // P=U*I -> I=P/U
       if (this.#chargeMode !== ZappiChargeMode.Off) {
         this.#lastOnState = this.#chargeMode;
+        this.#lastChargingStarted = true;
       }
     } catch (error) {
       this.error(error);
@@ -51,7 +53,41 @@ class ZappiDevice extends Device {
     this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
     this.registerCapabilityListener('charge_mode_selector', this.onCapabilityChargeMode.bind(this));
 
+    //TODO Fix logic here!
+    const rainingCondition = this.homey.flow.getConditionCard('is_charging');
+    rainingCondition.registerRunListener(async (args, state) => {
+      const raining = await RainApi.isItRaining(); // true or false
+      return raining;
+    });
+
+    const stopRainingAction = this.homey.flow.getActionCard('start_charging');
+    stopRainingAction.registerRunListener(async (args, state) => {
+      await RainApi.makeItStopRaining();
+    });
+
+    const stopRainingAction = this.homey.flow.getActionCard('stop_charging');
+    stopRainingAction.registerRunListener(async (args, state) => {
+      await RainApi.makeItStopRaining();
+    });
+
     this.log('ZappiDevice has been initialized');
+  }
+
+  triggerChargingFlow(chargingStarted) {
+    let device = this; // We're in a Device instance
+    let tokens = {};
+    let state = {};
+    if (chargingStarted === this.#lastChargingStarted) {
+      return;
+    }
+    this.#lastChargingStarted = chargingStarted;
+
+    this.driver.ready().then(() => {
+      if (chargingStarted)
+        this.driver.triggerChargingStartedFlow(device, tokens, state);
+      else
+        this.driver.triggerChargingStoppedFlow(device, tokens, state);
+    });
   }
 
   dataUpdated(data) {
@@ -91,6 +127,7 @@ class ZappiDevice extends Device {
       if (result.status !== 0) {
         throw new Error(result);
       }
+      triggerChargingFlow(isOn);
       this.log(`Zappi was switched ${isOn ? 'on' : 'off'}`);
     } catch (error) {
       this.error(error);
