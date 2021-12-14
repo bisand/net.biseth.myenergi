@@ -19,11 +19,13 @@ class ZappiDevice extends Device {
    * onInit is called when the device is initialized.
    */
   async onInit() {
+    const device = this;
     this.#callbackId = this.driver.registerDataUpdateCallback(data => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
     try {
+      // Collect data.
       this.myenergiClient = this.homey.app.clients[this.myenergiClientId];
       const zappi = await this.myenergiClient.getStatusZappi(this.deviceId);
       this.#chargeMode = zappi.zmo;
@@ -40,6 +42,7 @@ class ZappiDevice extends Device {
       this.error(error);
     }
 
+    // Set capabilities
     this.setCapabilityValue('onoff', this.#chargeMode !== ZappiChargeMode.Off).catch(this.error);
     this.setCapabilityValue('charge_mode', `${this.#chargeMode}`).catch(this.error);
     this.setCapabilityValue('charge_mode_selector', `${this.#chargeMode}`).catch(this.error);
@@ -53,21 +56,24 @@ class ZappiDevice extends Device {
     this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
     this.registerCapabilityListener('charge_mode_selector', this.onCapabilityChargeMode.bind(this));
 
-    //TODO Fix logic here!
-    const rainingCondition = this.homey.flow.getConditionCard('is_charging');
-    rainingCondition.registerRunListener(async (args, state) => {
-      const raining = await RainApi.isItRaining(); // true or false
-      return raining;
+    // Flow logic
+    const chargingCondition = this.homey.flow.getConditionCard('is_charging');
+    chargingCondition.registerRunListener(async (args, state) => {
+      device.log(`Is Charging: ${args} - ${state}`)
+      const charging = device.#chargerStatus === ZappiStatus.Charging; // true or false
+      return charging;
     });
 
-    const stopRainingAction = this.homey.flow.getActionCard('start_charging');
-    stopRainingAction.registerRunListener(async (args, state) => {
-      await RainApi.makeItStopRaining();
+    const startChargingAction = this.homey.flow.getActionCard('start_charging');
+    startChargingAction.registerRunListener(async (args, state) => {
+      device.log(`Start Charging: ${args} - ${state}`)
+      await device.setChargeMode(true);
     });
 
-    const stopRainingAction = this.homey.flow.getActionCard('stop_charging');
-    stopRainingAction.registerRunListener(async (args, state) => {
-      await RainApi.makeItStopRaining();
+    const stopChargingAction = this.homey.flow.getActionCard('stop_charging');
+    stopChargingAction.registerRunListener(async (args, state) => {
+      this.log(`Stop Charging: ${args} - ${state}`)
+      await device.setChargeMode(false);
     });
 
     this.log('ZappiDevice has been initialized');
@@ -127,7 +133,7 @@ class ZappiDevice extends Device {
       if (result.status !== 0) {
         throw new Error(result);
       }
-      triggerChargingFlow(isOn);
+      this.triggerChargingFlow(isOn);
       this.log(`Zappi was switched ${isOn ? 'on' : 'off'}`);
     } catch (error) {
       this.error(error);

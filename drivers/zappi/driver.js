@@ -22,14 +22,14 @@ class ZappiDriver extends Driver {
   triggerChargingStartedFlow(device, tokens, state) {
     this.#chargingStarted
       .trigger(device, tokens, state)
-      .then(this.log)
+      .then(x => this.log(`triggerChargingStartedFlow: ${x}`))
       .catch(this.error);
   }
 
   triggerChargingStoppedFlow(device, tokens, state) {
     this.#chargingStopped
       .trigger(device, tokens, state)
-      .then(this.log)
+      .then(x => this.log(`triggerChargingStoppedFlow: ${x}`))
       .catch(this.error);
   }
 
