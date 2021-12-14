@@ -28,6 +28,48 @@
     "name": "André Biseth",
     "email": "andre@biseth.net"
   },
+  "flow": {
+    "triggers": [
+      {
+        "title": {
+          "en": "Charging starts",
+          "no": "Lading starter"
+        },
+        "hint": {
+          "en": "When Zappi starts charging the connected car.",
+          "no": "Når Zappi starter lading av den tilkoblede bilen."
+        },
+        "id": "charging_start"
+      },
+      {
+        "title": {
+          "en": "Charging stopped",
+          "no": "Lading stoppet"
+        },
+        "hint": {
+          "en": "When Zappi stops charging the connected car.",
+          "no": "Når Zappi stopper ladingen av den tilkoblede bilen."
+        },
+        "id": "charging_stop"
+      }
+    ],
+    "actions": [
+      {
+        "title": {
+          "en": "Start charging the car.",
+          "no": "Start lading av bilen."
+        },
+        "id": "start_charging"
+      },
+      {
+        "title": {
+          "en": "Stop charging the car.",
+          "no": "Stopp lading av bilen."
+        },
+        "id": "stop_charging"
+      }
+    ]
+  },
   "drivers": [
     {
       "name": {

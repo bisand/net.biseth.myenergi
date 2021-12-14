@@ -1,0 +1,10 @@
+{
+    "title": {
+        "en": "Charging starts",
+        "no": "Lading starter"
+    },
+    "hint": {
+        "en": "When Zappi starts charging the connected car.",
+        "no": "Når Zappi starter lading av den tilkoblede bilen."
+    }
+}

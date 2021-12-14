@@ -1,0 +1,10 @@
+{
+  "title": {
+    "en": "Charging stopped",
+    "no": "Lading stoppet"
+  },
+  "hint": {
+    "en": "When Zappi stops charging the connected car.",
+    "no": "Når Zappi stopper ladingen av den tilkoblede bilen."
+  }
+}
