@@ -47,7 +47,25 @@
         "local",
         "cloud"
       ],
-      "connectivity": [],
+      "connectivity": [
+        "cloud"
+      ],
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          },
+          "options": {
+            "singular": true
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
       "images": {
         "small": "/drivers/eddi/assets/images/small.png",
         "large": "/drivers/eddi/assets/images/large.png",
@@ -328,6 +346,26 @@
       "uiComponent": "sensor",
       "icon": "/assets/ct_clamp1.svg"
     },
+    "heater_1_name": {
+      "title": {
+        "en": "Heater 1",
+        "no": "Varmeelement 1"
+      },
+      "type": "string",
+      "getable": true,
+      "setable": false,
+      "uiComponent": "media"
+    },
+    "heater_2_name": {
+      "title": {
+        "en": "Heater 2",
+        "no": "Varmeelement 2"
+      },
+      "type": "string",
+      "getable": true,
+      "setable": false,
+      "uiComponent": "media"
+    },
     "heater_session_transferred": {
       "type": "number",
       "title": {
@@ -397,6 +435,108 @@
           }
         }
       ]
+    },
+    "measure_current_ct1": {
+      "type": "number",
+      "title": {
+        "en": "Current CT1",
+        "nl": "Stroom CT1",
+        "de": "Strom CT1",
+        "fr": "Courant CT1",
+        "it": "Corrente CT1",
+        "sv": "Ström CT1",
+        "no": "Strøm CT1",
+        "es": "Corriente CT1",
+        "da": "Strøm CT1"
+      },
+      "units": {
+        "en": "A"
+      },
+      "insights": true,
+      "desc": {
+        "en": "Electric current (A)",
+        "nl": "Elektrische stroom (A)",
+        "de": "Elektrischer Strom (A)",
+        "fr": "Courant électrique (A)",
+        "it": "Corrente elettrica (A)",
+        "sv": "Elektrisk ström (A)",
+        "no": "Elektrisk strøm (A)",
+        "es": "Corriente eléctrica (A)",
+        "da": "Elektrisk strøm (A)"
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "measure_current_ct2": {
+      "type": "number",
+      "title": {
+        "en": "Current CT2",
+        "nl": "Stroom CT2",
+        "de": "Strom CT2",
+        "fr": "Courant CT2",
+        "it": "Corrente CT2",
+        "sv": "Ström CT2",
+        "no": "Strøm CT2",
+        "es": "Corriente CT2",
+        "da": "Strøm CT2"
+      },
+      "units": {
+        "en": "A"
+      },
+      "insights": true,
+      "desc": {
+        "en": "Electric current (A)",
+        "nl": "Elektrische stroom (A)",
+        "de": "Elektrischer Strom (A)",
+        "fr": "Courant électrique (A)",
+        "it": "Corrente elettrica (A)",
+        "sv": "Elektrisk ström (A)",
+        "no": "Elektrisk strøm (A)",
+        "es": "Corriente eléctrica (A)",
+        "da": "Elektrisk strøm (A)"
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "measure_current_ct3": {
+      "type": "number",
+      "title": {
+        "en": "Current CT3",
+        "nl": "Stroom CT3",
+        "de": "Strom CT3",
+        "fr": "Courant CT3",
+        "it": "Corrente CT3",
+        "sv": "Ström CT3",
+        "no": "Strøm CT3",
+        "es": "Corriente CT3",
+        "da": "Strøm CT3"
+      },
+      "units": {
+        "en": "A"
+      },
+      "insights": true,
+      "desc": {
+        "en": "Electric current (A)",
+        "nl": "Elektrische stroom (A)",
+        "de": "Elektrischer Strom (A)",
+        "fr": "Courant électrique (A)",
+        "it": "Corrente elettrica (A)",
+        "sv": "Elektrisk ström (A)",
+        "no": "Elektrisk strøm (A)",
+        "es": "Corriente eléctrica (A)",
+        "da": "Elektrisk strøm (A)"
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
     },
     "measure_power_ct1": {
       "type": "number",

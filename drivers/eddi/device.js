@@ -8,7 +8,7 @@ class EddiDevice extends Device {
   #callbackId = -1;
   #onOff = EddiMode.Off;
   #heaterStatus = EddiHeaterStatus.Boost;
-  #lastOnState = EddiHeaterStatus.Boost;
+  #lastHeaterStatus = EddiHeaterStatus.Boost;
   #systemVoltage = 0;
   #heater1Power = 0;
   #heater2Power = 0;
@@ -40,9 +40,7 @@ class EddiDevice extends Device {
       this.#energyTransferred = eddi.che ? eddi.che : 0;
       this.#heater1Current = (this.#systemVoltage > 0) ? (this.#heater1Power / this.#systemVoltage) : 0; // P=U*I -> I=P/U
       this.#heater2Current = (this.#systemVoltage > 0) ? (this.#heater2Power / this.#systemVoltage) : 0; // P=U*I -> I=P/U
-      if (this.#heaterStatus !== EddiHeaterStatus.Stopped) {
-        this.#lastOnState = this.#heaterStatus;
-      }
+      this.#lastHeaterStatus = this.#heaterStatus;
     } catch (error) {
       this.error(error);
     }
@@ -71,9 +69,7 @@ class EddiDevice extends Device {
       data.forEach(eddi => {
         if (eddi && eddi.sno === this.deviceId) {
           try {
-            if (eddi.zmo !== EddiMode.Off) {
-              this.#lastOnState = eddi.zmo;
-            }
+            this.#lastHeaterStatus = this.sta;
             this.#heaterStatus = eddi.sta;
             this.#heater1Power = eddi.ectp1 ? eddi.ectp1 : 0;
             this.#heater2Power = eddi.ectp2 ? eddi.ectp2 : 0;
@@ -103,7 +99,7 @@ class EddiDevice extends Device {
     }
   }
 
-  async setChargeMode(isOn) {
+  async setEddiMode(isOn) {
     try {
       const result = await this.myenergiClient.setEddiMode(this.deviceId, isOn ? EddiMode.On : EddiMode.Off);
       if (result.status !== 0) {
@@ -118,9 +114,9 @@ class EddiDevice extends Device {
 
   async onCapabilityOnoff(value, opts) {
     this.log(`onoff: ${value}`);
-    await this.setChargeMode(value);
-    this.setCapabilityValue('charge_mode', value ? `${this.#chargeMode}` : `${EddiMode.Off}`).catch(this.error);
-    this.setCapabilityValue('charge_mode_selector', value ? `${this.#chargeMode}` : `${EddiMode.Off}`).catch(this.error);
+    await this.setEddiMode(value);
+    this.setCapabilityValue('onoff', value ? EddiMode.On : EddiMode.Off).catch(this.error);
+    this.setCapabilityValue('heater_status', value ? `${this.#lastHeaterStatus}` : EddiHeaterStatus.Stopped).catch(this.error);
   }
 
   /**

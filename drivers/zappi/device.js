@@ -1,24 +1,14 @@
 'use strict';
 
 const { Device } = require('homey');
-const { ZappiChargeMode } = require('myenergi-api/dist');
-
-const ZappiStatus = {
-  ev_disconnected: 'A',
-  ev_connected: 'B1',
-  waiting_for_ev: 'B2',
-  ev_ready_to_charge: 'C1',
-  charging: 'C2',
-  fault: 'F',
-};
-Object.freeze(ZappiStatus);
+const { ZappiChargeMode, ZappiStatus } = require('myenergi-api');
 
 class ZappiDevice extends Device {
 
   #callbackId = -1;
   #chargeMode = ZappiChargeMode.Fast;
   #lastOnState = ZappiChargeMode.Fast;
-  #chargerStatus = ZappiStatus.ev_disconnected;
+  #chargerStatus = ZappiStatus.EvDisconnected;
   #chargingPower = 0;
   #chargingVoltage = 0;
   #chargingCurrent = 0;
