@@ -59,20 +59,20 @@ class ZappiDevice extends Device {
     // Flow logic
     const chargingCondition = this.homey.flow.getConditionCard('is_charging');
     chargingCondition.registerRunListener(async (args, state) => {
-      device.log(`Is Charging: ${args} - ${state}`)
+      device.log(`Is Charging: ${args} - ${state}`);
       const charging = device.#chargerStatus === ZappiStatus.Charging; // true or false
       return charging;
     });
 
     const startChargingAction = this.homey.flow.getActionCard('start_charging');
     startChargingAction.registerRunListener(async (args, state) => {
-      device.log(`Start Charging: ${args} - ${state}`)
+      device.log(`Start Charging: ${args} - ${state}`);
       await device.setChargeMode(true);
     });
 
     const stopChargingAction = this.homey.flow.getActionCard('stop_charging');
     stopChargingAction.registerRunListener(async (args, state) => {
-      this.log(`Stop Charging: ${args} - ${state}`)
+      this.log(`Stop Charging: ${args} - ${state}`);
       await device.setChargeMode(false);
     });
 
@@ -80,19 +80,18 @@ class ZappiDevice extends Device {
   }
 
   triggerChargingFlow(chargingStarted) {
-    let device = this; // We're in a Device instance
-    let tokens = {};
-    let state = {};
+    const device = this; // We're in a Device instance
+    const tokens = {};
+    const state = {};
     if (chargingStarted === this.#lastChargingStarted) {
       return;
     }
     this.#lastChargingStarted = chargingStarted;
 
     this.driver.ready().then(() => {
-      if (chargingStarted)
+      if (chargingStarted) {
         this.driver.triggerChargingStartedFlow(device, tokens, state);
-      else
-        this.driver.triggerChargingStoppedFlow(device, tokens, state);
+      } else this.driver.triggerChargingStoppedFlow(device, tokens, state);
     });
   }
 

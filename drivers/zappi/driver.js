@@ -14,8 +14,8 @@ class ZappiDriver extends Driver {
    */
   async onInit() {
     this.homey.app.registerDataUpdateCallback(data => this.dataUpdated(data));
-    this.#chargingStarted = this.homey.flow.getDeviceTriggerCard("charging_started");
-    this.#chargingStopped = this.homey.flow.getDeviceTriggerCard("charging_stopped");
+    this.#chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
+    this.#chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
     this.log('ZappiDriver has been initialized');
   }
 
