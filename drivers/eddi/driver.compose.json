@@ -13,11 +13,9 @@
     "measure_voltage"
   ],
   "platforms": [
-    "local",
-    "cloud"
+    "local"
   ],
   "connectivity": [
-    "cloud"
   ],
   "pair": [
     {

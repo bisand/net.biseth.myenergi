@@ -12,12 +12,9 @@
     "measure_power_ct3"
   ],
   "platforms": [
-    "local",
-    "cloud"
+    "local"
   ],
-  "connectivity": [
-    "cloud"
-  ],
+  "connectivity": [],
   "pair": [
     {
       "id": "list_devices",

@@ -6,8 +6,7 @@
   "sdk": 3,
   "brandColor": "#2bcc64",
   "platforms": [
-    "local",
-    "cloud"
+    "local"
   ],
   "name": {
     "en": "myenergi"
@@ -19,6 +18,28 @@
   "category": [
     "energy"
   ],
+  "tags": {
+    "en": [
+      "energy",
+      "power",
+      "myenergi",
+      "zappi",
+      "harvi",
+      "charging",
+      "EV",
+      "solar"
+    ],
+    "no": [
+      "energi",
+      "effekt",
+      "myenergi",
+      "zappi",
+      "harvi",
+      "lading",
+      "elbil",
+      "solcelle"
+    ]
+  },
   "permissions": [],
   "images": {
     "small": "/assets/images/small.png",
@@ -29,6 +50,19 @@
     "name": "André Biseth",
     "email": "andre@biseth.net"
   },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "bisand"
+      }
+    }
+  },
+  "bugs": {
+    "url": "https://github.com/bisand/net.biseth.myenergi/issues"
+  },
+  "source": "https://github.com/bisand/net.biseth.myenergi",
+  "homepage": "https://myenergi.com",
+  "support": "https://github.com/bisand/net.biseth.myenergi/issues",
   "drivers": [
     {
       "name": {
@@ -45,12 +79,9 @@
         "measure_voltage"
       ],
       "platforms": [
-        "local",
-        "cloud"
+        "local"
       ],
-      "connectivity": [
-        "cloud"
-      ],
+      "connectivity": [],
       "pair": [
         {
           "id": "list_devices",
@@ -88,12 +119,9 @@
         "measure_power_ct3"
       ],
       "platforms": [
-        "local",
-        "cloud"
+        "local"
       ],
-      "connectivity": [
-        "cloud"
-      ],
+      "connectivity": [],
       "pair": [
         {
           "id": "list_devices",
@@ -133,12 +161,9 @@
         "meter_power"
       ],
       "platforms": [
-        "local",
-        "cloud"
+        "local"
       ],
-      "connectivity": [
-        "cloud"
-      ],
+      "connectivity": [],
       "pair": [
         {
           "id": "list_devices",

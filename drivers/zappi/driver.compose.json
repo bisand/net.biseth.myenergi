@@ -15,12 +15,9 @@
     "meter_power"
   ],
   "platforms": [
-    "local",
-    "cloud"
+    "local"
   ],
-  "connectivity": [
-    "cloud"
-  ],
+  "connectivity": [],
   "pair": [
     {
       "id": "list_devices",
