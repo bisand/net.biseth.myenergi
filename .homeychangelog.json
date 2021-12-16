@@ -1,5 +1,8 @@
 {
   "1.0.0": {
     "en": "Added support for the devices Zappi, Eddi and Harvi"
+  },
+  "1.0.1": {
+    "en": "Minor improvements and added Norwegian readme."
   }
 }
