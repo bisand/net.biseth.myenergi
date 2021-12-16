@@ -32,14 +32,15 @@
         </div>
         <div class="field row">
             <label for="pollInterval">Server poll interval (sec)</label>
-            <input id="pollInterval" name="pollInterval" type="number" min="5" max="86400" value="" />
+            <input id="pollInterval" name="pollInterval" type="number" min="5" max="86400" value="" /><br>
+            <span><i>Note! Be careful not to use too short intervals. This could cause you to be locked out from the myenergi API.</i></span>
         </div>
     </fieldset>
 
     <button id="addHub" class="left">Add Hub</button>
     <button id="saveHubs" class="right">Save changes</button>
 
-    <textarea id="log" rows="10"></textarea>
+    <!-- <textarea id="log" rows="10"></textarea> -->
 
     <script type="text/javascript">
         // a method named 'onHomeyReady' must be present in your code
@@ -78,7 +79,15 @@
                     const hubName = ('' + $(this).find('input[name="hubname"]').val() + '').replace(/[\W_]+/g, "_");
                     const userName = $(this).find('input[name="username"]').val();
                     const password = $(this).find('input[name="password"]').val();
-                    const pollInterval = $(this).find('input[name="pollInterval"]').val();
+                    let pollInterval = 60;
+                    try {
+                        pollInterval = Number($(this).find('input[name="pollInterval"]').val());
+                        if (pollInterval < 5) {
+                            pollInterval = 5;
+                        }
+                    } catch (error) {
+                        pollInterval = 60;
+                    }
                     $(this).find('input[name="hubname"]').val(hubName);
                     myenergiHubs.push({
                         hubname: hubName,
@@ -87,7 +96,7 @@
                         pollInterval: pollInterval
                     });
                 });
-                $('#log').val(JSON.stringify(myenergiHubs));
+                // $('#log').val(JSON.stringify(myenergiHubs));
                 Homey.set("myenergiHubs", myenergiHubs, function (err) {
                     if (err) return Homey.alert(err);
                 });

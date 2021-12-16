@@ -3,15 +3,15 @@
         {
             "id": "start_charging",
             "title": {
-                "en": "Start charging the car.",
-                "no": "Start lading av bilen."
+                "en": "Start charging the car",
+                "no": "Start lading av bilen"
             }
         },
         {
             "id": "stop_charging",
             "title": {
-                "en": "Stop charging the car.",
-                "no": "Stopp lading av bilen."
+                "en": "Stop charging the car",
+                "no": "Stopp lading av bilen"
             }
         }
     ],
@@ -23,7 +23,7 @@
                 "no": "Bilen !{{lader|lader ikke}}"
             },
             "hint": {
-                "en": "Checks if the car is currently being charged by Zappi.",
+                "en": "Checks if the car is currently being charged by Zappi",
                 "no": "Sjekker om bilen blir laded av Zappi"
             }
         }
@@ -36,8 +36,8 @@
                 "no": "Lading startet"
             },
             "hint": {
-                "en": "When Zappi starts charging the connected car.",
-                "no": "Når Zappi starter lading av den tilkoblede bilen."
+                "en": "When Zappi starts charging the connected car",
+                "no": "Når Zappi starter lading av den tilkoblede bilen"
             }
         },
         {
@@ -47,8 +47,8 @@
                 "no": "Lading stoppet"
             },
             "hint": {
-                "en": "When Zappi stops charging the connected car.",
-                "no": "Når Zappi stopper ladingen av den tilkoblede bilen."
+                "en": "When Zappi stops charging the connected car",
+                "no": "Når Zappi stopper ladingen av den tilkoblede bilen"
             }
         }
     ]
