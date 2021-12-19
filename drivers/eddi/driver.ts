@@ -1,34 +1,45 @@
-'use strict';
+import { Driver } from 'homey';
+import { Eddi } from 'myenergi-api';
+import { MyEnergiApp } from '../../app';
 
-const { Driver } = require('homey');
+export interface EddiData extends Eddi {
+  myenergiClientId: string;
+}
 
-class EddiDriver extends Driver {
+export class EddiDriver extends Driver {
 
-  #dataUpdateCallbacks = [];
-  eddiDevices = [];
+  private _app: MyEnergiApp;
+  private _dataUpdateCallbacks: any[] = [];
+
+  public eddiDevices: EddiData[] = [];
+
+  constructor() {
+    super();
+    this._app = this.homey.app as MyEnergiApp;
+  }
 
   /**
    * onInit is called when the driver is initialized.
    */
-  async onInit() {
-    this.homey.app.registerDataUpdateCallback(data => this.dataUpdated(data));
+  public async onInit() {
+    this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this.log('EddiDriver has been initialized');
   }
 
-  registerDataUpdateCallback(callback) {
-    return this.#dataUpdateCallbacks.push(callback);
+  public registerDataUpdateCallback(callback: any) {
+    return this._dataUpdateCallbacks.push(callback);
   }
 
-  removeDataUpdateCallback(callbackId) {
-    this.#dataUpdateCallbacks.splice(callbackId, 1);
+  public removeDataUpdateCallback(callbackId: number) {
+    this._dataUpdateCallbacks.splice(callbackId, 1);
   }
 
-  dataUpdated(data) {
+  private dataUpdated(data: any[]) {
     this.log('Received data from app. Relaying to devices.');
     if (data) {
       data.forEach(d => {
         if (d.eddi) {
-          this.#dataUpdateCallbacks.forEach(callback => {
+          this._dataUpdateCallbacks.forEach(callback => {
             callback(d.eddi);
           });
         }
@@ -36,14 +47,14 @@ class EddiDriver extends Driver {
     }
   }
 
-  async loadEddiDevices() {
+  private async loadEddiDevices() {
     const res = new Promise((resolve, reject) => {
-      Object.keys(this.homey.app.clients).forEach(async (key, i, arr) => {
-        const client = this.homey.app.clients[key];
-        const eddis = await client.getStatusEddiAll();
-        eddis.forEach(eddi => {
+      Object.keys(this._app.clients).forEach(async (key, i, arr) => {
+        const client = this._app.clients[key];
+        const eddis: EddiData[] = await client.getStatusEddiAll();
+        eddis.forEach((eddi: EddiData) => {
           if (this.eddiDevices.findIndex(z => z.sno === eddi.sno) === -1) {
-            eddi['myenergiClientId'] = key;
+            eddi.myenergiClientId = key;
             this.eddiDevices.push(eddi);
           }
         });
@@ -53,7 +64,7 @@ class EddiDriver extends Driver {
     return res;
   }
 
-  async getEddiDevices() {
+  private async getEddiDevices() {
     await this.loadEddiDevices();
     return this.eddiDevices.map((v, i, a) => {
       return {
@@ -91,7 +102,7 @@ class EddiDriver extends Driver {
     return this.getEddiDevices();
   }
 
-  async onPair(session) {
+  async onPair(session: any) {
     session.setHandler('list_devices', () => {
       const devices = this.getEddiDevices();
 

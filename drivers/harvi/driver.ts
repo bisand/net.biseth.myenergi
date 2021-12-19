@@ -1,34 +1,45 @@
-'use strict';
+import { Driver } from 'homey';
+import { Harvi } from 'myenergi-api';
+import { MyEnergiApp } from '../../app';
 
-const { Driver } = require('homey');
+export interface HarviData extends Harvi {
+  myenergiClientId: string;
+}
 
-class HarviDriver extends Driver {
+export class HarviDriver extends Driver {
 
-  #dataUpdateCallbacks = [];
-  harviDevices = [];
+  private _app: MyEnergiApp;
+  private _dataUpdateCallbacks: any[] = [];
+
+  public harviDevices: HarviData[] = [];
+
+  constructor() {
+    super();
+    this._app = this.homey.app as MyEnergiApp;
+  }
 
   /**
    * onInit is called when the driver is initialized.
    */
-  async onInit() {
-    this.homey.app.registerDataUpdateCallback(data => this.dataUpdated(data));
+  public async onInit() {
+    this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this.log('HarviDriver has been initialized');
   }
 
-  registerDataUpdateCallback(callback) {
-    return this.#dataUpdateCallbacks.push(callback);
+  public registerDataUpdateCallback(callback: any) {
+    return this._dataUpdateCallbacks.push(callback);
   }
 
-  removeDataUpdateCallback(callbackId) {
-    this.#dataUpdateCallbacks.splice(callbackId, 1);
+  public removeDataUpdateCallback(callbackId: number) {
+    this._dataUpdateCallbacks.splice(callbackId, 1);
   }
 
-  dataUpdated(data) {
+  private dataUpdated(data: any[]) {
     this.log('Received data from app. Relaying to devices.');
     if (data) {
       data.forEach(d => {
         if (d.harvi) {
-          this.#dataUpdateCallbacks.forEach(callback => {
+          this._dataUpdateCallbacks.forEach(callback => {
             callback(d.harvi);
           });
         }
@@ -36,13 +47,13 @@ class HarviDriver extends Driver {
     }
   }
 
-  async loadHarviDevices() {
+  private async loadHarviDevices() {
     const res = new Promise((resolve, reject) => {
-      Object.keys(this.homey.app.clients).forEach(async (key, i, arr) => {
-        const client = this.homey.app.clients[key];
-        const harvis = await client.getStatusHarviAll();
-        harvis.forEach(harvi => {
-          if (this.harviDevices.findIndex(z => z.sno === harvi.sno) === -1) {
+      Object.keys(this._app.clients).forEach(async (key, i, arr) => {
+        const client = this._app.clients[key];
+        const harvis: HarviData[] = await client.getStatusHarviAll();
+        harvis.forEach((harvi: HarviData) => {
+          if (this.harviDevices.findIndex(h => h.sno === harvi.sno) === -1) {
             harvi['myenergiClientId'] = key;
             this.harviDevices.push(harvi);
           }
@@ -53,7 +64,7 @@ class HarviDriver extends Driver {
     return res;
   }
 
-  async getHarviDevices() {
+  private async getHarviDevices() {
     await this.loadHarviDevices();
     return this.harviDevices.map((v, i, a) => {
       return {
@@ -82,11 +93,11 @@ class HarviDriver extends Driver {
    * and the 'list_devices' view is called.
    * This should return an array with the data of devices that are available for pairing.
    */
-  async onPairListDevices() {
+  public async onPairListDevices() {
     return this.getHarviDevices();
   }
 
-  async onPair(session) {
+  public async onPair(session: any) {
     session.setHandler('list_devices', () => {
       const devices = this.getHarviDevices();
 

@@ -1,52 +1,63 @@
-'use strict';
+import { Driver } from 'homey';
+import { MyEnergiApp } from '../../app';
+import { Zappi } from 'myenergi-api';
 
-const { Driver } = require('homey');
+export interface ZappiData extends Zappi {
+  myenergiClientId: string;
+}
 
-class ZappiDriver extends Driver {
+export class ZappiDriver extends Driver {
 
-  #dataUpdateCallbacks = [];
-  #chargingStarted;
-  #chargingStopped;
-  zappiDevices = [];
+  private _dataUpdateCallbacks: any[] = [];
+  private _chargingStarted: any;
+  private _chargingStopped: any;
+  private _app: MyEnergiApp;
+
+  public zappiDevices: ZappiData[] = [];
+
+  constructor() {
+    super();
+    this._app = this.homey.app as MyEnergiApp;
+  }
 
   /**
    * onInit is called when the driver is initialized.
    */
   async onInit() {
-    this.homey.app.registerDataUpdateCallback(data => this.dataUpdated(data));
-    this.#chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
-    this.#chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
+    this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
+    this._chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
+    this._chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
     this.log('ZappiDriver has been initialized');
   }
 
-  triggerChargingStartedFlow(device, tokens, state) {
-    this.#chargingStarted
+  triggerChargingStartedFlow(device: any, tokens: any, state: any) {
+    this._chargingStarted
       .trigger(device, tokens, state)
-      .then(x => this.log(`triggerChargingStartedFlow: ${x}`))
+      .then((x: any) => this.log(`triggerChargingStartedFlow: ${x}`))
       .catch(this.error);
   }
 
-  triggerChargingStoppedFlow(device, tokens, state) {
-    this.#chargingStopped
+  triggerChargingStoppedFlow(device: any, tokens: any, state: any) {
+    this._chargingStopped
       .trigger(device, tokens, state)
-      .then(x => this.log(`triggerChargingStoppedFlow: ${x}`))
+      .then((x: any) => this.log(`triggerChargingStoppedFlow: ${x}`))
       .catch(this.error);
   }
 
-  registerDataUpdateCallback(callback) {
-    return this.#dataUpdateCallbacks.push(callback);
+  registerDataUpdateCallback(callback: any) {
+    return this._dataUpdateCallbacks.push(callback);
   }
 
-  removeDataUpdateCallback(callbackId) {
-    this.#dataUpdateCallbacks.splice(callbackId, 1);
+  removeDataUpdateCallback(callbackId: number) {
+    this._dataUpdateCallbacks.splice(callbackId, 1);
   }
 
-  dataUpdated(data) {
+  dataUpdated(data: any[]) {
     this.log('Received data from app. Relaying to devices.');
     if (data) {
       data.forEach(d => {
         if (d.zappi) {
-          this.#dataUpdateCallbacks.forEach(callback => {
+          this._dataUpdateCallbacks.forEach(callback => {
             callback(d.zappi);
           });
         }
@@ -56,12 +67,12 @@ class ZappiDriver extends Driver {
 
   async loadZappiDevices() {
     const res = new Promise((resolve, reject) => {
-      Object.keys(this.homey.app.clients).forEach(async (key, i, arr) => {
-        const client = this.homey.app.clients[key];
-        const zappis = await client.getStatusZappiAll();
-        zappis.forEach(zappi => {
-          if (this.zappiDevices.findIndex(z => z.sno === zappi.sno) === -1) {
-            zappi['myenergiClientId'] = key;
+      Object.keys(this._app.clients).forEach(async (key, i, arr) => {
+        const client = this._app.clients[key];
+        const zappis: ZappiData[] = await client.getStatusZappiAll();
+        zappis.forEach((zappi: ZappiData) => {
+          if (this.zappiDevices.findIndex((z: ZappiData) => z.sno === zappi.sno) === -1) {
+            zappi.myenergiClientId = key;
             this.zappiDevices.push(zappi);
           }
         });
@@ -106,7 +117,7 @@ class ZappiDriver extends Driver {
     return this.getZappiDevices();
   }
 
-  async onPair(session) {
+  async onPair(session: any) {
     session.setHandler('list_devices', () => {
       const devices = this.getZappiDevices();
 
