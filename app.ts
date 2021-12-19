@@ -1,6 +1,3 @@
-import sourceMapSupport from 'source-map-support';
-sourceMapSupport.install();
-
 import Homey from 'homey';
 import { MyEnergi } from 'myenergi-api';
 
