@@ -8,20 +8,17 @@ export interface EddiData extends Eddi {
 
 export class EddiDriver extends Driver {
 
-  private _app: MyEnergiApp;
+  private _app!: MyEnergiApp;
+
   private _dataUpdateCallbacks: any[] = [];
 
   public eddiDevices: EddiData[] = [];
-
-  constructor() {
-    super();
-    this._app = this.homey.app as MyEnergiApp;
-  }
 
   /**
    * onInit is called when the driver is initialized.
    */
   public async onInit() {
+    this._app = this.homey.app as MyEnergiApp;
     this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this.log('EddiDriver has been initialized');
   }
@@ -98,11 +95,11 @@ export class EddiDriver extends Driver {
    * and the 'list_devices' view is called.
    * This should return an array with the data of devices that are available for pairing.
    */
-  async onPairListDevices() {
+  public async onPairListDevices() {
     return this.getEddiDevices();
   }
 
-  async onPair(session: any) {
+  public async onPair(session: any) {
     session.setHandler('list_devices', () => {
       const devices = this.getEddiDevices();
 

@@ -8,20 +8,17 @@ export interface HarviData extends Harvi {
 
 export class HarviDriver extends Driver {
 
-  private _app: MyEnergiApp;
+  private _app!: MyEnergiApp;
+
   private _dataUpdateCallbacks: any[] = [];
 
   public harviDevices: HarviData[] = [];
-
-  constructor() {
-    super();
-    this._app = this.homey.app as MyEnergiApp;
-  }
 
   /**
    * onInit is called when the driver is initialized.
    */
   public async onInit() {
+    this._app = this.homey.app as MyEnergiApp;
     this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this.log('HarviDriver has been initialized');
   }
@@ -54,7 +51,7 @@ export class HarviDriver extends Driver {
         const harvis: HarviData[] = await client.getStatusHarviAll();
         harvis.forEach((harvi: HarviData) => {
           if (this.harviDevices.findIndex(h => h.sno === harvi.sno) === -1) {
-            harvi['myenergiClientId'] = key;
+            harvi.myenergiClientId = key;
             this.harviDevices.push(harvi);
           }
         });

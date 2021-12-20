@@ -1,3 +1,6 @@
+import sourceMapSupport from 'source-map-support';
+sourceMapSupport.install();
+
 import Homey from 'homey';
 import { MyEnergi } from 'myenergi-api';
 
@@ -9,16 +12,16 @@ export class MyEnergiApp extends Homey.App {
 
   public clients: any;
 
-  private async initClients(myenergiHubs: any) {
+  private async initClients(hubs: any) {
     if (this.clients) {
       Object.keys(this.clients).forEach((key, i, arr) => {
         this.log(key);
         delete this.clients[key];
       });
     }
-    if (myenergiHubs) {
+    if (hubs) {
       this.clients = {};
-      myenergiHubs.forEach((hub: any, index: Number) => {
+      hubs.forEach((hub: any, index: number) => {
         this.log(hub);
         this.clients[`${hub.hubname}_${hub.username}`] = new MyEnergi(hub.username, hub.password);
         if (index === 0) {
@@ -33,7 +36,7 @@ export class MyEnergiApp extends Homey.App {
   }
 
   private runDataUpdate() {
-    const updateInterval: Number = this._dataUpdateInterval / 1000;
+    const updateInterval: number = this._dataUpdateInterval / 1000;
     this.log(`Starting scheduled data update. Running every ${updateInterval} seconds.`);
     clearTimeout(this._dataUpdateId);
     if (this.clients) {
@@ -59,8 +62,8 @@ export class MyEnergiApp extends Homey.App {
     this.initClients(myenergiHubs);
     this.homey.settings.on('set', key => {
       if (key === 'myenergiHubs') {
-        const myenergiHubs = this.homey.settings.get('myenergiHubs');
-        this.initClients(myenergiHubs);
+        const hubs = this.homey.settings.get('myenergiHubs');
+        this.initClients(hubs);
       }
     });
     this.runDataUpdate();

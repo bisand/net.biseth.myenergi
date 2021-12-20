@@ -8,51 +8,48 @@ export interface ZappiData extends Zappi {
 
 export class ZappiDriver extends Driver {
 
+  private _app!: MyEnergiApp;
+
   private _dataUpdateCallbacks: any[] = [];
   private _chargingStarted: any;
   private _chargingStopped: any;
-  private _app: MyEnergiApp;
 
   public zappiDevices: ZappiData[] = [];
-
-  constructor() {
-    super();
-    this._app = this.homey.app as MyEnergiApp;
-  }
 
   /**
    * onInit is called when the driver is initialized.
    */
-  async onInit() {
+  public async onInit() {
+    this._app = this.homey.app as MyEnergiApp;
     this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this._chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
     this._chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
     this.log('ZappiDriver has been initialized');
   }
 
-  triggerChargingStartedFlow(device: any, tokens: any, state: any) {
+  public triggerChargingStartedFlow(device: any, tokens: any, state: any) {
     this._chargingStarted
       .trigger(device, tokens, state)
       .then((x: any) => this.log(`triggerChargingStartedFlow: ${x}`))
       .catch(this.error);
   }
 
-  triggerChargingStoppedFlow(device: any, tokens: any, state: any) {
+  public triggerChargingStoppedFlow(device: any, tokens: any, state: any) {
     this._chargingStopped
       .trigger(device, tokens, state)
       .then((x: any) => this.log(`triggerChargingStoppedFlow: ${x}`))
       .catch(this.error);
   }
 
-  registerDataUpdateCallback(callback: any) {
+  public registerDataUpdateCallback(callback: any) {
     return this._dataUpdateCallbacks.push(callback);
   }
 
-  removeDataUpdateCallback(callbackId: number) {
+  public removeDataUpdateCallback(callbackId: number) {
     this._dataUpdateCallbacks.splice(callbackId, 1);
   }
 
-  dataUpdated(data: any[]) {
+  private dataUpdated(data: any[]) {
     this.log('Received data from app. Relaying to devices.');
     if (data) {
       data.forEach(d => {
@@ -65,7 +62,7 @@ export class ZappiDriver extends Driver {
     }
   }
 
-  async loadZappiDevices() {
+  private async loadZappiDevices() {
     const res = new Promise((resolve, reject) => {
       Object.keys(this._app.clients).forEach(async (key, i, arr) => {
         const client = this._app.clients[key];
@@ -82,7 +79,7 @@ export class ZappiDriver extends Driver {
     return res;
   }
 
-  async getZappiDevices() {
+  private async getZappiDevices() {
     await this.loadZappiDevices();
     return this.zappiDevices.map((v, i, a) => {
       return {
@@ -113,11 +110,11 @@ export class ZappiDriver extends Driver {
    * and the 'list_devices' view is called.
    * This should return an array with the data of devices that are available for pairing.
    */
-  async onPairListDevices() {
+  public async onPairListDevices() {
     return this.getZappiDevices();
   }
 
-  async onPair(session: any) {
+  public async onPair(session: any) {
     session.setHandler('list_devices', () => {
       const devices = this.getZappiDevices();
 

@@ -5,8 +5,8 @@ import { EddiData, EddiDriver } from './driver';
 
 export class EddiDevice extends Device {
 
-  private _app: MyEnergiApp;
-  private _driver: EddiDriver;
+  private _app!: MyEnergiApp;
+  private _driver!: EddiDriver;
 
   private _callbackId: number = -1;
   private _onOff: EddiMode = EddiMode.Off;
@@ -26,16 +26,12 @@ export class EddiDevice extends Device {
   public myenergiClientId!: string;
   public myenergiClient!: MyEnergi;
 
-  constructor() {
-    super();
-    this._app = this.homey.app as MyEnergiApp;
-    this._driver = this.driver as EddiDriver;
-  }
-
   /**
    * onInit is called when the device is initialized.
    */
   public async onInit() {
+    this._app = this.homey.app as MyEnergiApp;
+    this._driver = this.driver as EddiDriver;
     this._callbackId = this._driver.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
@@ -114,7 +110,7 @@ export class EddiDevice extends Device {
     }
   }
 
-  async setEddiMode(isOn: boolean) {
+  private async setEddiMode(isOn: boolean) {
     try {
       const result = await this.myenergiClient.setEddiMode(this.deviceId, isOn ? EddiMode.On : EddiMode.Off);
       if (result.status !== 0) {
@@ -127,7 +123,7 @@ export class EddiDevice extends Device {
     }
   }
 
-  async onCapabilityOnoff(value: boolean, opts: any) {
+  public async onCapabilityOnoff(value: boolean, opts: any) {
     this.log(`onoff: ${value}`);
     await this.setEddiMode(value);
     this.setCapabilityValue('onoff', value ? EddiMode.On : EddiMode.Off).catch(this.error);
@@ -137,7 +133,7 @@ export class EddiDevice extends Device {
   /**
    * onAdded is called when the user adds the device, called just after pairing.
    */
-  async onAdded() {
+  public async onAdded() {
     this.log('EddiDevice has been added');
   }
 
@@ -149,7 +145,7 @@ export class EddiDevice extends Device {
    * @param {string[]} event.changedKeys An array of keys changed since the previous version
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
-  async onSettings({ oldSettings, newSettings, changedKeys }: {
+  public async onSettings({ oldSettings, newSettings, changedKeys }: {
     oldSettings: object;
     newSettings: object;
     changedKeys: string[];
@@ -161,14 +157,14 @@ export class EddiDevice extends Device {
    * This method can be used this to synchronise the name to the device.
    * @param {string} name The new name
    */
-  async onRenamed(name: any) {
+  public async onRenamed(name: any) {
     this.log('EddiDevice was renamed');
   }
 
   /**
    * onDeleted is called when the user deleted the device.
    */
-  async onDeleted() {
+  public async onDeleted() {
     this._driver.removeDataUpdateCallback(this._callbackId);
     this.log('EddiDevice has been deleted');
   }

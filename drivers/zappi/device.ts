@@ -5,8 +5,8 @@ import { ZappiData, ZappiDriver } from './driver';
 
 export class ZappiDevice extends Device {
 
-  private _app: MyEnergiApp;
-  private _driver: ZappiDriver;
+  private _app!: MyEnergiApp;
+  private _driver!: ZappiDriver;
 
   private _callbackId: number = -1;
   private _chargeMode: ZappiChargeMode = ZappiChargeMode.Fast;
@@ -22,16 +22,12 @@ export class ZappiDevice extends Device {
   public myenergiClientId!: string;
   public myenergiClient!: MyEnergi;
 
-  constructor() {
-    super();
-    this._app = this.homey.app as MyEnergiApp;
-    this._driver = this.driver as ZappiDriver;
-  }
-
   /**
    * onInit is called when the device is initialized.
    */
-  async onInit() {
+  public async onInit() {
+    this._app = this.homey.app as MyEnergiApp;
+    this._driver = this.driver as ZappiDriver;
     const device = this;
     this._callbackId = this._driver.registerDataUpdateCallback((data: any) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
@@ -94,7 +90,7 @@ export class ZappiDevice extends Device {
     this.log('ZappiDevice has been initialized');
   }
 
-  triggerChargingFlow(chargingStarted: boolean) {
+  private triggerChargingFlow(chargingStarted: boolean) {
     const device = this; // We're in a Device instance
     const tokens = {};
     const state = {};
@@ -112,7 +108,7 @@ export class ZappiDevice extends Device {
     });
   }
 
-  dataUpdated(data: ZappiData[]) {
+  private dataUpdated(data: ZappiData[]) {
     this.log('Received data from driver.');
     if (data) {
       data.forEach((zappi: ZappiData) => {
@@ -143,7 +139,7 @@ export class ZappiDevice extends Device {
     }
   }
 
-  async setChargeMode(isOn: boolean) {
+  private async setChargeMode(isOn: boolean) {
     try {
       const result = await this.myenergiClient.setZappiChargeMode(this.deviceId, isOn ? this._lastOnState : ZappiChargeMode.Off);
       if (result.status !== 0) {
@@ -157,7 +153,7 @@ export class ZappiDevice extends Device {
     }
   }
 
-  async onCapabilityChargeMode(value: any, opts: any) {
+  private async onCapabilityChargeMode(value: any, opts: any) {
     this.log(`Charge Mode: ${value}`);
     this._chargeMode = Number(value);
     if (this._chargeMode !== ZappiChargeMode.Off) {
@@ -168,7 +164,7 @@ export class ZappiDevice extends Device {
     this.setCapabilityValue('charge_mode', `${this._chargeMode}`).catch(this.error);
   }
 
-  async onCapabilityOnoff(value: boolean, opts: any) {
+  private async onCapabilityOnoff(value: boolean, opts: any) {
     this.log(`onoff: ${value}`);
     await this.setChargeMode(value);
     this.setCapabilityValue('charge_mode', value ? `${this._chargeMode}` : `${ZappiChargeMode.Off}`).catch(this.error);
@@ -178,7 +174,7 @@ export class ZappiDevice extends Device {
   /**
    * onAdded is called when the user adds the device, called just after pairing.
    */
-  async onAdded() {
+  public async onAdded() {
     this.log('ZappiDevice has been added');
   }
 
@@ -190,7 +186,7 @@ export class ZappiDevice extends Device {
    * @param {string[]} event.changedKeys An array of keys changed since the previous version
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
-  async onSettings({ oldSettings, newSettings, changedKeys }: {
+  public async onSettings({ oldSettings, newSettings, changedKeys }: {
     oldSettings: object;
     newSettings: object;
     changedKeys: string[];
@@ -203,14 +199,14 @@ export class ZappiDevice extends Device {
    * This method can be used this to synchronise the name to the device.
    * @param {string} name The new name
    */
-  async onRenamed(name: any) {
+  public async onRenamed(name: any) {
     this.log('ZappiDevice was renamed');
   }
 
   /**
    * onDeleted is called when the user deleted the device.
    */
-  async onDeleted() {
+  public async onDeleted() {
     (this.driver as ZappiDriver).removeDataUpdateCallback(this._callbackId);
     this.log('ZappiDevice has been deleted');
   }
