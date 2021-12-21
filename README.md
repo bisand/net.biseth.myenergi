@@ -1,4 +1,4 @@
-# myenergi
+# myenergi app for Homey
 
 ![GitHub](https://img.shields.io/github/license/bisand/net.biseth.myenergi)
 ![GitHub last commit](https://img.shields.io/github/last-commit/bisand/net.biseth.myenergi)
