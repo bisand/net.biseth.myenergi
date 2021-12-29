@@ -2,7 +2,8 @@
     "type": "number",
     "title": {
         "en": "Transferred last session",
-        "no": "Overført siste økt"
+        "no": "Overført siste økt",
+        "nl": "Omgeleid in laatste sessie"
     },
     "getable": true,
     "setable": false,
