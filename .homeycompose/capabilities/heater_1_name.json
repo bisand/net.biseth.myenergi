@@ -1,21 +1,23 @@
 {
     "title": {
-      "en": "Heater 1",
-      "no": "Varmeelement 1"
+        "en": "Heater 1",
+        "no": "Varmeelement 1",
+        "nl": "Verwarmingselement"
     },
     "type": "string",
     "getable": true,
     "setable": false,
     "uiComponent": "media",
     "$flow": {
-      "triggers": [
+        "triggers": [
         {
-          "id": "heater_name_changed",
-          "title": {
-            "en": "The name changed",
-            "no": "Navnet ble endret"
-          }
-        }
-      ]
+            "id": "heater_name_changed",
+            "title": {
+                "en": "The name changed",
+                "no": "Navnet ble endret",
+                "nl": "De naam is gewijzigd"
+                }
+            }
+        ]
     }
   }
