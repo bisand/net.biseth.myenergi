@@ -2,7 +2,8 @@
     "type": "number",
     "title": {
         "en": "Power generated",
-        "no": "Generert kraft"
+        "no": "Generert kraft",
+        "nl": "Opgewekt vermogen"
     },
     "getable": true,
     "setable": false,
