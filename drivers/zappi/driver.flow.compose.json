@@ -23,7 +23,7 @@
             "title": {
                 "en": "Car !{{is|isn't}} charging",
                 "no": "Bilen !{{lader|lader ikke}}",
-                "no": "EV !{{is|is niet}} aan het laden"
+                "nl": "EV !{{is|is niet}} aan het laden"
             },
             "hint": {
                 "en": "Checks if the car is currently being charged by Zappi",
