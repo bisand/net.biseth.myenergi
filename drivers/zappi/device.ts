@@ -1,5 +1,5 @@
 import { Device } from 'homey';
-import { MyEnergi, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
+import { MyEnergi, Zappi, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
 import { ZappiData, ZappiDriver } from './driver';
 
@@ -17,6 +17,7 @@ export class ZappiDevice extends Device {
   private _chargingVoltage: number = 0;
   private _chargingCurrent: number = 0;
   private _chargeAdded: number = 0;
+  private _settings: any;
 
   public deviceId!: string;
   public myenergiClientId!: string;
@@ -28,6 +29,7 @@ export class ZappiDevice extends Device {
   public async onInit() {
     this._app = this.homey.app as MyEnergiApp;
     this._driver = this.driver as ZappiDriver;
+    this._settings = this.getSettings();
     const device = this;
     this._callbackId = this._driver.registerDataUpdateCallback((data: any) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
@@ -36,14 +38,9 @@ export class ZappiDevice extends Device {
     try {
       // Collect data.
       this.myenergiClient = this._app.clients[this.myenergiClientId];
-      const zappi = await this.myenergiClient.getStatusZappi(this.deviceId);
+      const zappi: Zappi | null = await this.myenergiClient.getStatusZappi(this.deviceId);
       if (zappi) {
-        this._chargeMode = zappi.zmo;
-        this._chargerStatus = zappi.pst as ZappiStatus;
-        this._chargingPower = zappi.ectp1 ? zappi.ectp1 : 0;
-        this._chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
-        this._chargeAdded = zappi.che ? zappi.che : 0;
-        this._chargingCurrent = (this._chargingVoltage > 0) ? (this._chargingPower / this._chargingVoltage) : 0; // P=U*I -> I=P/U
+        this.calculateValues(zappi); // P=U*I -> I=P/U
         if (this._chargeMode !== ZappiChargeMode.Off) {
           this._lastOnState = this._chargeMode;
           this._lastChargingStarted = true;
@@ -90,6 +87,25 @@ export class ZappiDevice extends Device {
     this.log('ZappiDevice has been initialized');
   }
 
+  private calculateValues(zappi: Zappi) {
+    this._chargeMode = zappi.zmo;
+    this._chargerStatus = zappi.pst as ZappiStatus;
+    this._chargingPower = zappi.ectp1 ? zappi.ectp1 : 0;
+    this._chargingPower += zappi.ectp2 ? zappi.ectp2 : 0;
+    this._chargingPower += zappi.ectp3 ? zappi.ectp3 : 0;
+    this._chargingPower += zappi.ectp4 ? zappi.ectp4 : 0;
+    this._chargingPower += zappi.ectp5 ? zappi.ectp5 : 0;
+    this._chargingPower += zappi.ectp6 ? zappi.ectp6 : 0;
+
+    if (this._settings.showNegativeValues === false) {
+      this._chargingPower = this._chargingPower > 0 ? this._chargingPower : 0;
+    }
+
+    this._chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
+    this._chargeAdded = zappi.che ? zappi.che : 0;
+    this._chargingCurrent = (this._chargingVoltage > 0) ? (this._chargingPower / this._chargingVoltage) : 0; // P=U*I -> I=P/U
+  }
+
   private triggerChargingFlow(chargingStarted: boolean) {
     const device = this; // We're in a Device instance
     const tokens = {};
@@ -117,12 +133,7 @@ export class ZappiDevice extends Device {
             if (zappi.zmo !== ZappiChargeMode.Off) {
               this._lastOnState = zappi.zmo;
             }
-            this._chargeMode = zappi.zmo;
-            this._chargerStatus = zappi.pst as ZappiStatus;
-            this._chargingPower = zappi.ectp1 ? zappi.ectp1 : 0;
-            this._chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
-            this._chargeAdded = zappi.che ? zappi.che : 0;
-            this._chargingCurrent = (this._chargingVoltage > 0) ? (this._chargingPower / this._chargingVoltage) : 0; // P=U*I -> I=P/U
+            this.calculateValues(zappi);
             this.setCapabilityValue('onoff', this._chargeMode !== ZappiChargeMode.Off).catch(this.error);
             this.setCapabilityValue('charge_mode', `${this._chargeMode}`).catch(this.error);
             this.setCapabilityValue('charge_mode_selector', `${this._chargeMode}`).catch(this.error);
@@ -192,6 +203,7 @@ export class ZappiDevice extends Device {
     changedKeys: string[];
   }): Promise<string | void> {
     this.log(`ZappiDevice settings where changed: ${changedKeys}`);
+    this._settings = newSettings;
   }
 
   /**

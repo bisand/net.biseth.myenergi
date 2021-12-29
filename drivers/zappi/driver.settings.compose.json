@@ -1,0 +1,12 @@
+[
+    {
+        "id": "showNegativeValues",
+        "type": "checkbox",
+        "value": true,
+        "label": {
+            "en": "Show negative values",
+            "no": "Vis negative verdier",
+            "nl": "Negatieve waarden weergeven"
+        }
+    }
+]
