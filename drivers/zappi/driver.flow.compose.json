@@ -4,14 +4,16 @@
             "id": "start_charging",
             "title": {
                 "en": "Start charging the car",
-                "no": "Start lading av bilen"
+                "no": "Start lading av bilen",
+                "nl": "Start laden van EV"
             }
         },
         {
             "id": "stop_charging",
             "title": {
                 "en": "Stop charging the car",
-                "no": "Stopp lading av bilen"
+                "no": "Stopp lading av bilen",
+                "nl": "Stop laden van EV"
             }
         }
     ],
@@ -20,11 +22,13 @@
             "id": "is_charging",
             "title": {
                 "en": "Car !{{is|isn't}} charging",
-                "no": "Bilen !{{lader|lader ikke}}"
+                "no": "Bilen !{{lader|lader ikke}}",
+                "nl": "EV !{{is|is niet}} aan het laden"
             },
             "hint": {
                 "en": "Checks if the car is currently being charged by Zappi",
-                "no": "Sjekker om bilen blir laded av Zappi"
+                "no": "Sjekker om bilen blir laded av Zappi",
+                "nl": "Controleert of de EV wordt opgeladen door de Zappi"
             }
         }
     ],
@@ -33,22 +37,26 @@
             "id": "charging_started",
             "title": {
                 "en": "Charging started",
-                "no": "Lading startet"
+                "no": "Lading startet",
+                "nl": "Laden gestart"
             },
             "hint": {
                 "en": "When Zappi starts charging the connected car",
-                "no": "Når Zappi starter lading av den tilkoblede bilen"
+                "no": "Når Zappi starter lading av den tilkoblede bilen",
+                "nl": "Wanneer Zappi de verbonden EV begint op te laden"
             }
         },
         {
             "id": "charging_stopped",
             "title": {
                 "en": "Charging stopped",
-                "no": "Lading stoppet"
+                "no": "Lading stoppet",
+                "nl": "Laden gestopt"
             },
             "hint": {
                 "en": "When Zappi stops charging the connected car",
-                "no": "Når Zappi stopper ladingen av den tilkoblede bilen"
+                "no": "Når Zappi stopper ladingen av den tilkoblede bilen",
+                "nl": "Wanneer de Zappi is gestopt met het opladen van de verbonden EV"
             }
         }
     ]

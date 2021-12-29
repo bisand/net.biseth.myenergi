@@ -2,7 +2,8 @@
     "type": "enum",
     "title": {
         "en": "Heater Status",
-        "no": "Varmerstatus"
+        "no": "Varmerstatus",
+        "nl": "Verwarming status"
     },
     "getable": true,
     "setable": false,
@@ -13,21 +14,24 @@
             "id": "1",
             "title": {
                 "en": "Paused",
-                "no": "Pauset"
+                "no": "Pauset",
+                "nl": "Gepauzeerd"
             }
         },
         {
             "id": "2",
             "title": {
                 "en": "Unknown",
-                "no": "Ukjent"
+                "no": "Ukjent",
+                "nl": "Onbekend"
             }
         },
         {
             "id": "3",
             "title": {
                 "en": "Diverting",
-                "no": "Omdirigerer"
+                "no": "Omdirigerer",
+                "nl": "Omleiden"
             }
         },
         {
@@ -40,14 +44,16 @@
             "id": "5",
             "title": {
                 "en": "Max Temp Reached",
-                "no": "Max Temp Oppnådd"
+                "no": "Max Temp Oppnådd",
+                "nl": "Max Temp Bereikt"
             }
         },
         {
             "id": "6",
             "title": {
                 "en": "Stopped",
-                "no": "Stoppet"
+                "no": "Stoppet",
+                "nl": "Gestopt"
             }
         }
     ]
