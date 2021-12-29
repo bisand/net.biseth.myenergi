@@ -2,7 +2,8 @@
     "type": "enum",
     "title": {
         "en": "Charger Status",
-        "no": "Ladestatus"
+        "no": "Ladestatus",
+        "nl": "Laderstatus"
     },
     "getable": true,
     "setable": false,
@@ -13,42 +14,48 @@
             "id": "A",
             "title": {
                 "en": "EV Disconnected",
-                "no": "Bil Frakoblet"
+                "no": "Bil Frakoblet",
+                "nl": "EV losgekoppeld"
             }
         },
         {
             "id": "B1",
             "title": {
                 "en": "EV Connected",
-                "no": "Bil Tilkoblet"
+                "no": "Bil Tilkoblet",
+                "nl": "EV verbonden"
             }
         },
         {
             "id": "B2",
             "title": {
                 "en": "Waiting for EV",
-                "no": "Venter på Bil"
+                "no": "Venter på Bil",
+                "nl": "Wachten op EV"
             }
         },
         {
             "id": "C1",
             "title": {
                 "en": "EV ready to charge",
-                "no": "Bil klar for lading"
+                "no": "Bil klar for lading",
+                "nl": "EV gereed om te laden"
             }
         },
         {
             "id": "C2",
             "title": {
                 "en": "Charging",
-                "no": "Lader"
+                "no": "Lader",
+                "nl": "Laden"
             }
         },
         {
             "id": "F",
             "title": {
                 "en": "Fault",
-                "no": "Feil"
+                "no": "Feil",
+                "nl": "Fout"
             }
         }
     ]
