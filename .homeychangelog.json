@@ -4,5 +4,8 @@
   },
   "1.0.1": {
     "en": "Minor improvements and added Norwegian readme."
+  },
+  "1.1.0": {
+    "en": "Added Dutch translation (Thanks to Spijkmans). Included accumulated power consumption for all possible Zappi CTs. Also included a setting for displaying negative values or not."
   }
 }
