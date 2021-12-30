@@ -5,13 +5,7 @@
   "1.0.1": {
     "en": "Minor improvements and added Norwegian readme."
   },
-  "1.1.0": {
-    "en": "Added Dutch translation (Thanks to Spijkmans). Included accumulated power consumption for all possible Zappi CTs. Also included a setting for displaying negative values or not."
-  },
-  "1.1.1": {
-    "en": "Added Dutch translation (Thanks to Spijkmans). Included accumulated power consumption for all possible Zappi CTs. Also included a setting for d"
-  },
-  "1.1.2": {
-    "en": "Checking load type before adding charging power"
+  "1.1.4": {
+    "en": "Added Dutch translation (Thanks to Spijkmans). Included accumulated power consumption for all Zappi CTs with type Internal Load. Also included a setting for displaying negative values or not."
   }
 }
