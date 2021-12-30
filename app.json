@@ -207,6 +207,102 @@
             "no": "Vis negative verdier",
             "nl": "Negatieve waarden weergeven"
           }
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Power calculations"
+          },
+          "children": [
+            {
+              "id": "mode",
+              "type": "dropdown",
+              "value": "automatic",
+              "label": {
+                "en": "Default mode"
+              },
+              "values": [
+                {
+                  "id": "automatic",
+                  "label": {
+                    "en": "Automatically select CTs"
+                  }
+                },
+                {
+                  "id": "manual",
+                  "label": {
+                    "en": "Manual override CTs"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "includeCT1",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 1"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 1 in the power calculation."
+              }
+            },
+            {
+              "id": "includeCT2",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 2"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 2 in the power calculation."
+              }
+            },
+            {
+              "id": "includeCT3",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 3"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 3 in the power calculation."
+              }
+            },
+            {
+              "id": "includeCT4",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 4"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 4 in the power calculation."
+              }
+            },
+            {
+              "id": "includeCT5",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 5"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 5 in the power calculation."
+              }
+            },
+            {
+              "id": "includeCT6",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 6"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 6 in the power calculation."
+              }
+            }
+          ]
         }
       ]
     }

@@ -90,18 +90,30 @@ export class ZappiDevice extends Device {
   private calculateValues(zappi: Zappi) {
     this._chargeMode = zappi.zmo;
     this._chargerStatus = zappi.pst as ZappiStatus;
-    if (zappi.ectt1 === 'Internal Load')
+    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt1 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT1)) {
       this._chargingPower = zappi.ectp1 ? zappi.ectp1 : 0;
-    if (zappi.ectt2 === 'Internal Load')
+    }
+    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt2 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT2)) {
       this._chargingPower += zappi.ectp2 ? zappi.ectp2 : 0;
-    if (zappi.ectt3 === 'Internal Load')
+    }
+    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt3 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT3)) {
       this._chargingPower += zappi.ectp3 ? zappi.ectp3 : 0;
-    if (zappi.ectt4 === 'Internal Load')
+    }
+    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt4 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT4)) {
       this._chargingPower += zappi.ectp4 ? zappi.ectp4 : 0;
-    if (zappi.ectt5 === 'Internal Load')
+    }
+    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt5 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT5)) {
       this._chargingPower += zappi.ectp5 ? zappi.ectp5 : 0;
-    if (zappi.ectt6 === 'Internal Load')
+    }
+    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt6 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT6)) {
       this._chargingPower += zappi.ectp6 ? zappi.ectp6 : 0;
+    }
 
     if (this._settings.showNegativeValues === false) {
       this._chargingPower = this._chargingPower > 0 ? this._chargingPower : 0;
@@ -204,12 +216,34 @@ export class ZappiDevice extends Device {
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
   public async onSettings({ oldSettings, newSettings, changedKeys }: {
-    oldSettings: object;
-    newSettings: object;
+    oldSettings: any;
+    newSettings: any;
     changedKeys: string[];
   }): Promise<string | void> {
     this.log(`ZappiDevice settings where changed: ${changedKeys}`);
-    this._settings = newSettings;
+    if (changedKeys.includes('showNegativeValues')) {
+      this._settings.showNegativeValues = newSettings.showNegativeValues;
+    }
+    if (changedKeys.includes('powerCalculationMode')) {
+      if (this._settings.powerCalculationMode === "automatic") {
+        const zappi = await this.myenergiClient.getStatusZappi(this.deviceId);
+        if (zappi)
+          this.calculateValues(zappi);
+      } else if (this._settings.powerCalculationMode === "manual") {
+        if (changedKeys.includes('includeCT1'))
+          this._settings.includeCT1 = newSettings.includeCT1;
+        if (changedKeys.includes('includeCT2'))
+          this._settings.includeCT2 = newSettings.includeCT2;
+        if (changedKeys.includes('includeCT3'))
+          this._settings.includeCT3 = newSettings.includeCT3;
+        if (changedKeys.includes('includeCT4'))
+          this._settings.includeCT4 = newSettings.includeCT4;
+        if (changedKeys.includes('includeCT5'))
+          this._settings.includeCT5 = newSettings.includeCT5;
+        if (changedKeys.includes('includeCT6'))
+          this._settings.includeCT6 = newSettings.includeCT6;
+      }
+    }
   }
 
   /**
