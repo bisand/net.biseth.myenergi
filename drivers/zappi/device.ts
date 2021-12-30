@@ -90,12 +90,18 @@ export class ZappiDevice extends Device {
   private calculateValues(zappi: Zappi) {
     this._chargeMode = zappi.zmo;
     this._chargerStatus = zappi.pst as ZappiStatus;
-    this._chargingPower = zappi.ectp1 ? zappi.ectp1 : 0;
-    this._chargingPower += zappi.ectp2 ? zappi.ectp2 : 0;
-    this._chargingPower += zappi.ectp3 ? zappi.ectp3 : 0;
-    this._chargingPower += zappi.ectp4 ? zappi.ectp4 : 0;
-    this._chargingPower += zappi.ectp5 ? zappi.ectp5 : 0;
-    this._chargingPower += zappi.ectp6 ? zappi.ectp6 : 0;
+    if (zappi.ectt1 === 'Internal Load')
+      this._chargingPower = zappi.ectp1 ? zappi.ectp1 : 0;
+    if (zappi.ectt2 === 'Internal Load')
+      this._chargingPower += zappi.ectp2 ? zappi.ectp2 : 0;
+    if (zappi.ectt3 === 'Internal Load')
+      this._chargingPower += zappi.ectp3 ? zappi.ectp3 : 0;
+    if (zappi.ectt4 === 'Internal Load')
+      this._chargingPower += zappi.ectp4 ? zappi.ectp4 : 0;
+    if (zappi.ectt5 === 'Internal Load')
+      this._chargingPower += zappi.ectp5 ? zappi.ectp5 : 0;
+    if (zappi.ectt6 === 'Internal Load')
+      this._chargingPower += zappi.ectp6 ? zappi.ectp6 : 0;
 
     if (this._settings.showNegativeValues === false) {
       this._chargingPower = this._chargingPower > 0 ? this._chargingPower : 0;
