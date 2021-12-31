@@ -3,7 +3,8 @@
     "title": {
         "en": "Power generated",
         "no": "Generert kraft",
-        "nl": "Opgewekt vermogen"
+        "nl": "Opgewekt vermogen",
+        "sv": "Genererad energi"
     },
     "getable": true,
     "setable": false,

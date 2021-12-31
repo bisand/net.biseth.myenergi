@@ -3,7 +3,8 @@
     "title": {
         "en": "Transferred last session",
         "no": "Overført siste økt",
-        "nl": "Omgeleid in laatste sessie"
+        "nl": "Omgeleid in laatste sessie",
+        "sv": "Överförde senaste sessionen"
     },
     "getable": true,
     "setable": false,

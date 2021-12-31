@@ -3,7 +3,8 @@
     "title": {
         "en": "Last charge",
         "no": "Siste lading",
-        "nl": "Laatste sessie"
+        "nl": "Laatste sessie",
+        "sv": "Senaste laddningen"
     },
     "getable": true,
     "setable": false,

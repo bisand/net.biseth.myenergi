@@ -2,7 +2,8 @@
     "title": {
         "en": "Heater 2",
         "no": "Varmeelement 2",
-        "nl": "Verwarmingselement 2"
+        "nl": "Verwarmingselement 2",
+        "sv": "Värmeelement 2"
     },
     "type": "string",
     "getable": true,
@@ -15,7 +16,8 @@
                 "title": {
                     "en": "The name changed",
                     "no": "Navnet ble endret",
-                    "nl": "De naam is veranderd"
+                    "nl": "De naam is veranderd",
+                    "sv": "Namnet ändrades"
                 }
             }
         ]

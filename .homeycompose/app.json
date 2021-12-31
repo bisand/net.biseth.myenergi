@@ -13,7 +13,8 @@
   "description": {
     "en": "Sustainable future through eco-smart technology.",
     "no": "Bærekraftig fremtid gjennom eco-smart teknologi.",
-    "nl": "Duurzame toekomst door eco-smart technologie."
+    "nl": "Duurzame toekomst door eco-smart technologie.",
+    "sv": "Hållbar framtid genom miljösmart teknik. "
   },
   "category": [
     "energy"
@@ -48,6 +49,16 @@
       "laden",
       "EV",
       "zonnepanelen"
+    ],
+    "sv": [
+      "energi",
+      "effekt",
+      "myenergi",
+      "zappi",
+      "harvi",
+      "laddning",
+      "elbil",
+      "solceller"
     ]
   },
   "permissions": [],
@@ -77,6 +88,9 @@
     "translators": [
       {
         "name": "Michel van Spijk"
+      },
+      {
+        "name": "Ted Dÿring"
       }
     ]
   }

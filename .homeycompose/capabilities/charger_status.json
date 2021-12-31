@@ -3,7 +3,8 @@
     "title": {
         "en": "Charger Status",
         "no": "Ladestatus",
-        "nl": "Laderstatus"
+        "nl": "Laderstatus",
+        "sv": "Laddningsstatus"
     },
     "getable": true,
     "setable": false,
@@ -15,7 +16,8 @@
             "title": {
                 "en": "EV Disconnected",
                 "no": "Bil Frakoblet",
-                "nl": "EV losgekoppeld"
+                "nl": "EV losgekoppeld",
+                "sv": "Bil frånkopplad"
             }
         },
         {
@@ -23,7 +25,8 @@
             "title": {
                 "en": "EV Connected",
                 "no": "Bil Tilkoblet",
-                "nl": "EV verbonden"
+                "nl": "EV verbonden",
+                "sv": "Bil Ansluten"
             }
         },
         {
@@ -31,7 +34,8 @@
             "title": {
                 "en": "Waiting for EV",
                 "no": "Venter på Bil",
-                "nl": "Wachten op EV"
+                "nl": "Wachten op EV",
+                "sv": "Väntar på Bil"
             }
         },
         {
@@ -39,7 +43,8 @@
             "title": {
                 "en": "EV ready to charge",
                 "no": "Bil klar for lading",
-                "nl": "EV gereed om te laden"
+                "nl": "EV gereed om te laden",
+                "sv": "Bil redo att laddas"
             }
         },
         {
@@ -47,7 +52,8 @@
             "title": {
                 "en": "Charging",
                 "no": "Lader",
-                "nl": "Laden"
+                "nl": "Laden",
+                "sv": "Laddar"
             }
         },
         {
@@ -55,7 +61,8 @@
             "title": {
                 "en": "Fault",
                 "no": "Feil",
-                "nl": "Fout"
+                "nl": "Fout",
+                "sv": "Fel"
             }
         }
     ]

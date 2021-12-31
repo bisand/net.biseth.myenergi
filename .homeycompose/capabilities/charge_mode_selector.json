@@ -3,7 +3,8 @@
     "title": {
         "en": "Charge Mode",
         "no": "Lademodus",
-        "nl": "Laadmodus"
+        "nl": "Laadmodus",
+        "SV": "Laddningsläge"
     },
     "getable": true,
     "setable": true,
@@ -15,7 +16,8 @@
             "title": {
                 "en": "Fast",
                 "no": "Rask",
-                "nl": "Snel"
+                "nl": "Snel",
+                "sv": "Snabb"
             }
         },
         {
@@ -23,7 +25,8 @@
             "title": {
                 "en": "Eco",
                 "no": "Eco",
-                "nl": "Eco"
+                "nl": "Eco",
+                "sv": "Eco"
             }
         },
         {
@@ -31,7 +34,8 @@
             "title": {
                 "en": "Eco+",
                 "no": "Eco+",
-                "nl": "Eco+"
+                "nl": "Eco+",
+                "sv": "Eco+"
             }
         },
         {
@@ -39,7 +43,8 @@
             "title": {
                 "en": "Off",
                 "no": "Av",
-                "nl": "Uit"
+                "nl": "Uit",
+                "sv": "Av"
             }
         }
     ]
