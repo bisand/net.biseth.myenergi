@@ -1,0 +1,71 @@
+{
+    "type": "number",
+    "title": {
+        "en": "Frequency",
+        "nl": "Frequentie",
+        "de": "Frequenz",
+        "fr": "La fréquence",
+        "it": "Frequenza",
+        "sv": "Frekvens",
+        "no": "Frekvens",
+        "es": "Frecuencia",
+        "da": "Frekvens"
+    },
+    "units": {
+        "en": "Hz"
+    },
+    "insights": true,
+    "desc": {
+        "en": "Frequency in Hertz (Hz)",
+        "nl": "Frequentie in Hertz (Hz)",
+        "de": "Frequenz in Hertz (Hz)",
+        "fr": "La fréquence en Hertz (Hz)",
+        "it": "Frequenza in Hertz (Hz)",
+        "sv": "Frekvens i Hertz (Hz)",
+        "no": "Frekvens i Hertz (Hz)",
+        "es": "Frecuencia en Hertz (Hz)",
+        "da": "Frekvens i Hertz (Hz)"
+    },
+    "chartType": "stepLine",
+    "decimals": 2,
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "icon": "/assets/sinus.svg",
+    "$flow": {
+        "triggers": [
+            {
+                "id": "measure_frequency_changed",
+                "title": {
+                    "en": "The frequency changed",
+                    "nl": "Het Frequentie is veranderd",
+                    "de": "Der Frequenz hat sich gändert",
+                    "fr": "La fréquence a changé",
+                    "it": "La frequenza è cambiata",
+                    "sv": "Frekvensen ändrades",
+                    "no": "Frekvensen ble endret",
+                    "es": "La frecuencia ha cambiado",
+                    "da": "Frekvensen ændrede sig"
+                },
+                "tokens": [
+                    {
+                        "name": "measure_frequency",
+                        "title": {
+                            "en": "Frequency",
+                            "nl": "Frequentie",
+                            "de": "Frequenz",
+                            "fr": "La fréquence",
+                            "it": "Frequenza",
+                            "sv": "Frekvens",
+                            "no": "Frekvens",
+                            "es": "Frecuencia",
+                            "da": "Frekvens"
+                        },
+                        "type": "number",
+                        "example": 50.02
+                    }
+                ]
+            }
+        ]
+    }
+}

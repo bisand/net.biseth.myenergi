@@ -17,6 +17,7 @@ export class ZappiDevice extends Device {
   private _chargingVoltage: number = 0;
   private _chargingCurrent: number = 0;
   private _chargeAdded: number = 0;
+  private _frequency: number = 0;
   private _settings: any;
 
   public deviceId!: string;
@@ -59,6 +60,7 @@ export class ZappiDevice extends Device {
     this.setCapabilityValue('measure_voltage', this._chargingVoltage).catch(this.error);
     this.setCapabilityValue('measure_current', this._chargingCurrent).catch(this.error);
     this.setCapabilityValue('charge_session_consumption', this._chargeAdded).catch(this.error);
+    this.setCapabilityValue('measure_frequency', this._frequency).catch(this.error);
     this.log(`Status: ${this._chargerStatus}`);
 
     this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
@@ -121,6 +123,7 @@ export class ZappiDevice extends Device {
 
     this._chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
     this._chargeAdded = zappi.che ? zappi.che : 0;
+    this._frequency = zappi.frq ? zappi.frq : 0;
     this._chargingCurrent = (this._chargingVoltage > 0) ? (this._chargingPower / this._chargingVoltage) : 0; // P=U*I -> I=P/U
   }
 
@@ -160,6 +163,7 @@ export class ZappiDevice extends Device {
             this.setCapabilityValue('measure_voltage', this._chargingVoltage).catch(this.error);
             this.setCapabilityValue('measure_current', this._chargingCurrent).catch(this.error);
             this.setCapabilityValue('charge_session_consumption', this._chargeAdded).catch(this.error);
+            this.setCapabilityValue('measure_frequency', this._frequency).catch(this.error);
           } catch (error) {
             this.error(error);
           }

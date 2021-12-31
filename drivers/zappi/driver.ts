@@ -98,6 +98,7 @@ export class ZappiDriver extends Driver {
           'measure_power',
           'measure_current',
           'measure_voltage',
+          'measure_frequency',
         ],
         capabilitiesOptions: {
         },
