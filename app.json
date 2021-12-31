@@ -74,6 +74,13 @@
   "source": "https://github.com/bisand/net.biseth.myenergi",
   "homepage": "https://myenergi.com",
   "support": "https://github.com/bisand/net.biseth.myenergi/issues",
+  "contributors": {
+    "translators": [
+      {
+        "name": "Michel van Spijk"
+      }
+    ]
+  },
   "drivers": [
     {
       "name": {
@@ -215,7 +222,7 @@
           },
           "children": [
             {
-              "id": "mode",
+              "id": "powerCalculationMode",
               "type": "dropdown",
               "value": "automatic",
               "label": {

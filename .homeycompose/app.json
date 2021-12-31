@@ -72,5 +72,12 @@
   },
   "source": "https://github.com/bisand/net.biseth.myenergi",
   "homepage": "https://myenergi.com",
-  "support": "https://github.com/bisand/net.biseth.myenergi/issues"
+  "support": "https://github.com/bisand/net.biseth.myenergi/issues",
+  "contributors": {
+    "translators": [
+      {
+        "name": "Michel van Spijk"
+      }
+    ]
+  }
 }
