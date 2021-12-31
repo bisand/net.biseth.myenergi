@@ -1,9 +1,9 @@
 {
     "type": "number",
     "title": {
-        "en": "Charge added last session",
+        "en": "Last charge",
         "no": "Siste lading",
-        "nl": "Lading toegevoegd in laatste sessie"
+        "nl": "Laatste sessie"
     },
     "getable": true,
     "setable": false,
