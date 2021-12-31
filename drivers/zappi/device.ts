@@ -94,7 +94,7 @@ export class ZappiDevice extends Device {
     this.setCapabilityValue('measure_frequency', this._frequency).catch(this.error);
   }
 
-
+  // Assign and calculate values from Zappi.
   private calculateValues(zappi: Zappi) {
     this._chargeMode = zappi.zmo;
     this._chargerStatus = zappi.pst as ZappiStatus;
@@ -230,8 +230,24 @@ export class ZappiDevice extends Device {
     if (changedKeys.includes('powerCalculationMode')) {
       if (this._settings.powerCalculationMode === "automatic") {
         const zappi = await this.myenergiClient.getStatusZappi(this.deviceId);
-        if (zappi)
+        if (zappi) {
           this.calculateValues(zappi);
+          this._settings.includeCT1 = zappi.ectt1 === 'Internal Load';
+          this._settings.includeCT2 = zappi.ectt2 === 'Internal Load';
+          this._settings.includeCT3 = zappi.ectt3 === 'Internal Load';
+          this._settings.includeCT4 = zappi.ectt4 === 'Internal Load';
+          this._settings.includeCT5 = zappi.ectt5 === 'Internal Load';
+          this._settings.includeCT6 = zappi.ectt6 === 'Internal Load';
+          const tmpSettings: any = this._settings;
+          this.setSettings({
+            includeCT1: tmpSettings.includeCT1,
+            includeCT2: tmpSettings.includeCT2,
+            includeCT3: tmpSettings.includeCT3,
+            includeCT4: tmpSettings.includeCT4,
+            includeCT5: tmpSettings.includeCT5,
+            includeCT6: tmpSettings.includeCT6,
+          });
+        }
       } else if (this._settings.powerCalculationMode === "manual") {
         if (changedKeys.includes('includeCT1'))
           this._settings.includeCT1 = newSettings.includeCT1;
