@@ -40,7 +40,7 @@
     "getable": true,
     "setable": false,
     "uiComponent": "sensor",
-    "icon": "/assets/ct_clamp1.svg",
+    "icon": "/assets/sinus.svg",
     "$flow": {
         "triggers": [
             {

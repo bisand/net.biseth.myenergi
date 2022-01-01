@@ -36,6 +36,9 @@ export class ZappiDevice extends Device {
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
+    if(!this.hasCapability('measure_frequency')){
+      this.addCapability('measure_frequency')
+    }
     try {
       // Collect data.
       this.myenergiClient = this._app.clients[this.myenergiClientId];
