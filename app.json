@@ -105,10 +105,14 @@
         "onoff",
         "heater_status",
         "heater_session_transferred",
-        "measure_power",
+        "measure_power_ct1",
+        "measure_power_ct2",
         "measure_power_generated",
-        "measure_current",
-        "measure_voltage"
+        "measure_current_ct1",
+        "measure_current_ct2",
+        "measure_voltage",
+        "heater_1_name",
+        "heater_2_name"
       ],
       "platforms": [
         "local"
@@ -190,7 +194,6 @@
         "measure_power",
         "measure_voltage",
         "measure_current",
-        "meter_power",
         "measure_frequency"
       ],
       "platforms": [
@@ -666,7 +669,7 @@
       "type": "string",
       "getable": true,
       "setable": false,
-      "uiComponent": "media"
+      "uiComponent": "sensor"
     },
     "heater_2_name": {
       "title": {
@@ -678,7 +681,7 @@
       "type": "string",
       "getable": true,
       "setable": false,
-      "uiComponent": "media"
+      "uiComponent": "sensor"
     },
     "heater_session_transferred": {
       "type": "number",
@@ -894,12 +897,21 @@
         "es": "Frecuencia en Hertz (Hz)",
         "da": "Frekvens i Hertz (Hz)"
       },
+      "options": {
+        "isApproximated": {
+          "type": "boolean",
+          "default": false,
+          "desc": {
+            "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+          }
+        }
+      },
       "chartType": "stepLine",
       "decimals": 2,
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/sinus.svg"
+      "icon": "/assets/ct_clamp1.svg"
     },
     "measure_power_ct1": {
       "type": "number",

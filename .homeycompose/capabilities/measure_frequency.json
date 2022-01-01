@@ -26,12 +26,21 @@
         "es": "Frecuencia en Hertz (Hz)",
         "da": "Frekvens i Hertz (Hz)"
     },
+    "options": {
+        "isApproximated": {
+            "type": "boolean",
+            "default": false,
+            "desc": {
+                "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+            }
+        }
+    },
     "chartType": "stepLine",
     "decimals": 2,
     "getable": true,
     "setable": false,
     "uiComponent": "sensor",
-    "icon": "/assets/sinus.svg",
+    "icon": "/assets/ct_clamp1.svg",
     "$flow": {
         "triggers": [
             {

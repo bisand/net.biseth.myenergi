@@ -83,6 +83,8 @@ export class ZappiDevice extends Device {
 
   // Set capability values from collected values.
   private setCapabilityValues() {
+    this.log(`Frequency: ${this._frequency} - ${this.getCapabilityValue('measure_frequency')}`);
+    
     this.setCapabilityValue('onoff', this._chargeMode !== ZappiChargeMode.Off).catch(this.error);
     this.setCapabilityValue('charge_mode', `${this._chargeMode}`).catch(this.error);
     this.setCapabilityValue('charge_mode_selector', `${this._chargeMode}`).catch(this.error);
@@ -228,39 +230,30 @@ export class ZappiDevice extends Device {
       this._settings.showNegativeValues = newSettings.showNegativeValues;
     }
     if (changedKeys.includes('powerCalculationMode')) {
-      if (this._settings.powerCalculationMode === "automatic") {
+      this._settings.powerCalculationMode = newSettings.powerCalculationMode;
+      if (newSettings.powerCalculationMode === "automatic") {
         const zappi = await this.myenergiClient.getStatusZappi(this.deviceId);
         if (zappi) {
           this.calculateValues(zappi);
-          this._settings.includeCT1 = zappi.ectt1 === 'Internal Load';
-          this._settings.includeCT2 = zappi.ectt2 === 'Internal Load';
-          this._settings.includeCT3 = zappi.ectt3 === 'Internal Load';
-          this._settings.includeCT4 = zappi.ectt4 === 'Internal Load';
-          this._settings.includeCT5 = zappi.ectt5 === 'Internal Load';
-          this._settings.includeCT6 = zappi.ectt6 === 'Internal Load';
-          const tmpSettings: any = this._settings;
-          this.setSettings({
-            includeCT1: tmpSettings.includeCT1,
-            includeCT2: tmpSettings.includeCT2,
-            includeCT3: tmpSettings.includeCT3,
-            includeCT4: tmpSettings.includeCT4,
-            includeCT5: tmpSettings.includeCT5,
-            includeCT6: tmpSettings.includeCT6,
-          });
+          const tmpSettings: any =
+          {
+            includeCT1: zappi.ectt1 === 'Internal Load',
+            includeCT2: zappi.ectt2 === 'Internal Load',
+            includeCT3: zappi.ectt3 === 'Internal Load',
+            includeCT4: zappi.ectt4 === 'Internal Load',
+            includeCT5: zappi.ectt5 === 'Internal Load',
+            includeCT6: zappi.ectt6 === 'Internal Load',
+          };
+          this.setSettings(tmpSettings);
+          Object.keys(tmpSettings).forEach(key => this._settings[key] = tmpSettings[key]);
         }
-      } else if (this._settings.powerCalculationMode === "manual") {
-        if (changedKeys.includes('includeCT1'))
-          this._settings.includeCT1 = newSettings.includeCT1;
-        if (changedKeys.includes('includeCT2'))
-          this._settings.includeCT2 = newSettings.includeCT2;
-        if (changedKeys.includes('includeCT3'))
-          this._settings.includeCT3 = newSettings.includeCT3;
-        if (changedKeys.includes('includeCT4'))
-          this._settings.includeCT4 = newSettings.includeCT4;
-        if (changedKeys.includes('includeCT5'))
-          this._settings.includeCT5 = newSettings.includeCT5;
-        if (changedKeys.includes('includeCT6'))
-          this._settings.includeCT6 = newSettings.includeCT6;
+      } else if (newSettings.powerCalculationMode === "manual") {
+        this._settings.includeCT1 = newSettings.includeCT1;
+        this._settings.includeCT2 = newSettings.includeCT2;
+        this._settings.includeCT3 = newSettings.includeCT3;
+        this._settings.includeCT4 = newSettings.includeCT4;
+        this._settings.includeCT5 = newSettings.includeCT5;
+        this._settings.includeCT6 = newSettings.includeCT6;
       }
     }
   }

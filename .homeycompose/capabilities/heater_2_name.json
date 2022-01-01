@@ -8,7 +8,7 @@
     "type": "string",
     "getable": true,
     "setable": false,
-    "uiComponent": "media",
+    "uiComponent": "sensor",
     "$flow": {
         "triggers": [
             {
