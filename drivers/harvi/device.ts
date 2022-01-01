@@ -45,14 +45,18 @@ class HarviDevice extends Device {
       this.error(error);
     }
 
-    this.setCapabilityValue('measure_power_ct1', this._ectp1).catch(this.error);
-    this.setCapabilityValue('measure_power_ct2', this._ectp2).catch(this.error);
-    this.setCapabilityValue('measure_power_ct3', this._ectp3).catch(this.error);
+    this.setCapabilityValues();
+
+    this.log('HarviDevice has been initialized');
+  }
+
+  private setCapabilityValues() {
+    this.setCapabilityValue('measure_power_ct1', this._ectp1 ? this._ectp1 : 0).catch(this.error);
+    this.setCapabilityValue('measure_power_ct2', this._ectp2 ? this._ectp2 : 0).catch(this.error);
+    this.setCapabilityValue('measure_power_ct3', this._ectp3 ? this._ectp3 : 0).catch(this.error);
     this.setCapabilityValue('ct1_type', this._ectt1).catch(this.error);
     this.setCapabilityValue('ct2_type', this._ectt2).catch(this.error);
     this.setCapabilityValue('ct3_type', this._ectt3).catch(this.error);
-
-    this.log('HarviDevice has been initialized');
   }
 
   private dataUpdated(data: HarviData[]) {
@@ -68,12 +72,7 @@ class HarviDevice extends Device {
             this._ectt2 = harvi.ectt2;
             this._ectt3 = harvi.ectt3;
 
-            this.setCapabilityValue('measure_power_ct1', this._ectp1).catch(this.error);
-            this.setCapabilityValue('measure_power_ct2', this._ectp2).catch(this.error);
-            this.setCapabilityValue('measure_power_ct3', this._ectp3).catch(this.error);
-            this.setCapabilityValue('ct1_type', this._ectt1).catch(this.error);
-            this.setCapabilityValue('ct2_type', this._ectt2).catch(this.error);
-            this.setCapabilityValue('ct3_type', this._ectt3).catch(this.error);
+            this.setCapabilityValues();
           } catch (error) {
             this.error(error);
           }
@@ -97,7 +96,7 @@ class HarviDevice extends Device {
    * @param {string[]} event.changedKeys An array of keys changed since the previous version
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
-   public async onSettings({ oldSettings, newSettings, changedKeys }: {
+  public async onSettings({ oldSettings, newSettings, changedKeys }: {
     oldSettings: object;
     newSettings: object;
     changedKeys: string[];
@@ -110,14 +109,14 @@ class HarviDevice extends Device {
    * This method can be used this to synchronise the name to the device.
    * @param {string} name The new name
    */
-   public async onRenamed(name: any) {
+  public async onRenamed(name: any) {
     this.log('HarviDevice was renamed');
   }
 
   /**
    * onDeleted is called when the user deleted the device.
    */
-   public async onDeleted() {
+  public async onDeleted() {
     this._driver.removeDataUpdateCallback(this._callbackId);
     this.log('HarviDevice has been deleted');
   }
