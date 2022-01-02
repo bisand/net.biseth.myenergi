@@ -12,7 +12,7 @@
     "measure_power",
     "measure_voltage",
     "measure_current",
-    "meter_power"
+    "measure_frequency"
   ],
   "platforms": [
     "local"

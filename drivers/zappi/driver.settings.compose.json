@@ -1,0 +1,142 @@
+[
+    {
+        "id": "showNegativeValues",
+        "type": "checkbox",
+        "value": true,
+        "label": {
+            "en": "Show negative values",
+            "no": "Vis negative verdier",
+            "nl": "Negatieve waarden weergeven",
+            "sv": "Visa negativa värden",
+            "de": "Negative Werte anzeigen"
+        }
+    },
+    {
+        "type": "group",
+        "label": {
+            "en": "Power calculations",
+            "nl": "Vermogen berekenen",
+            "de": "Leistungsberechnungen"
+        },
+        "children": [
+            {
+                "id": "powerCalculationMode",
+                "type": "dropdown",
+                "value": "automatic",
+                "label": {
+                    "en": "Default mode",
+                    "nl": "Standaard modus",
+                    "de": "Standardmodus"
+                },
+                "values": [
+                    {
+                        "id": "automatic",
+                        "label": {
+                            "en": "Automatically select CTs",
+                            "nl": "Selecteer CT's automatisch",
+                            "de": "CTs automatisch auswählen"
+                        }
+                    },
+                    {
+                        "id": "manual",
+                        "label": {
+                            "en": "Manual override CTs",
+                            "nl": "Handmatige instelling CT's",
+                            "de": "CTs manuell Überbrücken"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "includeCT1",
+                "type": "checkbox",
+                "label": {
+                    "en": "Include CT 1",
+                    "nl": "CT 1 meenemen",
+                    "de": "Inklusive CT 1"
+                },
+                "value": false,
+                "hint": {
+                    "en": "Include CT 1 in the power calculation.",
+                    "nl": "CT 1 meenemen in berekening.",
+                    "de": "Beziehen Sie CT 1 in die Leistungsberechnung ein."
+                }
+            },
+            {
+                "id": "includeCT2",
+                "type": "checkbox",
+                "label": {
+                    "en": "Include CT 2",
+                    "nl": "CT 2 meenemen",
+                    "de": "Inklusive CT 2"
+                },
+                "value": false,
+                "hint": {
+                    "en": "Include CT 2 in the power calculation.",
+                    "nl": "CT 2 meenemen in berekening.",
+                    "de": "Beziehen Sie CT 2 in die Leistungsberechnung ein."
+                }
+            },
+            {
+                "id": "includeCT3",
+                "type": "checkbox",
+                "label": {
+                    "en": "Include CT 3",
+                    "nl": "CT 3 meenemen",
+                    "de": "Inklusive CT 3"
+                },
+                "value": false,
+                "hint": {
+                    "en": "Include CT 3 in the power calculation.",
+                    "nl": "CT 3 meenemen in berekening.",
+                    "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein."
+                }
+            },
+            {
+                "id": "includeCT4",
+                "type": "checkbox",
+                "label": {
+                    "en": "Include CT 4",
+                    "nl": "CT 4 meenemen",
+                    "de": "Inklusive CT 4"
+                },
+                "value": false,
+                "hint": {
+                    "en": "Include CT 4 in the power calculation.",
+                    "nl": "CT 4 meenemen in berekening.",
+                    "de": "Beziehen Sie CT 4 in die Leistungsberechnung ein."
+                }
+            },
+            {
+                "id": "includeCT5",
+                "type": "checkbox",
+                "label": {
+                    "en": "Include CT 5",
+                    "nl": "CT 5 meenemen",
+                    "de": "Inklusive CT 5"
+                },
+                "value": false,
+                "hint": {
+                    "en": "Include CT 5 in the power calculation.",
+                    "nl": "CT 5 meenemen in berekening.",
+                    "de": "Beziehen Sie CT 5 in die Leistungsberechnung ein."
+                }
+            },
+            {
+                "id": "includeCT6",
+                "type": "checkbox",
+                "label": {
+                    "en": "Include CT 6",
+                    "nl": "CT 6 meenemen",
+                    "de": "Inklusive CT 6"
+                },
+                "value": false,
+                "hint": {
+                    "en": "Include CT 6 in the power calculation.",
+                    "nl": "CT 6 meenemen in berekening.",
+                    "de": "Beziehen Sie CT 6 in die Leistungsberechnung ein."
+                }
+            }
+        ]
+    }
+]

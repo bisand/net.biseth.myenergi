@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "net.biseth.myenergi",
-  "version": "1.0.1",
+  "version": "1.2.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#2bcc64",
@@ -13,7 +13,9 @@
   },
   "description": {
     "en": "Sustainable future through eco-smart technology.",
-    "no": "Bærekraftig fremtid gjennom øko-smart teknologi."
+    "no": "Bærekraftig fremtid gjennom eco-smart teknologi.",
+    "nl": "Duurzame toekomst door eco-smart technologie.",
+    "sv": "Hållbar framtid genom miljösmart teknik. "
   },
   "category": [
     "energy"
@@ -38,6 +40,26 @@
       "lading",
       "elbil",
       "solcelle"
+    ],
+    "nl": [
+      "energie",
+      "vermogen",
+      "myenergi",
+      "zappi",
+      "harvi",
+      "laden",
+      "EV",
+      "zonnepanelen"
+    ],
+    "sv": [
+      "energi",
+      "effekt",
+      "myenergi",
+      "zappi",
+      "harvi",
+      "laddning",
+      "elbil",
+      "solceller"
     ]
   },
   "permissions": [],
@@ -63,6 +85,16 @@
   "source": "https://github.com/bisand/net.biseth.myenergi",
   "homepage": "https://myenergi.com",
   "support": "https://github.com/bisand/net.biseth.myenergi/issues",
+  "contributors": {
+    "translators": [
+      {
+        "name": "Michel van Spijk"
+      },
+      {
+        "name": "Ted Dÿring"
+      }
+    ]
+  },
   "drivers": [
     {
       "name": {
@@ -73,10 +105,14 @@
         "onoff",
         "heater_status",
         "heater_session_transferred",
-        "measure_power",
+        "measure_power_ct1",
+        "measure_power_ct2",
         "measure_power_generated",
-        "measure_current",
-        "measure_voltage"
+        "measure_current_ct1",
+        "measure_current_ct2",
+        "measure_voltage",
+        "heater_1_name",
+        "heater_2_name"
       ],
       "platforms": [
         "local"
@@ -158,7 +194,7 @@
         "measure_power",
         "measure_voltage",
         "measure_current",
-        "meter_power"
+        "measure_frequency"
       ],
       "platforms": [
         "local"
@@ -185,7 +221,116 @@
         "large": "/drivers/zappi/assets/images/large.png",
         "xlarge": "/drivers/zappi/assets/images/xlarge.png"
       },
-      "id": "zappi"
+      "id": "zappi",
+      "settings": [
+        {
+          "id": "showNegativeValues",
+          "type": "checkbox",
+          "value": true,
+          "label": {
+            "en": "Show negative values",
+            "no": "Vis negative verdier",
+            "nl": "Negatieve waarden weergeven",
+            "sv": "Visa negativa värden"
+          }
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Power calculations"
+          },
+          "children": [
+            {
+              "id": "powerCalculationMode",
+              "type": "dropdown",
+              "value": "automatic",
+              "label": {
+                "en": "Default mode"
+              },
+              "values": [
+                {
+                  "id": "automatic",
+                  "label": {
+                    "en": "Automatically select CTs"
+                  }
+                },
+                {
+                  "id": "manual",
+                  "label": {
+                    "en": "Manual override CTs"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "includeCT1",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 1"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 1 in the power calculation."
+              }
+            },
+            {
+              "id": "includeCT2",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 2"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 2 in the power calculation."
+              }
+            },
+            {
+              "id": "includeCT3",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 3"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 3 in the power calculation."
+              }
+            },
+            {
+              "id": "includeCT4",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 4"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 4 in the power calculation."
+              }
+            },
+            {
+              "id": "includeCT5",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 5"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 5 in the power calculation."
+              }
+            },
+            {
+              "id": "includeCT6",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 6"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 6 in the power calculation."
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "flow": {
@@ -194,11 +339,15 @@
         "id": "charging_started",
         "title": {
           "en": "Charging started",
-          "no": "Lading startet"
+          "no": "Lading startet",
+          "nl": "Laden gestart",
+          "sv": "Laddning startade"
         },
         "hint": {
           "en": "When Zappi starts charging the connected car",
-          "no": "Når Zappi starter lading av den tilkoblede bilen"
+          "no": "Når Zappi starter lading av den tilkoblede bilen",
+          "nl": "Wanneer Zappi de verbonden EV begint op te laden",
+          "sv": "När Zappi börjar ladda den uppkopplade bilen "
         },
         "args": [
           {
@@ -212,11 +361,15 @@
         "id": "charging_stopped",
         "title": {
           "en": "Charging stopped",
-          "no": "Lading stoppet"
+          "no": "Lading stoppet",
+          "nl": "Laden gestopt",
+          "sv": "Laddningen avbröts"
         },
         "hint": {
           "en": "When Zappi stops charging the connected car",
-          "no": "Når Zappi stopper ladingen av den tilkoblede bilen"
+          "no": "Når Zappi stopper ladingen av den tilkoblede bilen",
+          "nl": "Wanneer de Zappi is gestopt met het opladen van de verbonden EV",
+          "sv": "När Zappi slutar ladda den anslutna bilen "
         },
         "args": [
           {
@@ -232,11 +385,15 @@
         "id": "is_charging",
         "title": {
           "en": "Car !{{is|isn't}} charging",
-          "no": "Bilen !{{lader|lader ikke}}"
+          "no": "Bilen !{{lader|lader ikke}}",
+          "nl": "EV !{{is|is niet}} aan het laden",
+          "sv": "Bilen !{{laddar|laddar inte}}"
         },
         "hint": {
           "en": "Checks if the car is currently being charged by Zappi",
-          "no": "Sjekker om bilen blir laded av Zappi"
+          "no": "Sjekker om bilen blir laded av Zappi",
+          "nl": "Controleert of de EV wordt opgeladen door de Zappi",
+          "sv": "Kontrollerar om bilen för närvarande laddas av Zappi"
         },
         "args": [
           {
@@ -252,7 +409,9 @@
         "id": "start_charging",
         "title": {
           "en": "Start charging the car",
-          "no": "Start lading av bilen"
+          "no": "Start lading av bilen",
+          "nl": "Start laden van EV",
+          "sv": "Börja ladda bilen"
         },
         "args": [
           {
@@ -266,7 +425,9 @@
         "id": "stop_charging",
         "title": {
           "en": "Stop charging the car",
-          "no": "Stopp lading av bilen"
+          "no": "Stopp lading av bilen",
+          "nl": "Stop laden van EV",
+          "sv": "Sluta ladda bilen"
         },
         "args": [
           {
@@ -283,7 +444,9 @@
       "type": "enum",
       "title": {
         "en": "Charge Mode",
-        "no": "Lademodus"
+        "no": "Lademodus",
+        "nl": "Laadmodus",
+        "sv": "Laddningsläge"
       },
       "getable": true,
       "setable": false,
@@ -294,28 +457,36 @@
           "id": "1",
           "title": {
             "en": "Fast",
-            "no": "Rask"
+            "no": "Rask",
+            "nl": "Snel",
+            "sv": "Snabb"
           }
         },
         {
           "id": "2",
           "title": {
             "en": "Eco",
-            "no": "Eco"
+            "no": "Eco",
+            "nl": "Eco",
+            "sv": "Eco"
           }
         },
         {
           "id": "3",
           "title": {
             "en": "Eco+",
-            "no": "Eco+"
+            "no": "Eco+",
+            "nl": "Eco+",
+            "sv": "Eco+"
           }
         },
         {
           "id": "4",
           "title": {
             "en": "Off",
-            "no": "Av"
+            "no": "Av",
+            "nl": "Uit",
+            "sv": "Av"
           }
         }
       ]
@@ -324,7 +495,9 @@
       "type": "enum",
       "title": {
         "en": "Charge Mode",
-        "no": "Lademodus"
+        "no": "Lademodus",
+        "nl": "Laadmodus",
+        "SV": "Laddningsläge"
       },
       "getable": true,
       "setable": true,
@@ -335,28 +508,36 @@
           "id": "1",
           "title": {
             "en": "Fast",
-            "no": "Rask"
+            "no": "Rask",
+            "nl": "Snel",
+            "sv": "Snabb"
           }
         },
         {
           "id": "2",
           "title": {
             "en": "Eco",
-            "no": "Eco"
+            "no": "Eco",
+            "nl": "Eco",
+            "sv": "Eco"
           }
         },
         {
           "id": "3",
           "title": {
             "en": "Eco+",
-            "no": "Eco+"
+            "no": "Eco+",
+            "nl": "Eco+",
+            "sv": "Eco+"
           }
         },
         {
           "id": "4",
           "title": {
             "en": "Off",
-            "no": "Av"
+            "no": "Av",
+            "nl": "Uit",
+            "sv": "Av"
           }
         }
       ]
@@ -364,8 +545,10 @@
     "charge_session_consumption": {
       "type": "number",
       "title": {
-        "en": "Charge added last session",
-        "no": "Siste lading"
+        "en": "Last charge",
+        "no": "Siste lading",
+        "nl": "Laatste sessie",
+        "sv": "Senaste laddningen"
       },
       "getable": true,
       "setable": false,
@@ -381,7 +564,9 @@
       "type": "enum",
       "title": {
         "en": "Charger Status",
-        "no": "Ladestatus"
+        "no": "Ladestatus",
+        "nl": "Laderstatus",
+        "sv": "Laddningsstatus"
       },
       "getable": true,
       "setable": false,
@@ -392,42 +577,54 @@
           "id": "A",
           "title": {
             "en": "EV Disconnected",
-            "no": "Bil Frakoblet"
+            "no": "Bil Frakoblet",
+            "nl": "EV losgekoppeld",
+            "sv": "Bil frånkopplad"
           }
         },
         {
           "id": "B1",
           "title": {
             "en": "EV Connected",
-            "no": "Bil Tilkoblet"
+            "no": "Bil Tilkoblet",
+            "nl": "EV verbonden",
+            "sv": "Bil Ansluten"
           }
         },
         {
           "id": "B2",
           "title": {
             "en": "Waiting for EV",
-            "no": "Venter på Bil"
+            "no": "Venter på Bil",
+            "nl": "Wachten op EV",
+            "sv": "Väntar på Bil"
           }
         },
         {
           "id": "C1",
           "title": {
             "en": "EV ready to charge",
-            "no": "Bil klar for lading"
+            "no": "Bil klar for lading",
+            "nl": "EV gereed om te laden",
+            "sv": "Bil redo att laddas"
           }
         },
         {
           "id": "C2",
           "title": {
             "en": "Charging",
-            "no": "Lader"
+            "no": "Lader",
+            "nl": "Laden",
+            "sv": "Laddar"
           }
         },
         {
           "id": "F",
           "title": {
             "en": "Fault",
-            "no": "Feil"
+            "no": "Feil",
+            "nl": "Fout",
+            "sv": "Fel"
           }
         }
       ]
@@ -465,28 +662,34 @@
     "heater_1_name": {
       "title": {
         "en": "Heater 1",
-        "no": "Varmeelement 1"
+        "no": "Varmeelement 1",
+        "nl": "Verwarmingselement 1",
+        "sv": "Värmeelement 1"
       },
       "type": "string",
       "getable": true,
       "setable": false,
-      "uiComponent": "media"
+      "uiComponent": "sensor"
     },
     "heater_2_name": {
       "title": {
         "en": "Heater 2",
-        "no": "Varmeelement 2"
+        "no": "Varmeelement 2",
+        "nl": "Verwarmingselement 2",
+        "sv": "Värmeelement 2"
       },
       "type": "string",
       "getable": true,
       "setable": false,
-      "uiComponent": "media"
+      "uiComponent": "sensor"
     },
     "heater_session_transferred": {
       "type": "number",
       "title": {
         "en": "Transferred last session",
-        "no": "Overført siste økt"
+        "no": "Overført siste økt",
+        "nl": "Omgeleid in laatste sessie",
+        "sv": "Överförde senaste sessionen"
       },
       "getable": true,
       "setable": false,
@@ -502,7 +705,9 @@
       "type": "enum",
       "title": {
         "en": "Heater Status",
-        "no": "Varmerstatus"
+        "no": "Varmerstatus",
+        "nl": "Verwarming status",
+        "sv": "Värmarens status"
       },
       "getable": true,
       "setable": false,
@@ -513,21 +718,27 @@
           "id": "1",
           "title": {
             "en": "Paused",
-            "no": "Pauset"
+            "no": "Pauset",
+            "nl": "Gepauzeerd",
+            "sv": "Pausad"
           }
         },
         {
           "id": "2",
           "title": {
             "en": "Unknown",
-            "no": "Ukjent"
+            "no": "Ukjent",
+            "nl": "Onbekend",
+            "sv": "Okänd"
           }
         },
         {
           "id": "3",
           "title": {
             "en": "Diverting",
-            "no": "Omdirigerer"
+            "no": "Omdirigerer",
+            "nl": "Omleiden",
+            "sv": "Omdirigerar"
           }
         },
         {
@@ -540,14 +751,18 @@
           "id": "5",
           "title": {
             "en": "Max Temp Reached",
-            "no": "Max Temp Oppnådd"
+            "no": "Max Temp Oppnådd",
+            "nl": "Max Temp Bereikt",
+            "sv": "Max temperatur uppnådd"
           }
         },
         {
           "id": "6",
           "title": {
             "en": "Stopped",
-            "no": "Stoppet"
+            "no": "Stoppet",
+            "nl": "Gestopt",
+            "sv": "Stannade"
           }
         }
       ]
@@ -653,6 +868,50 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor"
+    },
+    "measure_frequency": {
+      "type": "number",
+      "title": {
+        "en": "Frequency",
+        "nl": "Frequentie",
+        "de": "Frequenz",
+        "fr": "La fréquence",
+        "it": "Frequenza",
+        "sv": "Frekvens",
+        "no": "Frekvens",
+        "es": "Frecuencia",
+        "da": "Frekvens"
+      },
+      "units": {
+        "en": "Hz"
+      },
+      "insights": true,
+      "desc": {
+        "en": "Frequency in Hertz (Hz)",
+        "nl": "Frequentie in Hertz (Hz)",
+        "de": "Frequenz in Hertz (Hz)",
+        "fr": "La fréquence en Hertz (Hz)",
+        "it": "Frequenza in Hertz (Hz)",
+        "sv": "Frekvens i Hertz (Hz)",
+        "no": "Frekvens i Hertz (Hz)",
+        "es": "Frecuencia en Hertz (Hz)",
+        "da": "Frekvens i Hertz (Hz)"
+      },
+      "options": {
+        "isApproximated": {
+          "type": "boolean",
+          "default": false,
+          "desc": {
+            "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+          }
+        }
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/sinus.svg"
     },
     "measure_power_ct1": {
       "type": "number",
@@ -790,7 +1049,9 @@
       "type": "number",
       "title": {
         "en": "Power generated",
-        "no": "Generert kraft"
+        "no": "Generert kraft",
+        "nl": "Opgewekt vermogen",
+        "sv": "Genererad energi"
       },
       "getable": true,
       "setable": false,
