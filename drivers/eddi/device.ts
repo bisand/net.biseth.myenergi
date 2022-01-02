@@ -1,7 +1,8 @@
 import { Device } from 'homey';
 import { EddiMode, EddiHeaterStatus, MyEnergi, Eddi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
-import { EddiData, EddiDriver } from './driver';
+import { EddiDriver } from './driver';
+import { EddiData } from "./EddiData";
 
 export class EddiDevice extends Device {
 

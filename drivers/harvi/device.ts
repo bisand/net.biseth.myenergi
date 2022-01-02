@@ -1,7 +1,8 @@
 import { Device } from 'homey';
-import { MyEnergi } from 'myenergi-api';
+import { Harvi, MyEnergi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
-import { HarviData, HarviDriver } from './driver';
+import { HarviDriver } from './driver';
+import { HarviData } from "./HarviData";
 
 class HarviDevice extends Device {
 
@@ -24,57 +25,60 @@ class HarviDevice extends Device {
    * onInit is called when the device is initialized.
    */
   public async onInit() {
-    this._app = this.homey.app as MyEnergiApp;
-    this._driver = this.driver as HarviDriver;
-    this._callbackId = this._driver.registerDataUpdateCallback((data: any) => this.dataUpdated(data)) - 1;
-    this.deviceId = this.getData().id;
-    this.log(`Device ID: ${this.deviceId}`);
-    this.myenergiClientId = this.getStoreValue('myenergiClientId');
+    const dev = this as HarviDevice;
+    dev._app = dev.homey.app as MyEnergiApp;
+    dev._driver = dev.driver as HarviDriver;
+    dev._callbackId = dev._driver.registerDataUpdateCallback((data: any) => dev.dataUpdated(data)) - 1;
+    dev.deviceId = dev.getData().id;
+    dev.log(`Device ID: ${dev.deviceId}`);
+    dev.myenergiClientId = dev.getStoreValue('myenergiClientId');
+
     try {
-      this.myenergiClient = this._app.clients[this.myenergiClientId];
-      const harvi = await this.myenergiClient.getStatusHarvi(this.deviceId);
+      dev.myenergiClient = dev._app.clients[dev.myenergiClientId];
+      const harvi = await dev.myenergiClient.getStatusHarvi(dev.deviceId);
       if (harvi) {
-        this._ectp1 = harvi.ectp1;
-        this._ectp2 = harvi.ectp2;
-        this._ectp3 = harvi.ectp3;
-        this._ectt1 = harvi.ectt1;
-        this._ectt2 = harvi.ectt2;
-        this._ectt3 = harvi.ectt3;
+        this.calculateValues(harvi);
       }
     } catch (error) {
-      this.error(error);
+      dev.error(error);
     }
 
-    this.setCapabilityValues();
+    dev.setCapabilityValues();
 
-    this.log('HarviDevice has been initialized');
+    dev.log('HarviDevice has been initialized');
+  }
+
+  private calculateValues(harvi: Harvi) {
+    const dev = this as HarviDevice;
+    dev._ectp1 = harvi.ectp1;
+    dev._ectp2 = harvi.ectp2;
+    dev._ectp3 = harvi.ectp3;
+    dev._ectt1 = harvi.ectt1;
+    dev._ectt2 = harvi.ectt2;
+    dev._ectt3 = harvi.ectt3;
   }
 
   private setCapabilityValues() {
-    this.setCapabilityValue('measure_power_ct1', this._ectp1 ? this._ectp1 : 0).catch(this.error);
-    this.setCapabilityValue('measure_power_ct2', this._ectp2 ? this._ectp2 : 0).catch(this.error);
-    this.setCapabilityValue('measure_power_ct3', this._ectp3 ? this._ectp3 : 0).catch(this.error);
-    this.setCapabilityValue('ct1_type', this._ectt1).catch(this.error);
-    this.setCapabilityValue('ct2_type', this._ectt2).catch(this.error);
-    this.setCapabilityValue('ct3_type', this._ectt3).catch(this.error);
+    const dev = this as HarviDevice;
+    dev.setCapabilityValue('measure_power_ct1', dev._ectp1 ? dev._ectp1 : 0).catch(dev.error);
+    dev.setCapabilityValue('measure_power_ct2', dev._ectp2 ? dev._ectp2 : 0).catch(dev.error);
+    dev.setCapabilityValue('measure_power_ct3', dev._ectp3 ? dev._ectp3 : 0).catch(dev.error);
+    dev.setCapabilityValue('ct1_type', dev._ectt1).catch(dev.error);
+    dev.setCapabilityValue('ct2_type', dev._ectt2).catch(dev.error);
+    dev.setCapabilityValue('ct3_type', dev._ectt3).catch(dev.error);
   }
 
   private dataUpdated(data: HarviData[]) {
-    this.log('Received data from driver.');
+    const dev = this as HarviDevice;
+    dev.log('Received data from driver.');
     if (data) {
       data.forEach(harvi => {
-        if (harvi && harvi.sno === this.deviceId) {
+        if (harvi && harvi.sno === dev.deviceId) {
           try {
-            this._ectp1 = harvi.ectp1;
-            this._ectp2 = harvi.ectp2;
-            this._ectp3 = harvi.ectp3;
-            this._ectt1 = harvi.ectt1;
-            this._ectt2 = harvi.ectt2;
-            this._ectt3 = harvi.ectt3;
-
-            this.setCapabilityValues();
+            dev.calculateValues(harvi);
+            dev.setCapabilityValues();
           } catch (error) {
-            this.error(error);
+            dev.error(error);
           }
         }
       });

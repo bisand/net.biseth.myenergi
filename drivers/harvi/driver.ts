@@ -1,18 +1,25 @@
 import { Driver } from 'homey';
-import { Harvi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
-
-export interface HarviData extends Harvi {
-  myenergiClientId: string;
-}
+import { HarviData } from './HarviData';
 
 export class HarviDriver extends Driver {
 
   private _app!: MyEnergiApp;
 
   private _dataUpdateCallbacks: any[] = [];
+  private readonly _capabilities = [
+    'ct1_type',
+    'measure_power_ct1',
+    'ct2_type',
+    'measure_power_ct2',
+    'ct3_type',
+    'measure_power_ct3',
+  ];
 
   public harviDevices: HarviData[] = [];
+  public get capabilities() {
+    return this._capabilities;
+  }
 
   /**
    * onInit is called when the driver is initialized.
@@ -71,14 +78,7 @@ export class HarviDriver extends Driver {
         store: {
           myenergiClientId: v.myenergiClientId,
         },
-        capabilities: [
-          'ct1_type',
-          'measure_power_ct1',
-          'ct2_type',
-          'measure_power_ct2',
-          'ct3_type',
-          'measure_power_ct3',
-        ],
+        capabilities: this._capabilities,
         capabilitiesOptions: {
         },
       };

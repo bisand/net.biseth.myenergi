@@ -1,17 +1,13 @@
 import { Driver } from 'homey';
-import { Eddi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
-
-export interface EddiData extends Eddi {
-  myenergiClientId: string;
-}
+import { EddiData } from './EddiData';
 
 export class EddiDriver extends Driver {
 
   private _app!: MyEnergiApp;
 
   private _dataUpdateCallbacks: any[] = [];
-  private _capabilities: string[] = [
+  private readonly _capabilities: string[] = [
     'onoff',
     'heater_status',
     'heater_session_transferred',
