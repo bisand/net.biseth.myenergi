@@ -18,7 +18,7 @@ After installing the app on your Homey you will have to register your hub. You c
 Feel free to ask questions, suggest new features or bug reports in the [issues section](https://github.com/bisand/net.biseth.myenergi/issues) of this repository.
 
 ## Contribute
-Contributers are welcome to submit pull requests for translations, bug fixes and new features. Before a pull request is accepted they will have to resolve an issue in the [Issue section]() of this repository. If no issue is registered, please create one. 
+Contributers are welcome to submit pull requests for translations, bug fixes and new features. Before a pull request is accepted they will have to resolve an issue in the [Issue section](https://github.com/bisand/net.biseth.myenergi/issues) of this repository. If no issue is registered, please create one. 
 
 Pull requests:
 1. Fork this repository
