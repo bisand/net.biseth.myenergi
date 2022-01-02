@@ -11,8 +11,24 @@ export class EddiDriver extends Driver {
   private _app!: MyEnergiApp;
 
   private _dataUpdateCallbacks: any[] = [];
+  private _capabilities: string[] = [
+    'onoff',
+    'heater_status',
+    'heater_session_transferred',
+    'measure_power_ct1',
+    'measure_power_ct2',
+    'measure_power_generated',
+    'measure_current_ct1',
+    'measure_current_ct2',
+    'measure_voltage',
+    'heater_1_name',
+    'heater_2_name',
+  ];
 
   public eddiDevices: EddiData[] = [];
+  public get capabilities(): string[] {
+    return this._capabilities;
+  }
 
   /**
    * onInit is called when the driver is initialized.
@@ -71,19 +87,7 @@ export class EddiDriver extends Driver {
         store: {
           myenergiClientId: v.myenergiClientId,
         },
-        capabilities: [
-          'onoff',
-          'heater_status',
-          'heater_session_transferred',
-          'measure_power_ct1',
-          'measure_power_ct2',
-          'measure_power_generated',
-          'measure_current_ct1',
-          'measure_current_ct2',
-          'measure_voltage',
-          'heater_1_name',
-          'heater_2_name',
-        ],
+        capabilities: this._capabilities,
         capabilitiesOptions: {
         },
       };
