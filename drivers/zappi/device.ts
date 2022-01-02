@@ -99,58 +99,60 @@ export class ZappiDevice extends Device {
 
   // Set capability values from collected values.
   private setCapabilityValues() {
-    this.setCapabilityValue('onoff', this._chargeMode !== ZappiChargeMode.Off).catch(this.error);
-    this.setCapabilityValue('charge_mode', `${this._chargeMode}`).catch(this.error);
-    this.setCapabilityValue('charge_mode_selector', `${this._chargeMode}`).catch(this.error);
-    this.setCapabilityValue('charger_status', `${this._chargerStatus}`).catch(this.error);
-    this.setCapabilityValue('measure_power', this._chargingPower ? this._chargingPower : 0).catch(this.error);
-    this.setCapabilityValue('measure_voltage', this._chargingVoltage ? this._chargingVoltage : 0).catch(this.error);
-    this.setCapabilityValue('measure_current', this._chargingCurrent ? this._chargingCurrent : 0).catch(this.error);
-    this.setCapabilityValue('charge_session_consumption', this._chargeAdded ? this._chargeAdded : 0).catch(this.error);
-    this.setCapabilityValue('measure_frequency', this._frequency ? this._frequency : 0).catch(this.error);
+    const dev: ZappiDevice = this;
+    dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
+    dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode_selector', `${dev._chargeMode}`).catch(dev.error);
+    dev.setCapabilityValue('charger_status', `${dev._chargerStatus}`).catch(dev.error);
+    dev.setCapabilityValue('measure_power', dev._chargingPower ? dev._chargingPower : 0).catch(dev.error);
+    dev.setCapabilityValue('measure_voltage', dev._chargingVoltage ? dev._chargingVoltage : 0).catch(dev.error);
+    dev.setCapabilityValue('measure_current', dev._chargingCurrent ? dev._chargingCurrent : 0).catch(dev.error);
+    dev.setCapabilityValue('charge_session_consumption', dev._chargeAdded ? dev._chargeAdded : 0).catch(dev.error);
+    dev.setCapabilityValue('measure_frequency', dev._frequency ? dev._frequency : 0).catch(dev.error);
   }
 
   // Assign and calculate values from Zappi.
   private calculateValues(zappi: Zappi) {
-    this._chargeMode = zappi.zmo;
-    this._chargerStatus = zappi.pst as ZappiStatus;
-    this._chargingPower = 0;
-    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt1 === 'Internal Load')
-      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT1)) {
-      this._chargingPower += zappi.ectp1 ? zappi.ectp1 : 0;
+    const dev: ZappiDevice = this;
+    dev._chargeMode = zappi.zmo;
+    dev._chargerStatus = zappi.pst as ZappiStatus;
+    dev._chargingPower = 0;
+    if ((dev._settings.powerCalculationMode === 'automatic' && zappi.ectt1 === 'Internal Load')
+      || (dev._settings.powerCalculationMode === 'manual' && dev._settings.includeCT1)) {
+      dev._chargingPower += zappi.ectp1 ? zappi.ectp1 : 0;
     }
-    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt2 === 'Internal Load')
-      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT2)) {
-      this._chargingPower += zappi.ectp2 ? zappi.ectp2 : 0;
+    if ((dev._settings.powerCalculationMode === 'automatic' && zappi.ectt2 === 'Internal Load')
+      || (dev._settings.powerCalculationMode === 'manual' && dev._settings.includeCT2)) {
+      dev._chargingPower += zappi.ectp2 ? zappi.ectp2 : 0;
     }
-    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt3 === 'Internal Load')
-      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT3)) {
-      this._chargingPower += zappi.ectp3 ? zappi.ectp3 : 0;
+    if ((dev._settings.powerCalculationMode === 'automatic' && zappi.ectt3 === 'Internal Load')
+      || (dev._settings.powerCalculationMode === 'manual' && dev._settings.includeCT3)) {
+      dev._chargingPower += zappi.ectp3 ? zappi.ectp3 : 0;
     }
-    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt4 === 'Internal Load')
-      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT4)) {
-      this._chargingPower += zappi.ectp4 ? zappi.ectp4 : 0;
+    if ((dev._settings.powerCalculationMode === 'automatic' && zappi.ectt4 === 'Internal Load')
+      || (dev._settings.powerCalculationMode === 'manual' && dev._settings.includeCT4)) {
+      dev._chargingPower += zappi.ectp4 ? zappi.ectp4 : 0;
     }
-    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt5 === 'Internal Load')
-      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT5)) {
-      this._chargingPower += zappi.ectp5 ? zappi.ectp5 : 0;
+    if ((dev._settings.powerCalculationMode === 'automatic' && zappi.ectt5 === 'Internal Load')
+      || (dev._settings.powerCalculationMode === 'manual' && dev._settings.includeCT5)) {
+      dev._chargingPower += zappi.ectp5 ? zappi.ectp5 : 0;
     }
-    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt6 === 'Internal Load')
-      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT6)) {
-      this._chargingPower += zappi.ectp6 ? zappi.ectp6 : 0;
-    }
-
-    if (this._settings.showNegativeValues === false) {
-      this._chargingPower = this._chargingPower > 0 ? this._chargingPower : 0;
+    if ((dev._settings.powerCalculationMode === 'automatic' && zappi.ectt6 === 'Internal Load')
+      || (dev._settings.powerCalculationMode === 'manual' && dev._settings.includeCT6)) {
+      dev._chargingPower += zappi.ectp6 ? zappi.ectp6 : 0;
     }
 
-    this._chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
-    this._chargeAdded = zappi.che ? zappi.che : 0;
-    this._frequency = zappi.frq ? zappi.frq : 0;
-    this._chargingCurrent = (this._chargingVoltage > 0) ? (this._chargingPower / this._chargingVoltage) : 0; // P=U*I -> I=P/U
+    if (dev._settings.showNegativeValues === false) {
+      dev._chargingPower = dev._chargingPower > 0 ? dev._chargingPower : 0;
+    }
 
-    if (this._powerCalculationModeSetToAuto) {
-      this._powerCalculationModeSetToAuto = false;
+    dev._chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
+    dev._chargeAdded = zappi.che ? zappi.che : 0;
+    dev._frequency = zappi.frq ? zappi.frq : 0;
+    dev._chargingCurrent = (dev._chargingVoltage > 0) ? (dev._chargingPower / dev._chargingVoltage) : 0; // P=U*I -> I=P/U
+
+    if (dev._powerCalculationModeSetToAuto) {
+      dev._powerCalculationModeSetToAuto = false;
       const tmpSettings: any =
       {
         includeCT1: zappi.ectt1 === 'Internal Load',
@@ -161,41 +163,42 @@ export class ZappiDevice extends Device {
         includeCT6: zappi.ectt6 === 'Internal Load',
       };
 
-      this.setSettings(tmpSettings);
+      dev.setSettings(tmpSettings);
     }
   }
 
   private triggerChargingFlow(chargingStarted: boolean) {
-    const device = this; // We're in a Device instance
+    const dev: ZappiDevice = this;
     const tokens = {};
     const state = {};
-    if (chargingStarted === this._lastChargingStarted) {
+    if (chargingStarted === dev._lastChargingStarted) {
       return;
     }
-    this._lastChargingStarted = chargingStarted;
+    dev._lastChargingStarted = chargingStarted;
 
-    this.driver.ready().then(() => {
+    dev.driver.ready().then(() => {
       if (chargingStarted) {
-        (this.driver as ZappiDriver).triggerChargingStartedFlow(device, tokens, state);
+        (dev.driver as ZappiDriver).triggerChargingStartedFlow(dev, tokens, state);
       } else {
-        (this.driver as ZappiDriver).triggerChargingStoppedFlow(device, tokens, state);
+        (dev.driver as ZappiDriver).triggerChargingStoppedFlow(dev, tokens, state);
       }
     });
   }
 
   private dataUpdated(data: ZappiData[]) {
-    this.log('Received data from driver.');
+    const dev: ZappiDevice = this;
+    dev.log('Received data from driver.');
     if (data) {
       data.forEach((zappi: ZappiData) => {
-        if (zappi && zappi.sno === this.deviceId) {
+        if (zappi && zappi.sno === dev.deviceId) {
           try {
             if (zappi.zmo !== ZappiChargeMode.Off) {
-              this._lastOnState = zappi.zmo;
+              dev._lastOnState = zappi.zmo;
             }
-            this.calculateValues(zappi);
-            this.setCapabilityValues();
+            dev.calculateValues(zappi);
+            dev.setCapabilityValues();
           } catch (error) {
-            this.error(error);
+            dev.error(error);
           }
         }
       });
@@ -203,35 +206,38 @@ export class ZappiDevice extends Device {
   }
 
   private async setChargeMode(isOn: boolean) {
+    const dev: ZappiDevice = this;
     try {
-      const result = await this.myenergiClient.setZappiChargeMode(this.deviceId, isOn ? this._lastOnState : ZappiChargeMode.Off);
+      const result = await dev.myenergiClient.setZappiChargeMode(dev.deviceId, isOn ? dev._lastOnState : ZappiChargeMode.Off);
       if (result.status !== 0) {
         throw new Error(result);
       }
-      this.triggerChargingFlow(isOn);
-      this.log(`Zappi was switched ${isOn ? 'on' : 'off'}`);
+      dev.triggerChargingFlow(isOn);
+      dev.log(`Zappi was switched ${isOn ? 'on' : 'off'}`);
     } catch (error) {
-      this.error(error);
+      dev.error(error);
       throw new Error(`Switching the Zappi ${isOn ? 'on' : 'off'} failed!`);
     }
   }
 
   private async onCapabilityChargeMode(value: any, opts: any) {
-    this.log(`Charge Mode: ${value}`);
-    this._chargeMode = Number(value);
-    if (this._chargeMode !== ZappiChargeMode.Off) {
-      this._lastOnState = this._chargeMode;
+    const dev: ZappiDevice = this;
+    dev.log(`Charge Mode: ${value}`);
+    dev._chargeMode = Number(value);
+    if (dev._chargeMode !== ZappiChargeMode.Off) {
+      dev._lastOnState = dev._chargeMode;
     }
-    await this.setChargeMode(this._chargeMode !== ZappiChargeMode.Off);
-    this.setCapabilityValue('onoff', this._chargeMode !== ZappiChargeMode.Off).catch(this.error);
-    this.setCapabilityValue('charge_mode', `${this._chargeMode}`).catch(this.error);
+    await dev.setChargeMode(dev._chargeMode !== ZappiChargeMode.Off);
+    dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
+    dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
   }
 
   private async onCapabilityOnoff(value: boolean, opts: any) {
-    this.log(`onoff: ${value}`);
-    await this.setChargeMode(value);
-    this.setCapabilityValue('charge_mode', value ? `${this._chargeMode}` : `${ZappiChargeMode.Off}`).catch(this.error);
-    this.setCapabilityValue('charge_mode_selector', value ? `${this._chargeMode}` : `${ZappiChargeMode.Off}`).catch(this.error);
+    const dev: ZappiDevice = this;
+    dev.log(`onoff: ${value}`);
+    await dev.setChargeMode(value);
+    dev.setCapabilityValue('charge_mode', value ? `${dev._chargeMode}` : `${ZappiChargeMode.Off}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode_selector', value ? `${dev._chargeMode}` : `${ZappiChargeMode.Off}`).catch(dev.error);
   }
 
   /**
@@ -254,17 +260,18 @@ export class ZappiDevice extends Device {
     newSettings: any;
     changedKeys: string[];
   }): Promise<string | void> {
-    this.log(`ZappiDevice settings where changed: ${changedKeys}`);
+    const dev: ZappiDevice = this;
+    dev.log(`ZappiDevice settings where changed: ${changedKeys}`);
     if (changedKeys.includes('showNegativeValues')) {
-      this._settings.showNegativeValues = newSettings.showNegativeValues;
+      dev._settings.showNegativeValues = newSettings.showNegativeValues;
     }
     if (changedKeys.includes('powerCalculationMode')) {
-      this._settings.powerCalculationMode = newSettings.powerCalculationMode;
+      dev._settings.powerCalculationMode = newSettings.powerCalculationMode;
       if (newSettings.powerCalculationMode === "automatic") {
-        this._powerCalculationModeSetToAuto = true;
-        const zappi = await this.myenergiClient.getStatusZappi(this.deviceId);
+        dev._powerCalculationModeSetToAuto = true;
+        const zappi = await dev.myenergiClient.getStatusZappi(dev.deviceId);
         if (zappi) {
-          this.log(zappi);
+          dev.log(zappi);
           const tmpSettings: any =
           {
             includeCT1: zappi.ectt1 === 'Internal Load',
@@ -275,15 +282,15 @@ export class ZappiDevice extends Device {
             includeCT6: zappi.ectt6 === 'Internal Load',
           };
 
-          Object.keys(tmpSettings).forEach(key => this._settings[key] = tmpSettings[key]);
+          Object.keys(tmpSettings).forEach(key => dev._settings[key] = tmpSettings[key]);
         }
       } else if (newSettings.powerCalculationMode === "manual") {
-        this._settings.includeCT1 = newSettings.includeCT1;
-        this._settings.includeCT2 = newSettings.includeCT2;
-        this._settings.includeCT3 = newSettings.includeCT3;
-        this._settings.includeCT4 = newSettings.includeCT4;
-        this._settings.includeCT5 = newSettings.includeCT5;
-        this._settings.includeCT6 = newSettings.includeCT6;
+        dev._settings.includeCT1 = newSettings.includeCT1;
+        dev._settings.includeCT2 = newSettings.includeCT2;
+        dev._settings.includeCT3 = newSettings.includeCT3;
+        dev._settings.includeCT4 = newSettings.includeCT4;
+        dev._settings.includeCT5 = newSettings.includeCT5;
+        dev._settings.includeCT6 = newSettings.includeCT6;
       }
     }
   }

@@ -43,15 +43,15 @@ export class EddiDevice extends Device {
       dev.myenergiClient = dev._app.clients[dev.myenergiClientId];
       const eddi: Eddi | null = await dev.myenergiClient.getStatusEddi(dev.deviceId);
       if (eddi) {
-        this.calculateValues(eddi); // P=U*I -> I=P/U
+        dev.calculateValues(eddi); // P=U*I -> I=P/U
         dev._lastHeaterStatus = dev._heaterStatus;
       }
     } catch (error) {
       dev.error(error);
     }
 
-    this.validateCapabilities();
-    this.setCapabilityValues();
+    dev.validateCapabilities();
+    dev.setCapabilityValues();
     dev.log(`Status: ${dev._heaterStatus}`);
 
     dev.registerCapabilityListener('onoff', dev.onCapabilityOnoff.bind(this));
