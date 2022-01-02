@@ -1,16 +1,15 @@
 import { Driver } from 'homey';
 import { MyEnergiApp } from '../../app';
-import { Zappi } from 'myenergi-api';
-
-export interface ZappiData extends Zappi {
-  myenergiClientId: string;
-}
+import { ZappiData } from './ZappiData';
 
 export class ZappiDriver extends Driver {
 
   private _app!: MyEnergiApp;
 
-  private _capabilities: string[] = [
+  private _dataUpdateCallbacks: any[] = [];
+  private _chargingStarted: any;
+  private _chargingStopped: any;
+  private readonly _capabilities: string[] = [
     'onoff',
     'charge_mode_selector',
     'charge_mode',
@@ -21,10 +20,6 @@ export class ZappiDriver extends Driver {
     'measure_voltage',
     'measure_frequency',
   ];
-
-  private _dataUpdateCallbacks: any[] = [];
-  private _chargingStarted: any;
-  private _chargingStopped: any;
 
   public zappiDevices: ZappiData[] = [];
   public get capabilities(): string[] {

@@ -1,7 +1,8 @@
 import { Device } from 'homey';
 import { MyEnergi, Zappi, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
-import { ZappiData, ZappiDriver } from './driver';
+import { ZappiDriver } from './driver';
+import { ZappiData } from "./ZappiData";
 
 export class ZappiDevice extends Device {
 
