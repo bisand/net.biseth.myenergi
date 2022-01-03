@@ -4,7 +4,8 @@
         "en": "Last charge",
         "no": "Siste lading",
         "nl": "Laatste sessie",
-        "sv": "Senaste laddningen"
+        "sv": "Senaste laddningen",
+        "de": "In letztem Vorgang"
     },
     "getable": true,
     "setable": false,

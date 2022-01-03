@@ -4,7 +4,8 @@
         "en": "Charger Status",
         "no": "Ladestatus",
         "nl": "Laderstatus",
-        "sv": "Laddningsstatus"
+        "sv": "Laddningsstatus",
+        "de": "Ladegerätstatus"
     },
     "getable": true,
     "setable": false,
@@ -17,7 +18,8 @@
                 "en": "EV Disconnected",
                 "no": "Bil Frakoblet",
                 "nl": "EV losgekoppeld",
-                "sv": "Bil frånkopplad"
+                "sv": "Bil frånkopplad",
+                "de": "EV nicht angeschlossen"
             }
         },
         {
@@ -26,7 +28,8 @@
                 "en": "EV Connected",
                 "no": "Bil Tilkoblet",
                 "nl": "EV verbonden",
-                "sv": "Bil Ansluten"
+                "sv": "Bil Ansluten",
+                "de": "EV angeschlossen"
             }
         },
         {
@@ -35,7 +38,8 @@
                 "en": "Waiting for EV",
                 "no": "Venter på Bil",
                 "nl": "Wachten op EV",
-                "sv": "Väntar på Bil"
+                "sv": "Väntar på Bil",
+                "de": "Warte auf EV"
             }
         },
         {
@@ -44,7 +48,8 @@
                 "en": "EV ready to charge",
                 "no": "Bil klar for lading",
                 "nl": "EV gereed om te laden",
-                "sv": "Bil redo att laddas"
+                "sv": "Bil redo att laddas",
+                "de": "Bereit zum laden"
             }
         },
         {
@@ -53,7 +58,8 @@
                 "en": "Charging",
                 "no": "Lader",
                 "nl": "Laden",
-                "sv": "Laddar"
+                "sv": "Laddar",
+                "de": "Aufladen"
             }
         },
         {
@@ -62,7 +68,8 @@
                 "en": "Fault",
                 "no": "Feil",
                 "nl": "Fout",
-                "sv": "Fel"
+                "sv": "Fel",
+                "de": "Fehler"
             }
         }
     ]

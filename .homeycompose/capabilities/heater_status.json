@@ -4,7 +4,8 @@
         "en": "Heater Status",
         "no": "Varmerstatus",
         "nl": "Verwarming status",
-        "sv": "Värmarens status"
+        "sv": "Värmarens status",
+        "de": "Heizungsstatus"
     },
     "getable": true,
     "setable": false,
@@ -17,7 +18,8 @@
                 "en": "Paused",
                 "no": "Pauset",
                 "nl": "Gepauzeerd",
-                "sv": "Pausad"
+                "sv": "Pausad",
+                "de": "Pausiert"
             }
         },
         {
@@ -26,7 +28,8 @@
                 "en": "Unknown",
                 "no": "Ukjent",
                 "nl": "Onbekend",
-                "sv": "Okänd"
+                "sv": "Okänd",
+                "de": "Unbekannt"
             }
         },
         {
@@ -35,7 +38,8 @@
                 "en": "Diverting",
                 "no": "Omdirigerer",
                 "nl": "Omleiden",
-                "sv": "Omdirigerar"
+                "sv": "Omdirigerar",
+                "de": "Umleitung"
             }
         },
         {
@@ -50,7 +54,8 @@
                 "en": "Max Temp Reached",
                 "no": "Max Temp Oppnådd",
                 "nl": "Max Temp Bereikt",
-                "sv": "Max temperatur uppnådd"
+                "sv": "Max temperatur uppnådd",
+                "de": "Max Temperatur erreicht"
             }
         },
         {
@@ -59,7 +64,8 @@
                 "en": "Stopped",
                 "no": "Stoppet",
                 "nl": "Gestopt",
-                "sv": "Stannade"
+                "sv": "Stannade",
+                "de": "Gestoppt"
             }
         }
     ]

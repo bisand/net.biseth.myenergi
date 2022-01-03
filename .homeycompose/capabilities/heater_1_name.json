@@ -3,7 +3,8 @@
         "en": "Heater 1",
         "no": "Varmeelement 1",
         "nl": "Verwarmingselement 1",
-        "sv": "Värmeelement 1"
+        "sv": "Värmeelement 1",
+        "de": "Heizelement 1"
     },
     "type": "string",
     "getable": true,
@@ -17,7 +18,8 @@
                     "en": "The name changed",
                     "no": "Navnet ble endret",
                     "nl": "De naam is veranderd",
-                    "sv": "Namnet ändrades"
+                    "sv": "Namnet ändrades",
+                    "de": "Der Name hat sich geändert"
                 }
             }
         ]

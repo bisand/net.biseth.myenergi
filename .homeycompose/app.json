@@ -14,7 +14,8 @@
     "en": "Sustainable future through eco-smart technology.",
     "no": "Bærekraftig fremtid gjennom eco-smart teknologi.",
     "nl": "Duurzame toekomst door eco-smart technologie.",
-    "sv": "Hållbar framtid genom miljösmart teknik. "
+    "sv": "Hållbar framtid genom miljösmart teknik.",
+    "de": "Durch ökologisch intelligente Technologie in eine nachhaltige Zukunft."
   },
   "category": [
     "energy"
@@ -59,6 +60,18 @@
       "laddning",
       "elbil",
       "solceller"
+    ],
+    "de": [
+      "energie",
+      "myenergi",
+      "zappi",
+      "harvi",
+      "ladeleistung",
+      "elektrofahrzeuge",
+      "EV",
+      "e-auto",
+      "solaranlage"
+
     ]
   },
   "permissions": [],

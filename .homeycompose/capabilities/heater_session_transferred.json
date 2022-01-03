@@ -4,7 +4,8 @@
         "en": "Transferred last session",
         "no": "Overført siste økt",
         "nl": "Omgeleid in laatste sessie",
-        "sv": "Överförde senaste sessionen"
+        "sv": "Överförde senaste sessionen",
+        "de": "In der letzten Sitzung umgeleitet"
     },
     "getable": true,
     "setable": false,
