@@ -61,6 +61,7 @@ export class ZappiDevice extends Device {
 
     dev.registerCapabilityListener('onoff', dev.onCapabilityOnoff.bind(this));
     dev.registerCapabilityListener('charge_mode_selector', dev.onCapabilityChargeMode.bind(this));
+    dev.registerCapabilityListener('charge_mode_text', dev.onCapabilityChargeModeText.bind(this));
 
     // Flow logic
     const chargingCondition = dev.homey.flow.getConditionCard('is_charging');
@@ -102,6 +103,7 @@ export class ZappiDevice extends Device {
     const dev: ZappiDevice = this;
     dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
     dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode_text', `${dev.getChargeModeText(dev._chargeMode)}`).catch(dev.error);
     dev.setCapabilityValue('charge_mode_selector', `${dev._chargeMode}`).catch(dev.error);
     dev.setCapabilityValue('charger_status', `${dev._chargerStatus}`).catch(dev.error);
     dev.setCapabilityValue('measure_power', dev._chargingPower ? dev._chargingPower : 0).catch(dev.error);
@@ -230,6 +232,45 @@ export class ZappiDevice extends Device {
     await dev.setChargeMode(dev._chargeMode !== ZappiChargeMode.Off);
     dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
     dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
+  }
+
+  private async onCapabilityChargeModeText(value: any, opts: any) {
+    const dev: ZappiDevice = this;
+    dev.log(`Charge Mode Text: ${value}`);
+    dev.setCapabilityValue('charge_mode_text', `${value}`).catch(dev.error);
+    const chargeMode = dev.getChargeMode(value);
+    if (chargeMode)
+      await dev.onCapabilityChargeMode(chargeMode, opts);
+  }
+
+  getChargeMode(value: any) {
+    switch (value) {
+      case 'fast':
+        return 1;
+      case 'eco':
+        return 2;
+      case 'eco_plus':
+        return 3;
+      case 'off':
+        return 4;
+      default:
+        return undefined;
+    };
+  }
+
+  getChargeModeText(value: any) {
+    switch (value) {
+      case 1:
+        return 'fast';
+      case 2:
+        return 'eco';
+      case 3:
+        return 'eco_plus';
+      case 4:
+        return 'off';
+      default:
+        return undefined;
+    };
   }
 
   private async onCapabilityOnoff(value: boolean, opts: any) {

@@ -450,7 +450,7 @@
       },
       "getable": true,
       "setable": false,
-      "uiComponent": "sensor",
+      "uiComponent": null,
       "icon": "/assets/charge_mode.svg",
       "values": [
         {
@@ -499,7 +499,7 @@
         "nl": "Laadmodus",
         "SV": "Laddningsläge"
       },
-      "getable": true,
+      "getable": false,
       "setable": true,
       "uiComponent": "picker",
       "icon": "/assets/charge_mode.svg",
@@ -533,6 +533,57 @@
         },
         {
           "id": "4",
+          "title": {
+            "en": "Off",
+            "no": "Av",
+            "nl": "Uit",
+            "sv": "Av"
+          }
+        }
+      ]
+    },
+    "charge_mode_text": {
+      "type": "enum",
+      "title": {
+        "en": "Charge Mode",
+        "no": "Lademodus",
+        "nl": "Laadmodus",
+        "sv": "Laddningsläge"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": null,
+      "icon": "/assets/charge_mode.svg",
+      "values": [
+        {
+          "id": "fast",
+          "title": {
+            "en": "Fast",
+            "no": "Rask",
+            "nl": "Snel",
+            "sv": "Snabb"
+          }
+        },
+        {
+          "id": "eco",
+          "title": {
+            "en": "Eco",
+            "no": "Eco",
+            "nl": "Eco",
+            "sv": "Eco"
+          }
+        },
+        {
+          "id": "eco_plus",
+          "title": {
+            "en": "Eco+",
+            "no": "Eco+",
+            "nl": "Eco+",
+            "sv": "Eco+"
+          }
+        },
+        {
+          "id": "off",
           "title": {
             "en": "Off",
             "no": "Av",

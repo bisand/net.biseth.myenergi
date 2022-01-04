@@ -4,15 +4,15 @@
         "en": "Charge Mode",
         "no": "Lademodus",
         "nl": "Laadmodus",
-        "SV": "Laddningsläge"
+        "sv": "Laddningsläge"
     },
-    "getable": false,
+    "getable": true,
     "setable": true,
-    "uiComponent": "picker",
+    "uiComponent": null,
     "icon": "/assets/charge_mode.svg",
     "values": [
         {
-            "id": "1",
+            "id": "fast",
             "title": {
                 "en": "Fast",
                 "no": "Rask",
@@ -21,7 +21,7 @@
             }
         },
         {
-            "id": "2",
+            "id": "eco",
             "title": {
                 "en": "Eco",
                 "no": "Eco",
@@ -30,7 +30,7 @@
             }
         },
         {
-            "id": "3",
+            "id": "eco_plus",
             "title": {
                 "en": "Eco+",
                 "no": "Eco+",
@@ -39,7 +39,7 @@
             }
         },
         {
-            "id": "4",
+            "id": "off",
             "title": {
                 "en": "Off",
                 "no": "Av",
