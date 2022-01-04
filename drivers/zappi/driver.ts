@@ -12,6 +12,7 @@ export class ZappiDriver extends Driver {
   private readonly _capabilities: string[] = [
     'onoff',
     'charge_mode_selector',
+    'charge_mode_text',
     'charge_mode',
     'charger_status',
     'charge_session_consumption',
