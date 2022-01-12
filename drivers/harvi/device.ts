@@ -43,6 +43,7 @@ class HarviDevice extends Device {
       dev.error(error);
     }
 
+    dev.validateCapabilities();
     dev.setCapabilityValues();
 
     dev.log('HarviDevice has been initialized');
@@ -66,6 +67,34 @@ class HarviDevice extends Device {
     dev.setCapabilityValue('ct1_type', dev._ectt1).catch(dev.error);
     dev.setCapabilityValue('ct2_type', dev._ectt2).catch(dev.error);
     dev.setCapabilityValue('ct3_type', dev._ectt3).catch(dev.error);
+  }
+
+  private validateCapabilities() {
+    const dev: HarviDevice = this;
+    dev.log(`Validating Harvi capabilities...`);
+    const caps = dev.getCapabilities();
+    caps.forEach(async cap => {
+      if (!dev._driver.capabilities.includes(cap)) {
+        try {
+          await dev.removeCapability(cap);
+          dev.log(`${cap} - Removed`);
+        } catch (error) {
+          dev.error(error);
+        }
+      }
+    });
+    dev._driver.capabilities.forEach(async cap => {
+      try {
+        if (!dev.hasCapability(cap)) {
+          await dev.addCapability(cap);
+          dev.log(`${cap} - Added`);
+        } else {
+          dev.log(`${cap} - OK`);
+        }
+      } catch (error) {
+        dev.error(error);
+      }
+    });
   }
 
   private dataUpdated(data: HarviData[]) {

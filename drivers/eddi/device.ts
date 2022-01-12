@@ -90,12 +90,28 @@ export class EddiDevice extends Device {
 
   private validateCapabilities() {
     const dev: EddiDevice = this;
-    dev.log(`Checking for new capabilities...`);
-    dev._driver.capabilities.forEach(v => {
-      dev.log(`${v}`);
-      if (!dev.hasCapability(v)) {
-        dev.addCapability(v);
-        dev.log(`Added new capability: ${v}`);
+    dev.log(`Validating Eddi capabilities...`);
+    const caps = dev.getCapabilities();
+    caps.forEach(async cap => {
+      if (!dev._driver.capabilities.includes(cap)) {
+        try {
+          await dev.removeCapability(cap);
+          dev.log(`${cap} - Removed`);
+        } catch (error) {
+          dev.error(error);
+        }
+      }
+    });
+    dev._driver.capabilities.forEach(async cap => {
+      try {
+        if (!dev.hasCapability(cap)) {
+          await dev.addCapability(cap);
+          dev.log(`${cap} - Added`);
+        } else {
+          dev.log(`${cap} - OK`);
+        }
+      } catch (error) {
+        dev.error(error);
       }
     });
   }
