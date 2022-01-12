@@ -22,6 +22,9 @@ export class ZappiDevice extends Device {
   private _settings: any;
   private _powerCalculationModeSetToAuto!: boolean;
 
+  private _lastEnergyUpdate: Date = new Date();
+  private _lastPowerMeasure: number = 0;
+
   public deviceId!: string;
   public myenergiClientId!: string;
   public myenergiClient!: MyEnergi;
@@ -112,10 +115,14 @@ export class ZappiDevice extends Device {
       }
     });
   }
+  private _getRndInteger(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
 
   // Set capability values from collected values.
   private setCapabilityValues() {
     const dev: ZappiDevice = this;
+    //dev._chargingPower = this._getRndInteger(3000, 7200);
     dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
     dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
     dev.setCapabilityValue('charge_mode_selector', `${dev._chargeMode}`).catch(dev.error);
@@ -125,6 +132,18 @@ export class ZappiDevice extends Device {
     dev.setCapabilityValue('measure_current', dev._chargingCurrent ? dev._chargingCurrent : 0).catch(dev.error);
     dev.setCapabilityValue('charge_session_consumption', dev._chargeAdded ? dev._chargeAdded : 0).catch(dev.error);
     dev.setCapabilityValue('measure_frequency', dev._frequency ? dev._frequency : 0).catch(dev.error);
+
+    // Calculate energy usage.
+    const energyUpdated = new Date();
+    var seconds = Math.abs((energyUpdated.getTime() - this._lastEnergyUpdate.getTime()) / 1000);
+    let prevEnergy: number = dev.getCapabilityValue('meter_power');
+    let newEnergy: number = prevEnergy + ((((this._lastPowerMeasure + dev._chargingPower) / 2) * seconds) / 3600000)
+    dev.log(`Energy algo: ${prevEnergy} + ((((${this._lastPowerMeasure} + ${dev._chargingPower}) / 2) * ${seconds}) / 3600000)`);
+    this._lastPowerMeasure = dev._chargingPower;
+    this._lastEnergyUpdate = energyUpdated;
+
+    // Set energy capability.
+    dev.setCapabilityValue('meter_power', newEnergy).catch(dev.error);
   }
 
   // Assign and calculate values from Zappi.
