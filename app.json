@@ -207,8 +207,28 @@
         "measure_power",
         "measure_current",
         "measure_voltage",
-        "measure_frequency"
+        "measure_frequency",
+        "button.reset_meter"
       ],
+      "capabilitiesOptions": {
+        "button.reset_meter": {
+          "maintenanceAction": true,
+          "title": {
+            "en": "Reset power meter",
+            "no": "Tilbakestill strømmåler",
+            "nl": "Reset energiemeter",
+            "se": "Återställ energimätaren",
+            "de": "Energiezähler zurücksetzen"
+          },
+          "desc": {
+            "en": "Reset the accumulated power usage (kWh), this can not be restored.",
+            "no": "Tilbakestill akkumulert strømforbruk (kWh), dette kan ikke gjenopprettes.",
+            "nl": "Reset het geaccumuleerde stroomverbruik (kWh), dit kan niet worden hersteld.",
+            "de": "Setzen Sie den kumulierten Stromverbrauch zurück (kWh), dieser kann nicht wiederhergestellt werden.",
+            "se": "Återställ den ackumulerade strömförbrukningen (kWh), detta kan inte återställas"
+          }
+        }
+      },
       "platforms": [
         "local"
       ],

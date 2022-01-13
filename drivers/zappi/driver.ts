@@ -20,6 +20,7 @@ export class ZappiDriver extends Driver {
     'measure_current',
     'measure_voltage',
     'measure_frequency',
+    'button.reset_meter'
   ];
 
   public zappiDevices: ZappiData[] = [];
