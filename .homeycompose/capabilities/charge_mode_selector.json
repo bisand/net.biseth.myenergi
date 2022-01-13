@@ -7,7 +7,7 @@
         "sv": "Laddningsläge",
         "de": "Lademodus"
     },
-    "getable": false,
+    "getable": true,
     "setable": true,
     "uiComponent": "picker",
     "icon": "/assets/charge_mode.svg",
