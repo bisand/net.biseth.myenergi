@@ -10,5 +10,8 @@
   },
   "1.2.0": {
     "en": "Added frequency and settings for customizing charging power calculation for Zappi."
+  },
+  "1.3.0": {
+    "en": "Added total energy consumption (power meter) to Zappi"
   }
 }
