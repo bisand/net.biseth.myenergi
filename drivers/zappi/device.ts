@@ -22,8 +22,8 @@ export class ZappiDevice extends Device {
   private _settings: any;
   private _powerCalculationModeSetToAuto!: boolean;
 
-  private _lastEnergyUpdate: Date = new Date();
-  private _lastPowerMeasure: number = 0;
+  private _lastEnergyCalculation: Date = new Date();
+  private _lastPowerMeasurement: number = 0;
 
   public deviceId!: string;
   public myenergiClientId!: string;
@@ -32,7 +32,7 @@ export class ZappiDevice extends Device {
   /**
    * onInit is called when the device is initialized.
    */
-  public async onInit() {
+  public async onInit(): Promise<void> {
     const dev = this as ZappiDevice;
 
     dev._app = dev.homey.app as MyEnergiApp;
@@ -88,6 +88,9 @@ export class ZappiDevice extends Device {
     dev.log(`ZappiDevice ${dev.deviceId} has been initialized`);
   }
 
+  /**
+   * Validate capabilities. Add new and delete removed capabilities.
+   */
   private validateCapabilities() {
     const dev: ZappiDevice = this;
     dev.log(`Validating Zappi capabilities...`);
@@ -115,14 +118,16 @@ export class ZappiDevice extends Device {
       }
     });
   }
-  private _getRndInteger(min: number, max: number) {
+
+  private getRndInteger(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  // Set capability values from collected values.
-  private setCapabilityValues() {
+  /**
+   * Set capability values from collected values.
+   */
+  private setCapabilityValues(): void {
     const dev: ZappiDevice = this;
-    //dev._chargingPower = this._getRndInteger(3000, 7200);
     dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
     dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
     dev.setCapabilityValue('charge_mode_selector', `${dev._chargeMode}`).catch(dev.error);
@@ -132,22 +137,29 @@ export class ZappiDevice extends Device {
     dev.setCapabilityValue('measure_current', dev._chargingCurrent ? dev._chargingCurrent : 0).catch(dev.error);
     dev.setCapabilityValue('charge_session_consumption', dev._chargeAdded ? dev._chargeAdded : 0).catch(dev.error);
     dev.setCapabilityValue('measure_frequency', dev._frequency ? dev._frequency : 0).catch(dev.error);
-
-    // Calculate energy usage.
-    const energyUpdated = new Date();
-    var seconds = Math.abs((energyUpdated.getTime() - this._lastEnergyUpdate.getTime()) / 1000);
-    let prevEnergy: number = dev.getCapabilityValue('meter_power');
-    let newEnergy: number = prevEnergy + ((((this._lastPowerMeasure + dev._chargingPower) / 2) * seconds) / 3600000)
-    dev.log(`Energy algo: ${prevEnergy} + ((((${this._lastPowerMeasure} + ${dev._chargingPower}) / 2) * ${seconds}) / 3600000)`);
-    this._lastPowerMeasure = dev._chargingPower;
-    this._lastEnergyUpdate = energyUpdated;
-
-    // Set energy capability.
-    dev.setCapabilityValue('meter_power', newEnergy).catch(dev.error);
+    dev.setCapabilityValue('meter_power', dev.calculateEnergy()).catch(dev.error);
   }
 
-  // Assign and calculate values from Zappi.
-  private calculateValues(zappi: Zappi) {
+  /**
+   * Calculate accumulated kWh since last power measurement
+   * @returns Accumulated kWh 
+   */
+  private calculateEnergy(): number {
+    const dev: ZappiDevice = this;
+    const dateNow = new Date();
+    var seconds = Math.abs((dateNow.getTime() - this._lastEnergyCalculation.getTime()) / 1000);
+    let prevEnergy: number = dev.getCapabilityValue('meter_power');
+    let newEnergy: number = prevEnergy + ((((this._lastPowerMeasurement + dev._chargingPower) / 2) * seconds) / 3600000);
+    dev.log(`Energy algo: ${prevEnergy} + ((((${this._lastPowerMeasurement} + ${dev._chargingPower}) / 2) * ${seconds}) / 3600000)`);
+    this._lastPowerMeasurement = dev._chargingPower;
+    this._lastEnergyCalculation = dateNow;
+    return newEnergy;
+  }
+
+  /**
+   * Assign and calculate values from Zappi.
+   */
+  private async calculateValues(zappi: Zappi): Promise<void> {
     const dev: ZappiDevice = this;
     dev._chargeMode = zappi.zmo;
     dev._chargerStatus = zappi.pst as ZappiStatus;
@@ -202,7 +214,12 @@ export class ZappiDevice extends Device {
     }
   }
 
-  private triggerChargingFlow(chargingStarted: boolean) {
+  /**
+   * Trigger charging flows.
+   * @param chargingStarted true if charging has started
+   * @returns void
+   */
+  private async triggerChargingFlow(chargingStarted: boolean): Promise<void> {
     const dev: ZappiDevice = this;
     const tokens = {};
     const state = {};
@@ -220,7 +237,11 @@ export class ZappiDevice extends Device {
     });
   }
 
-  private dataUpdated(data: ZappiData[]) {
+  /**
+   * Event handler for data updates.
+   * @param data Zappi data
+   */
+  private async dataUpdated(data: ZappiData[]): Promise<void> {
     const dev: ZappiDevice = this;
     dev.log('Received data from driver.');
     if (data) {
@@ -240,7 +261,11 @@ export class ZappiDevice extends Device {
     }
   }
 
-  private async setChargeMode(isOn: boolean) {
+  /**
+   * Turn Zappi on or off. On is last charge mode.
+   * @param isOn true if charger is on
+   */
+  private async setChargeMode(isOn: boolean): Promise<void> {
     const dev: ZappiDevice = this;
     try {
       const result = await dev.myenergiClient.setZappiChargeMode(dev.deviceId, isOn ? dev._lastOnState : ZappiChargeMode.Off);
@@ -255,7 +280,12 @@ export class ZappiDevice extends Device {
     }
   }
 
-  private async onCapabilityChargeMode(value: any, opts: any) {
+  /**
+   * Event handler for charge mode capability listener
+   * @param value Charge mode
+   * @param opts Options
+   */
+  private async onCapabilityChargeMode(value: any, opts: any): Promise<void> {
     const dev: ZappiDevice = this;
     dev.log(`Charge Mode: ${value}`);
     dev._chargeMode = Number(value);
@@ -267,7 +297,12 @@ export class ZappiDevice extends Device {
     dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
   }
 
-  private async onCapabilityOnoff(value: boolean, opts: any) {
+  /**
+   * Event handler for onoff capability listener
+   * @param value On or off
+   * @param opts Options
+   */
+  private async onCapabilityOnoff(value: boolean, opts: any): Promise<void> {
     const dev: ZappiDevice = this;
     dev.log(`onoff: ${value}`);
     await dev.setChargeMode(value);
@@ -278,7 +313,7 @@ export class ZappiDevice extends Device {
   /**
    * onAdded is called when the user adds the device, called just after pairing.
    */
-  public async onAdded() {
+  public async onAdded(): Promise<void> {
     this.log('ZappiDevice has been added');
   }
 
@@ -335,14 +370,14 @@ export class ZappiDevice extends Device {
    * This method can be used this to synchronise the name to the device.
    * @param {string} name The new name
    */
-  public async onRenamed(name: any) {
+  public async onRenamed(name: any): Promise<void> {
     this.log('ZappiDevice was renamed');
   }
 
   /**
    * onDeleted is called when the user deleted the device.
    */
-  public async onDeleted() {
+  public async onDeleted(): Promise<void> {
     (this.driver as ZappiDriver).removeDataUpdateCallback(this._callbackId);
     this.log('ZappiDevice has been deleted');
   }
