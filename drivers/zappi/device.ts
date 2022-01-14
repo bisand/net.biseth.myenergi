@@ -40,13 +40,15 @@ export class ZappiDevice extends Device {
     dev._app = dev.homey.app as MyEnergiApp;
     dev._driver = dev.driver as ZappiDriver;
     dev._settings = dev.getSettings();
+
+    // Make sure capabilities are up to date.
+    if (dev.detectCapabilityChanges()) {
+      await dev.InitializeCapabilities();
+    }
+
     dev._callbackId = dev._driver.registerDataUpdateCallback((data: any) => dev.dataUpdated(data)) - 1;
     dev.deviceId = dev.getData().id;
     dev.myenergiClientId = dev.getStoreValue('myenergiClientId');
-
-    // Make sure capabilities are up to date.
-    await dev.ConvertCapabilities();
-    await dev.validateCapabilities();
 
     try {
       // Collect data.
@@ -69,7 +71,6 @@ export class ZappiDevice extends Device {
 
     dev.registerCapabilityListener('onoff', dev.onCapabilityOnoff.bind(this));
     dev.registerCapabilityListener('charge_mode_selector', dev.onCapabilityChargeMode.bind(this));
-    // dev.registerCapabilityListener('charge_mode_text', dev.onCapabilityChargeModeText.bind(this));
     dev.registerCapabilityListener('button.reset_meter', async () => {
       dev.setCapabilityValue('meter_power', 0);
     });
@@ -139,65 +140,58 @@ export class ZappiDevice extends Device {
     }
   }
 
-  private async convertCapability(capabilityId: string, newValue: any) {
-    const dev = this;
-    dev.log(`Removing capability: ${capabilityId}`);
-    await dev.removeCapability(capabilityId);
-    dev.log(`Adding capability: ${capabilityId}`);
-    await dev.addCapability(capabilityId);
-    dev.log(`Setting value on capability: ${capabilityId}`);
-    dev.setCapabilityValue(capabilityId, newValue);
-    dev.log(`Converted capability: ${capabilityId}`);
-  }
-
-  private async ConvertCapabilities(): Promise<void> {
-    const dev = this;
-    dev.log(`Determine if capabilities should be converted...`);
-    const chargeModeSelector = dev.getCapabilityValue('charge_mode_selector');
-    const chargeMode = dev.getCapabilityValue('charge_mode');
-    const chargerStatus = dev.getCapabilityValue('charger_status');
-    dev.log(`charge_mode_selector: ${chargeModeSelector}`);
-    dev.log(`charge_mode: ${chargeMode}`);
-    if (dev.isChargeModeValueText(chargeModeSelector) === false) {
-      await this.convertCapability('charge_mode_selector', dev.getChargeModeText(chargeModeSelector));
-    }
-    if (dev.isChargeModeValueText(chargeMode) === false) {
-      await this.convertCapability('charge_mode', dev.getChargeModeText(chargeMode));
-    }
-    if (dev.isZappiStatusValueText(chargerStatus) === false) {
-      await this.convertCapability('charger_status', dev.getChargerStatusText(chargerStatus));
-    }
+  /**
+   * Validate capabilities. Add new and delete removed capabilities.
+   */
+  private async InitializeCapabilities(): Promise<void> {
+    const dev: ZappiDevice = this;
+    dev.log(`Initializing Zappi capabilities...`);
+    const caps = dev.getCapabilities();
+    const tmpCaps: any = {};
+    caps.forEach(async cap => {
+      try {
+        tmpCaps[cap] = this.getCapabilityValue(cap);
+        await dev.removeCapability(cap).catch(dev.error);
+        dev.log(`${cap} - Removed`);
+      } catch (error) {
+        dev.error(error);
+      }
+    });
+    dev._driver.capabilities.forEach(async cap => {
+      try {
+        await dev.addCapability(cap).catch(dev.error);
+        if (tmpCaps[cap])
+          this.setCapabilityValue(cap, tmpCaps[cap]);
+        dev.log(`${cap} - Added`);
+      } catch (error) {
+        dev.error(error);
+      }
+    });
   }
 
   /**
    * Validate capabilities. Add new and delete removed capabilities.
    */
-  private async validateCapabilities(): Promise<void> {
+  private detectCapabilityChanges(): boolean {
     const dev: ZappiDevice = this;
-    dev.log(`Validating Zappi capabilities...`);
+    let result = false;
+    dev.log(`Detecting Zappi capability changes...`);
     const caps = dev.getCapabilities();
     caps.forEach(async cap => {
       if (!dev._driver.capabilities.includes(cap)) {
-        try {
-          await dev.removeCapability(cap);
-          dev.log(`${cap} - Removed`);
-        } catch (error) {
-          dev.error(error);
-        }
+        dev.log(`Zappi capability ${cap} was removed.`);
+        result = true;
       }
     });
     dev._driver.capabilities.forEach(async cap => {
-      try {
-        if (!dev.hasCapability(cap)) {
-          await dev.addCapability(cap);
-          dev.log(`${cap} - Added`);
-        } else {
-          dev.log(`${cap} - OK`);
-        }
-      } catch (error) {
-        dev.error(error);
+      if (!dev.hasCapability(cap)) {
+        dev.log(`Zappi capability ${cap} was added.`);
+        result = true;
       }
     });
+    if (!result)
+      dev.log('No changes in capabilities.');
+    return result;
   }
 
   private getRndInteger(min: number, max: number): number {
@@ -212,7 +206,7 @@ export class ZappiDevice extends Device {
     dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
     dev.setCapabilityValue('charge_mode', `${dev.getChargeModeText(dev._chargeMode)}`).catch(dev.error);
     dev.setCapabilityValue('charge_mode_selector', `${dev.getChargeModeText(dev._chargeMode)}`).catch(dev.error);
-    dev.setCapabilityValue('charger_status', `${dev._chargerStatus}`).catch(dev.error);
+    dev.setCapabilityValue('charger_status', `${dev.getChargerStatusText(dev._chargerStatus)}`).catch(dev.error);
     dev.setCapabilityValue('measure_power', dev._chargingPower ? dev._chargingPower : 0).catch(dev.error);
     dev.setCapabilityValue('measure_voltage', dev._chargingVoltage ? dev._chargingVoltage : 0).catch(dev.error);
     dev.setCapabilityValue('measure_current', dev._chargingCurrent ? dev._chargingCurrent : 0).catch(dev.error);
