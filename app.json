@@ -525,11 +525,11 @@
       },
       "getable": true,
       "setable": false,
-      "uiComponent": null,
+      "uiComponent": "sensor",
       "icon": "/assets/charge_mode.svg",
       "values": [
         {
-          "id": "1",
+          "id": "FAST",
           "title": {
             "en": "Fast",
             "no": "Rask",
@@ -539,7 +539,7 @@
           }
         },
         {
-          "id": "2",
+          "id": "ECO",
           "title": {
             "en": "Eco",
             "no": "Eco",
@@ -549,7 +549,7 @@
           }
         },
         {
-          "id": "3",
+          "id": "ECO_PLUS",
           "title": {
             "en": "Eco+",
             "no": "Eco+",
@@ -559,7 +559,7 @@
           }
         },
         {
-          "id": "4",
+          "id": "OFF",
           "title": {
             "en": "Off",
             "no": "Av",
@@ -579,13 +579,13 @@
         "sv": "Laddningsläge",
         "de": "Lademodus"
       },
-      "getable": false,
+      "getable": true,
       "setable": true,
       "uiComponent": "picker",
       "icon": "/assets/charge_mode.svg",
       "values": [
         {
-          "id": "1",
+          "id": "FAST",
           "title": {
             "en": "Fast",
             "no": "Rask",
@@ -595,7 +595,7 @@
           }
         },
         {
-          "id": "2",
+          "id": "ECO",
           "title": {
             "en": "Eco",
             "no": "Eco",
@@ -605,7 +605,7 @@
           }
         },
         {
-          "id": "3",
+          "id": "ECO_PLUS",
           "title": {
             "en": "Eco+",
             "no": "Eco+",
@@ -615,64 +615,13 @@
           }
         },
         {
-          "id": "4",
+          "id": "OFF",
           "title": {
             "en": "Off",
             "no": "Av",
             "nl": "Uit",
             "sv": "Av",
             "de": "Stopp"
-          }
-        }
-      ]
-    },
-    "charge_mode_text": {
-      "type": "enum",
-      "title": {
-        "en": "Charge Mode",
-        "no": "Lademodus",
-        "nl": "Laadmodus",
-        "sv": "Laddningsläge"
-      },
-      "getable": true,
-      "setable": true,
-      "uiComponent": null,
-      "icon": "/assets/charge_mode.svg",
-      "values": [
-        {
-          "id": "fast",
-          "title": {
-            "en": "Fast",
-            "no": "Rask",
-            "nl": "Snel",
-            "sv": "Snabb"
-          }
-        },
-        {
-          "id": "eco",
-          "title": {
-            "en": "Eco",
-            "no": "Eco",
-            "nl": "Eco",
-            "sv": "Eco"
-          }
-        },
-        {
-          "id": "eco_plus",
-          "title": {
-            "en": "Eco+",
-            "no": "Eco+",
-            "nl": "Eco+",
-            "sv": "Eco+"
-          }
-        },
-        {
-          "id": "off",
-          "title": {
-            "en": "Off",
-            "no": "Av",
-            "nl": "Uit",
-            "sv": "Av"
           }
         }
       ]
@@ -711,7 +660,7 @@
       "icon": "/assets/accessories.svg",
       "values": [
         {
-          "id": "A",
+          "id": "EV_DISCONNECTED",
           "title": {
             "en": "EV Disconnected",
             "no": "Bil Frakoblet",
@@ -721,7 +670,7 @@
           }
         },
         {
-          "id": "B1",
+          "id": "EV_CONNECTED",
           "title": {
             "en": "EV Connected",
             "no": "Bil Tilkoblet",
@@ -731,7 +680,7 @@
           }
         },
         {
-          "id": "B2",
+          "id": "WAITING_FOR_EV",
           "title": {
             "en": "Waiting for EV",
             "no": "Venter på Bil",
@@ -741,7 +690,7 @@
           }
         },
         {
-          "id": "C1",
+          "id": "READY_TO_CHARGE",
           "title": {
             "en": "EV ready to charge",
             "no": "Bil klar for lading",
@@ -751,7 +700,7 @@
           }
         },
         {
-          "id": "C2",
+          "id": "CHARGING",
           "title": {
             "en": "Charging",
             "no": "Lader",
@@ -761,7 +710,7 @@
           }
         },
         {
-          "id": "F",
+          "id": "FAULT",
           "title": {
             "en": "Fault",
             "no": "Feil",

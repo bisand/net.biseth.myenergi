@@ -13,7 +13,7 @@
     "icon": "/assets/charge_mode.svg",
     "values": [
         {
-            "id": "1",
+            "id": "FAST",
             "title": {
                 "en": "Fast",
                 "no": "Rask",
@@ -23,7 +23,7 @@
             }
         },
         {
-            "id": "2",
+            "id": "ECO",
             "title": {
                 "en": "Eco",
                 "no": "Eco",
@@ -33,7 +33,7 @@
             }
         },
         {
-            "id": "3",
+            "id": "ECO_PLUS",
             "title": {
                 "en": "Eco+",
                 "no": "Eco+",
@@ -43,7 +43,7 @@
             }
         },
         {
-            "id": "4",
+            "id": "OFF",
             "title": {
                 "en": "Off",
                 "no": "Av",
