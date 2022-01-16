@@ -43,7 +43,6 @@ export class ZappiDevice extends Device {
     // Make sure capabilities are up to date.
     if (dev.detectCapabilityChanges()) {
       await dev.InitializeCapabilities();
-      // await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     dev._settings = dev.getSettings();
@@ -146,29 +145,35 @@ export class ZappiDevice extends Device {
    */
   private async InitializeCapabilities(): Promise<void> {
     const dev: ZappiDevice = this;
-    dev.log(`****** Initializing Zappi capabilities ******`);
+    dev.log(`****** Initializing Zappi sensor capabilities ******`);
     const caps = dev.getCapabilities();
     const tmpCaps: any = {};
+    // Remove all capabilities in case the order has changed
     for (const cap of caps) {
       try {
+        if (['onoff', 'charge_mode_selector', 'button.reset_meter'].includes(cap))
+          continue;
         tmpCaps[cap] = this.getCapabilityValue(cap);
         await dev.removeCapability(cap).catch(dev.error);
-        dev.log(`${cap} - Removed`);
+        dev.log(`*** ${cap} - Removed`);
       } catch (error) {
         dev.error(error);
       }
     }
+    // Re-apply all capabilities.
     for (const cap of dev._driver.capabilities) {
       try {
+        if (['onoff', 'charge_mode_selector', 'button.reset_meter'].includes(cap))
+          continue;
         await dev.addCapability(cap).catch(dev.error);
         if (tmpCaps[cap])
           this.setCapabilityValue(cap, tmpCaps[cap]);
-        dev.log(`${cap} - Added`);
+        dev.log(`*** ${cap} - Added`);
       } catch (error) {
         dev.error(error);
       }
     }
-    dev.log(`****** Capability Initialization complete ******`);
+    dev.log(`****** Sensor capability initialization complete ******`);
   }
 
   /**

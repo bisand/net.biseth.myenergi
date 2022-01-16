@@ -199,18 +199,18 @@
       "class": "other",
       "capabilities": [
         "onoff",
+        "charge_mode_selector",
+        "button.reset_meter",
         "charge_mode",
         "charge_mode_txt",
-        "charge_mode_selector",
         "charger_status",
         "charger_status_txt",
         "measure_power",
         "measure_current",
         "measure_voltage",
         "measure_frequency",
-        "meter_power",
         "charge_session_consumption",
-        "button.reset_meter"
+        "meter_power"
       ],
       "capabilitiesOptions": {
         "button.reset_meter": {
