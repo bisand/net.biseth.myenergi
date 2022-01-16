@@ -1,11 +1,11 @@
 {
     "type": "enum",
     "title": {
-        "en": "Charge Mode",
-        "no": "Lademodus",
-        "nl": "Laadmodus",
-        "sv": "Laddningsläge",
-        "de": "Lademodus"
+        "en": "Select charge Mode",
+        "no": "Velg lademodus",
+        "nl": "Selecteer laadmodus",
+        "sv": "Välj laddningsläge",
+        "de": "Wählen Sie den Lademodus"
     },
     "getable": true,
     "setable": true,

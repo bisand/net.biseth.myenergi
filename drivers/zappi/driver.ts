@@ -11,16 +11,18 @@ export class ZappiDriver extends Driver {
   private _chargingStopped: any;
   private readonly _capabilities: string[] = [
     'onoff',
-    'charge_mode',
     'charge_mode_selector',
+    'button.reset_meter',
+    'charge_mode',
+    'charge_mode_txt',
     'charger_status',
-    'charge_session_consumption',
-    'meter_power',
+    'charger_status_txt',
     'measure_power',
     'measure_current',
     'measure_voltage',
     'measure_frequency',
-    'button.reset_meter'
+    'charge_session_consumption',
+    'meter_power',
   ];
 
   public zappiDevices: ZappiData[] = [];

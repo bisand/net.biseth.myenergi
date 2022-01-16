@@ -199,16 +199,18 @@
       "class": "other",
       "capabilities": [
         "onoff",
-        "charge_mode",
         "charge_mode_selector",
+        "button.reset_meter",
+        "charge_mode",
+        "charge_mode_txt",
         "charger_status",
-        "charge_session_consumption",
-        "meter_power",
+        "charger_status_txt",
         "measure_power",
         "measure_current",
         "measure_voltage",
         "measure_frequency",
-        "button.reset_meter"
+        "charge_session_consumption",
+        "meter_power"
       ],
       "capabilitiesOptions": {
         "button.reset_meter": {
@@ -517,15 +519,15 @@
     "charge_mode": {
       "type": "enum",
       "title": {
-        "en": "Charge Mode",
-        "no": "Lademodus",
-        "nl": "Laadmodus",
-        "sv": "Laddningsläge",
-        "de": "Lademodus"
+        "en": "Charge Mode ID",
+        "no": "Lademodus ID",
+        "nl": "Laadmodus ID",
+        "sv": "Laddningsläge ID",
+        "de": "Lademodus ID"
       },
       "getable": true,
       "setable": false,
-      "uiComponent": "sensor",
+      "uiComponent": null,
       "icon": "/assets/charge_mode.svg",
       "values": [
         {
@@ -573,11 +575,11 @@
     "charge_mode_selector": {
       "type": "enum",
       "title": {
-        "en": "Charge Mode",
-        "no": "Lademodus",
-        "nl": "Laadmodus",
-        "sv": "Laddningsläge",
-        "de": "Lademodus"
+        "en": "Select charge Mode",
+        "no": "Velg lademodus",
+        "nl": "Selecteer laadmodus",
+        "sv": "Välj laddningsläge",
+        "de": "Wählen Sie den Lademodus"
       },
       "getable": true,
       "setable": true,
@@ -626,6 +628,62 @@
         }
       ]
     },
+    "charge_mode_txt": {
+      "type": "enum",
+      "title": {
+        "en": "Charge Mode",
+        "no": "Lademodus",
+        "nl": "Laadmodus",
+        "sv": "Laddningsläge",
+        "de": "Lademodus"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/charge_mode.svg",
+      "values": [
+        {
+          "id": "FAST",
+          "title": {
+            "en": "Fast",
+            "no": "Rask",
+            "nl": "Snel",
+            "sv": "Snabb",
+            "de": "Fast"
+          }
+        },
+        {
+          "id": "ECO",
+          "title": {
+            "en": "Eco",
+            "no": "Eco",
+            "nl": "Eco",
+            "sv": "Eco",
+            "de": "Eco"
+          }
+        },
+        {
+          "id": "ECO_PLUS",
+          "title": {
+            "en": "Eco+",
+            "no": "Eco+",
+            "nl": "Eco+",
+            "sv": "Eco+",
+            "de": "Eco+"
+          }
+        },
+        {
+          "id": "OFF",
+          "title": {
+            "en": "Off",
+            "no": "Av",
+            "nl": "Uit",
+            "sv": "Av",
+            "de": "Stopp"
+          }
+        }
+      ]
+    },
     "charge_session_consumption": {
       "type": "number",
       "title": {
@@ -648,15 +706,15 @@
     "charger_status": {
       "type": "enum",
       "title": {
-        "en": "Charger Status",
-        "no": "Ladestatus",
-        "nl": "Laderstatus",
-        "sv": "Laddningsstatus",
-        "de": "Ladegerätstatus"
+        "en": "Charger Status ID",
+        "no": "Ladestatus ID",
+        "nl": "Laderstatus ID",
+        "sv": "Laddningsstatus ID",
+        "de": "Ladegerätstatus ID"
       },
       "getable": true,
       "setable": false,
-      "uiComponent": "sensor",
+      "uiComponent": null,
       "icon": "/assets/accessories.svg",
       "values": [
         {
@@ -711,6 +769,82 @@
         },
         {
           "id": "F",
+          "title": {
+            "en": "Fault",
+            "no": "Feil",
+            "nl": "Fout",
+            "sv": "Fel",
+            "de": "Fehler"
+          }
+        }
+      ]
+    },
+    "charger_status_txt": {
+      "type": "enum",
+      "title": {
+        "en": "Charger Status",
+        "no": "Ladestatus",
+        "nl": "Laderstatus",
+        "sv": "Laddningsstatus",
+        "de": "Ladegerätstatus"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/accessories.svg",
+      "values": [
+        {
+          "id": "EV_DISCONNECTED",
+          "title": {
+            "en": "EV Disconnected",
+            "no": "Bil Frakoblet",
+            "nl": "EV losgekoppeld",
+            "sv": "Bil frånkopplad",
+            "de": "EV nicht angeschlossen"
+          }
+        },
+        {
+          "id": "EV_CONNECTED",
+          "title": {
+            "en": "EV Connected",
+            "no": "Bil Tilkoblet",
+            "nl": "EV verbonden",
+            "sv": "Bil Ansluten",
+            "de": "EV angeschlossen"
+          }
+        },
+        {
+          "id": "WAITING_FOR_EV",
+          "title": {
+            "en": "Waiting for EV",
+            "no": "Venter på Bil",
+            "nl": "Wachten op EV",
+            "sv": "Väntar på Bil",
+            "de": "Warte auf EV"
+          }
+        },
+        {
+          "id": "READY_TO_CHARGE",
+          "title": {
+            "en": "EV ready to charge",
+            "no": "Bil klar for lading",
+            "nl": "EV gereed om te laden",
+            "sv": "Bil redo att laddas",
+            "de": "Bereit zum laden"
+          }
+        },
+        {
+          "id": "CHARGING",
+          "title": {
+            "en": "Charging",
+            "no": "Lader",
+            "nl": "Laden",
+            "sv": "Laddar",
+            "de": "Aufladen"
+          }
+        },
+        {
+          "id": "FAULT",
           "title": {
             "en": "Fault",
             "no": "Feil",
