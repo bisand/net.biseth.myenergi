@@ -9,6 +9,7 @@ export class ZappiDriver extends Driver {
   private _dataUpdateCallbacks: any[] = [];
   private _chargingStarted: any;
   private _chargingStopped: any;
+  private _chargeModeChanged: any;
   private readonly _capabilities: string[] = [
     'onoff',
     'charge_mode_selector',
@@ -38,6 +39,7 @@ export class ZappiDriver extends Driver {
     this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this._chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
     this._chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
+    this._chargeModeChanged = this.homey.flow.getDeviceTriggerCard('charge_mode_changed');
     this.log('ZappiDriver has been initialized');
   }
 
@@ -52,6 +54,13 @@ export class ZappiDriver extends Driver {
     this._chargingStopped
       .trigger(device, tokens, state)
       .then((x: any) => this.log(`triggerChargingStoppedFlow: ${x}`))
+      .catch(this.error);
+  }
+
+  public triggerChargeModeFlow(device: any, tokens: any, state: any) {
+    this._chargeModeChanged
+      .trigger(device, tokens, state)
+      .then((x: any) => this.log(`triggerChargeModeFlow: ${x}`))
       .catch(this.error);
   }
 

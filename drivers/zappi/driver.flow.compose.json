@@ -19,6 +19,82 @@
                 "sv": "Sluta ladda bilen",
                 "de": "Ladevorgang des EV beenden"
             }
+        },
+        {
+            "id": "set_charge_mode",
+            "title": {
+                "en": "Charge Mode",
+                "no": "Lademodus",
+                "nl": "Laadmodus",
+                "sv": "Laddningsläge",
+                "de": "Lademodus"
+            },
+            "titleFormatted": {
+                "en": "Set charge mode to [[charge_mode_txt]]"
+            },
+            "args": [
+                {
+                    "type": "text",
+                    "name": "charge_mode_txt",
+                    "title": {
+                        "en": "Charge Mode"
+                    },
+                    "placeholder": {
+                        "en": "FAST, ECO, ECO_PLUS or OFF"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "select_charge_mode",
+            "title": {
+                "en": "Select Charge Mode",
+                "no": "Velg Lademodus",
+                "nl": "Selecteer Laadmodus",
+                "sv": "Välj Laddningsläge",
+                "de": "Lademodus wählen"
+            },
+            "titleFormatted": {
+                "en": "Select charge mode to [[charge_mode_selector]]"
+            },
+            "args": [
+                {
+                    "type": "dropdown",
+                    "name": "charge_mode_selector",
+                    "title": {
+                        "en": "Select Charge Mode"
+                    },
+                    "placeholder": {
+                        "en": "Select a value"
+                    },
+                    "values": [
+                        {
+                            "id": "FAST",
+                            "label": {
+                                "en": "Fast"
+                            }
+                        },
+                        {
+                            "id": "ECO",
+                            "label": {
+                                "en": "Eco"
+                            }
+                        },
+                        {
+                            "id": "ECO_PLUS",
+                            "label": {
+                                "en": "Eco+"
+                            }
+                        },
+                        {
+                            "id": "OFF",
+                            "label": {
+                                "en": "Off"
+                            }
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "conditions": [
@@ -48,7 +124,7 @@
                 "no": "Lading startet",
                 "nl": "Laden gestart",
                 "sv": "Laddning startade",
-                "de": "Ladevorgang gestartet" 
+                "de": "Ladevorgang gestartet"
             },
             "hint": {
                 "en": "When Zappi starts charging the connected car",
@@ -73,6 +149,23 @@
                 "nl": "Wanneer de Zappi is gestopt met het opladen van de verbonden EV",
                 "sv": "När Zappi slutar ladda den anslutna bilen",
                 "de": "Wenn der Zappi das Aufladen des angeschlossenen EV beendet hat"
+            }
+        },
+        {
+            "id": "charge_mode_changed",
+            "title": {
+                "en": "Charge mode changed",
+                "no": "Ladestatus endret",
+                "nl": "Laadmodus veranderde",
+                "sv": "Laddningsläget ändrats",
+                "de": "Lademodus geändert"
+            },
+            "hint": {
+                "en": "When Zappi changed the charge mode",
+                "no": "Når Zappi endret lademodusen",
+                "nl": "Wanneer de Zappi de laadmodus veranderde",
+                "sv": "När Zappi bytte laddningsläge",
+                "de": "Wenn der Zappi den Lademodus geändert hat"
             }
         }
     ]
