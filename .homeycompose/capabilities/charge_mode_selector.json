@@ -1,11 +1,11 @@
 {
     "type": "enum",
     "title": {
-        "en": "Charge Mode",
-        "no": "Lademodus",
-        "nl": "Laadmodus",
-        "sv": "Laddningsläge",
-        "de": "Lademodus"
+        "en": "Select charge Mode",
+        "no": "Velg lademodus",
+        "nl": "Selecteer laadmodus",
+        "sv": "Välj laddningsläge",
+        "de": "Wählen Sie den Lademodus"
     },
     "getable": true,
     "setable": true,
@@ -13,7 +13,7 @@
     "icon": "/assets/charge_mode.svg",
     "values": [
         {
-            "id": "FAST",
+            "id": "1",
             "title": {
                 "en": "Fast",
                 "no": "Rask",
@@ -23,7 +23,7 @@
             }
         },
         {
-            "id": "ECO",
+            "id": "2",
             "title": {
                 "en": "Eco",
                 "no": "Eco",
@@ -33,7 +33,7 @@
             }
         },
         {
-            "id": "ECO_PLUS",
+            "id": "3",
             "title": {
                 "en": "Eco+",
                 "no": "Eco+",
@@ -43,7 +43,7 @@
             }
         },
         {
-            "id": "OFF",
+            "id": "4",
             "title": {
                 "en": "Off",
                 "no": "Av",

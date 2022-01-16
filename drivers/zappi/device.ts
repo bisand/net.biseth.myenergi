@@ -39,13 +39,14 @@ export class ZappiDevice extends Device {
 
     dev._app = dev.homey.app as MyEnergiApp;
     dev._driver = dev.driver as ZappiDriver;
-    dev._settings = dev.getSettings();
 
     // Make sure capabilities are up to date.
     if (dev.detectCapabilityChanges()) {
       await dev.InitializeCapabilities();
+      // await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
+    dev._settings = dev.getSettings();
     dev._callbackId = dev._driver.registerDataUpdateCallback((data: any) => dev.dataUpdated(data)) - 1;
     dev.deviceId = dev.getData().id;
     dev.myenergiClientId = dev.getStoreValue('myenergiClientId');
@@ -145,10 +146,10 @@ export class ZappiDevice extends Device {
    */
   private async InitializeCapabilities(): Promise<void> {
     const dev: ZappiDevice = this;
-    dev.log(`Initializing Zappi capabilities...`);
+    dev.log(`****** Initializing Zappi capabilities ******`);
     const caps = dev.getCapabilities();
     const tmpCaps: any = {};
-    caps.forEach(async cap => {
+    for (const cap of caps) {
       try {
         tmpCaps[cap] = this.getCapabilityValue(cap);
         await dev.removeCapability(cap).catch(dev.error);
@@ -156,8 +157,8 @@ export class ZappiDevice extends Device {
       } catch (error) {
         dev.error(error);
       }
-    });
-    dev._driver.capabilities.forEach(async cap => {
+    }
+    for (const cap of dev._driver.capabilities) {
       try {
         await dev.addCapability(cap).catch(dev.error);
         if (tmpCaps[cap])
@@ -166,7 +167,8 @@ export class ZappiDevice extends Device {
       } catch (error) {
         dev.error(error);
       }
-    });
+    }
+    dev.log(`****** Capability Initialization complete ******`);
   }
 
   /**
@@ -177,18 +179,18 @@ export class ZappiDevice extends Device {
     let result = false;
     dev.log(`Detecting Zappi capability changes...`);
     const caps = dev.getCapabilities();
-    caps.forEach(async cap => {
+    for (const cap of caps) {
       if (!dev._driver.capabilities.includes(cap)) {
         dev.log(`Zappi capability ${cap} was removed.`);
         result = true;
       }
-    });
-    dev._driver.capabilities.forEach(async cap => {
+    }
+    for (const cap of dev._driver.capabilities) {
       if (!dev.hasCapability(cap)) {
         dev.log(`Zappi capability ${cap} was added.`);
         result = true;
       }
-    });
+    }
     if (!result)
       dev.log('No changes in capabilities.');
     return result;
@@ -204,9 +206,11 @@ export class ZappiDevice extends Device {
   private setCapabilityValues(): void {
     const dev: ZappiDevice = this;
     dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
-    dev.setCapabilityValue('charge_mode', `${dev.getChargeModeText(dev._chargeMode)}`).catch(dev.error);
-    dev.setCapabilityValue('charge_mode_selector', `${dev.getChargeModeText(dev._chargeMode)}`).catch(dev.error);
-    dev.setCapabilityValue('charger_status', `${dev.getChargerStatusText(dev._chargerStatus)}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode_txt', `${dev.getChargeModeText(dev._chargeMode)}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode_selector', `${dev._chargeMode}`).catch(dev.error);
+    dev.setCapabilityValue('charger_status', `${dev._chargerStatus}`).catch(dev.error);
+    dev.setCapabilityValue('charger_status_txt', `${dev.getChargerStatusText(dev._chargerStatus)}`).catch(dev.error);
     dev.setCapabilityValue('measure_power', dev._chargingPower ? dev._chargingPower : 0).catch(dev.error);
     dev.setCapabilityValue('measure_voltage', dev._chargingVoltage ? dev._chargingVoltage : 0).catch(dev.error);
     dev.setCapabilityValue('measure_current', dev._chargingCurrent ? dev._chargingCurrent : 0).catch(dev.error);
@@ -369,7 +373,8 @@ export class ZappiDevice extends Device {
     }
     await dev.setChargeMode(dev._chargeMode !== ZappiChargeMode.Off);
     dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
-    dev.setCapabilityValue('charge_mode', `${dev.getChargeModeText(dev._chargeMode)}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode_txt', `${dev.getChargeModeText(dev._chargeMode)}`).catch(dev.error);
   }
 
   /**
@@ -381,8 +386,9 @@ export class ZappiDevice extends Device {
     const dev: ZappiDevice = this;
     dev.log(`onoff: ${value}`);
     await dev.setChargeMode(value);
-    dev.setCapabilityValue('charge_mode', value ? `${dev.getChargeModeText(dev._chargeMode)}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
-    dev.setCapabilityValue('charge_mode_selector', value ? `${dev.getChargeModeText(dev._chargeMode)}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode', value ? `${dev._chargeMode}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode_txt', value ? `${dev.getChargeModeText(dev._chargeMode)}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode_selector', value ? `${dev._chargeMode}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
   }
 
   private getChargeMode(value: ZappiChargeModeText): ZappiChargeMode {
