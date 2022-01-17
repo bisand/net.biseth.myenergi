@@ -229,6 +229,23 @@
                 "sv": "När Zappi ändrade laddarens status",
                 "de": "Wenn Zappi den Ladezustand geändert hat "
             }
+        },
+        {
+            "id": "boost_mode_changed",
+            "title": {
+                "en": "Boost mode changed",
+                "no": "Boost-modus endret",
+                "nl": "Boost-modus gewijzigd",
+                "sv": "Boost-läge har ändrats",
+                "de": "Boost-modus geändert"
+            },
+            "hint": {
+                "en": "When Zappi changed the boost mode",
+                "no": "Da Zappi endret boost-modus",
+                "nl": "Wanneer Zappi de boost-mode veranderde",
+                "sv": "När Zappi ändrade laddarens boost-läge",
+                "de": "Wenn Zappi den boost-modus geändert hat "
+            }
         }
     ]
 }
