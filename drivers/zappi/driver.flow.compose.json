@@ -155,17 +155,34 @@
             "id": "charge_mode_changed",
             "title": {
                 "en": "Charge mode changed",
-                "no": "Ladestatus endret",
+                "no": "Lademodus endret",
                 "nl": "Laadmodus veranderde",
                 "sv": "Laddningsläget ändrats",
                 "de": "Lademodus geändert"
             },
             "hint": {
                 "en": "When Zappi changed the charge mode",
-                "no": "Når Zappi endret lademodusen",
-                "nl": "Wanneer de Zappi de laadmodus veranderde",
+                "no": "Da Zappi endret lademodusen",
+                "nl": "Wanneer Zappi de laadmodus veranderde",
                 "sv": "När Zappi bytte laddningsläge",
-                "de": "Wenn der Zappi den Lademodus geändert hat"
+                "de": "Wenn Zappi den Lademodus geändert hat"
+            }
+        },
+        {
+            "id": "charger_status_changed",
+            "title": {
+                "en": "Charger status changed",
+                "no": "Laderstatus endret",
+                "nl": "Status van oplader gewijzigd",
+                "sv": "Laddarens status har ändrats",
+                "de": "Status des Ladegeräts geändert"
+            },
+            "hint": {
+                "en": "When Zappi changed the charger status",
+                "no": "Da Zappi endret lademodusen",
+                "nl": "Wanneer Zappi de status van de oplader veranderde",
+                "sv": "När Zappi ändrade laddarens status",
+                "de": "Wenn Zappi den Ladezustand geändert hat "
             }
         }
     ]
