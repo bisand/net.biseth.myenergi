@@ -1,4 +1,4 @@
-import { Driver } from 'homey';
+import { Driver, FlowCardTriggerDevice } from 'homey';
 import { MyEnergiApp } from '../../app';
 import { ZappiData } from './ZappiData';
 
@@ -7,9 +7,10 @@ export class ZappiDriver extends Driver {
   private _app!: MyEnergiApp;
 
   private _dataUpdateCallbacks: any[] = [];
-  private _chargingStarted: any;
-  private _chargingStopped: any;
-  private _chargeModeChanged: any;
+  private _chargingStarted!: FlowCardTriggerDevice;
+  private _chargingStopped!: FlowCardTriggerDevice;
+  private _chargeModeChanged!: FlowCardTriggerDevice;
+  private _boostModeChanged!: FlowCardTriggerDevice;
   private readonly _capabilities: string[] = [
     'onoff',
     'charge_mode_selector',
@@ -40,6 +41,7 @@ export class ZappiDriver extends Driver {
     this._chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
     this._chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
     this._chargeModeChanged = this.homey.flow.getDeviceTriggerCard('charge_mode_changed');
+    this._boostModeChanged = this.homey.flow.getDeviceTriggerCard('boost_mode_changed');
     this.log('ZappiDriver has been initialized');
   }
 
@@ -61,6 +63,13 @@ export class ZappiDriver extends Driver {
     this._chargeModeChanged
       .trigger(device, tokens, state)
       .then((x: any) => this.log(`triggerChargeModeFlow: ${x}`))
+      .catch(this.error);
+  }
+
+  public triggerBoostModeFlow(device: any, tokens: any, state: any) {
+    this._boostModeChanged
+      .trigger(device, tokens, state)
+      .then((x: any) => this.log(`triggerBoostModeFlow: ${x}`))
       .catch(this.error);
   }
 

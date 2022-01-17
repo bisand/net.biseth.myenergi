@@ -1,5 +1,5 @@
 import { Device } from 'homey';
-import { MyEnergi, Zappi, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
+import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
 import { ZappiDriver } from './driver';
 import { ZappiChargeModeText } from './ZappiChargeModeText';
@@ -16,6 +16,7 @@ export class ZappiDevice extends Device {
   private _lastOnState: ZappiChargeMode = ZappiChargeMode.Fast;
   private _lastChargingStarted: boolean = false;
   private _lastChargeMode: ZappiChargeMode = ZappiChargeMode.Fast;
+  private _lastBoostMode: ZappiBoostMode = ZappiBoostMode.Stop;
   private _chargerStatus: ZappiStatus = ZappiStatus.EvDisconnected;
   private _chargingPower: number = 0;
   private _chargingVoltage: number = 0;
@@ -347,7 +348,7 @@ export class ZappiDevice extends Device {
    * @param chargingStarted true if charging has started
    * @returns void
    */
-  private async triggerChargeModeFlow(chargeMode: ZappiChargeMode): Promise<void> {
+   private async triggerChargeModeFlow(chargeMode: ZappiChargeMode): Promise<void> {
     const dev: ZappiDevice = this;
     const tokens = {};
     const state = {};
@@ -364,6 +365,26 @@ export class ZappiDevice extends Device {
       } else if (isTurnedOn) {
         (dev.driver as ZappiDriver).triggerChargingStartedFlow(dev, tokens, state);
       }
+    });
+  }
+
+  /**
+   * Trigger charging flows.
+   * @param chargingStarted true if charging has started
+   * @returns void
+   */
+   private async triggerBoostModeFlow(boostMode: ZappiBoostMode): Promise<void> {
+    const dev: ZappiDevice = this;
+    const tokens = {};
+    const state = {};
+    if (boostMode === dev._lastBoostMode) {
+      return;
+    }
+    const isTurnedOn = dev._lastChargeMode === ZappiChargeMode.Off;
+    dev._lastBoostMode = boostMode;
+
+    dev.driver.ready().then(() => {
+      (dev.driver as ZappiDriver).triggerBoostModeFlow(dev, tokens, state);
     });
   }
 
@@ -433,6 +454,29 @@ export class ZappiDevice extends Device {
     } catch (error) {
       dev.error(error);
       throw new Error(`Switching the Zappi charge mode ${dev.getChargeModeText(chargeMode)} failed!`);
+    }
+  }
+
+  /**
+   * Turn Zappi on or off. On is last charge mode.
+   * @param isOn true if charger is on
+   */
+   private async setBoostMode(boostMode: ZappiBoostMode): Promise<void> {
+    const dev: ZappiDevice = this;
+
+    try {
+      dev.setCapabilityValue('charge_mode', `${boostMode}`).catch(dev.error);
+
+      const result = await dev.myenergiClient.setZappiBoostMode(dev.deviceId, boostMode);
+      if (result.status !== 0) {
+        throw new Error(result);
+      }
+
+      dev.triggerBoostModeFlow(boostMode);
+      dev.log(`Zappi changed charge mode ${boostMode}`);
+    } catch (error) {
+      dev.error(error);
+      throw new Error(`Switching the Zappi charge mode ${(boostMode)} failed!`);
     }
   }
 
