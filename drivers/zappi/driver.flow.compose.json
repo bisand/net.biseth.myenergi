@@ -106,12 +106,12 @@
                 "de": "Boost-modus"
             },
             "titleFormatted": {
-                "en": "Set Boost mode to [[boost_mode]]. End boost after [[boost_mode_kwh]] or [[boost_mode_complete_time]]"
+                "en": "Set Boost mode to [[boost_mode_txt]]. End boost after [[boost_mode_kwh]] or [[boost_mode_complete_time]]"
             },
             "args": [
                 {
                     "type": "text",
-                    "name": "boost_mode",
+                    "name": "boost_mode_txt",
                     "title": {
                         "en": "Boost Mode"
                     },
@@ -122,6 +122,7 @@
                 {
                     "type": "number",
                     "name": "boost_mode_kwh",
+                    "required": false,
                     "title": {
                         "en": "kWh"
                     },
@@ -132,6 +133,7 @@
                 {
                     "type": "number",
                     "name": "boost_mode_complete_time",
+                    "required": false,
                     "title": {
                         "en": "Complete time"
                     },

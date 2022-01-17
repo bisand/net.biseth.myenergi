@@ -9,7 +9,7 @@
     },
     "getable": true,
     "setable": false,
-    "uiComponent": null,
+    "uiComponent": "sensor",
     "icon": "/assets/rocket.svg",
     "values": [
         {

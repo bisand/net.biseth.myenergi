@@ -340,7 +340,7 @@ export class ZappiDevice extends Device {
    */
   private async triggerChargingFlow(chargingStarted: boolean): Promise<void> {
     const dev: ZappiDevice = this;
-    const tokens = {};
+    const tokens = {}; //TODO Add tokens
     const state = {};
     if (chargingStarted === dev._lastChargingStarted) {
       return;
@@ -363,7 +363,7 @@ export class ZappiDevice extends Device {
    */
   private async triggerChargeModeFlow(chargeMode: ZappiChargeMode): Promise<void> {
     const dev: ZappiDevice = this;
-    const tokens = {};
+    const tokens = {}; //TODO Add tokens
     const state = {};
     if (chargeMode === dev._lastChargeMode) {
       return;
@@ -388,7 +388,7 @@ export class ZappiDevice extends Device {
    */
   private async triggerBoostModeFlow(boostMode: ZappiBoostMode): Promise<void> {
     const dev: ZappiDevice = this;
-    const tokens = {};
+    const tokens = {}; //TODO Add tokens
     const state = {};
     if (boostMode === dev._lastBoostMode) {
       return;
@@ -478,7 +478,7 @@ export class ZappiDevice extends Device {
     const dev: ZappiDevice = this;
 
     try {
-      dev.setCapabilityValue('zappi_boost_mode', `${boostMode}`).catch(dev.error);
+      dev.setCapabilityValue('zappi_boost_mode', `${dev.getBoostModeText(boostMode)}`).catch(dev.error);
 
       const result = await dev.myenergiClient.setZappiBoostMode(dev.deviceId, boostMode);
       if (result.status !== 0) {
@@ -486,10 +486,10 @@ export class ZappiDevice extends Device {
       }
 
       dev.triggerBoostModeFlow(boostMode);
-      dev.log(`Zappi changed boost mode ${boostMode}`);
+      dev.log(`Zappi changed boost mode ${dev.getBoostModeText(boostMode)}`);
     } catch (error) {
       dev.error(error);
-      throw new Error(`Switching the Zappi charge mode ${(boostMode)} failed!`);
+      throw new Error(`Switching the Zappi charge mode ${(dev.getBoostModeText(boostMode))} failed!`);
     }
   }
 
