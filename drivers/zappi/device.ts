@@ -2,6 +2,7 @@ import { Device } from 'homey';
 import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
 import { ZappiDriver } from './driver';
+import { ZappiBoostModeText } from './ZappiBoostModeText';
 import { ZappiChargeModeText } from './ZappiChargeModeText';
 import { ZappiData } from "./ZappiData";
 import { ZappiStatusText } from './ZappiStatusText';
@@ -18,6 +19,8 @@ export class ZappiDevice extends Device {
   private _lastChargeMode: ZappiChargeMode = ZappiChargeMode.Fast;
   private _lastBoostMode: ZappiBoostMode = ZappiBoostMode.Stop;
   private _chargerStatus: ZappiStatus = ZappiStatus.EvDisconnected;
+  private _boostMode: ZappiBoostMode = ZappiBoostMode.Stop;
+  private _lastBoostState: ZappiBoostMode = ZappiBoostMode.Stop;
   private _chargingPower: number = 0;
   private _chargingVoltage: number = 0;
   private _chargingCurrent: number = 0;
@@ -115,6 +118,16 @@ export class ZappiDevice extends Device {
         dev._lastOnState = dev._chargeMode;
       }
       await dev.setChargeMode(dev._chargeMode);
+    });
+
+    const setBoostModeAction = dev.homey.flow.getActionCard('set_boost_mode');
+    setBoostModeAction.registerRunListener(async (args, state) => {
+      dev.log(`Boost Mode: ${args.boost_mode_txt}, Boost Mode: ${args.boost_mode_kwh}, Boost Mode: ${args.boost_mode_complete_time}`);
+      const kwh = args.boost_mode_kwh as number;
+      const completeTime = args.boost_mode_complete_time as number;
+      dev._boostMode = dev.getBoostMode(args.boost_mode_txt);
+      dev._lastBoostState = dev._boostMode;
+      await dev.setBoostMode(dev._boostMode, kwh, completeTime);
     });
 
     dev.log(`ZappiDevice ${dev.deviceId} has been initialized`);
@@ -348,7 +361,7 @@ export class ZappiDevice extends Device {
    * @param chargingStarted true if charging has started
    * @returns void
    */
-   private async triggerChargeModeFlow(chargeMode: ZappiChargeMode): Promise<void> {
+  private async triggerChargeModeFlow(chargeMode: ZappiChargeMode): Promise<void> {
     const dev: ZappiDevice = this;
     const tokens = {};
     const state = {};
@@ -373,7 +386,7 @@ export class ZappiDevice extends Device {
    * @param chargingStarted true if charging has started
    * @returns void
    */
-   private async triggerBoostModeFlow(boostMode: ZappiBoostMode): Promise<void> {
+  private async triggerBoostModeFlow(boostMode: ZappiBoostMode): Promise<void> {
     const dev: ZappiDevice = this;
     const tokens = {};
     const state = {};
@@ -461,11 +474,11 @@ export class ZappiDevice extends Device {
    * Turn Zappi on or off. On is last charge mode.
    * @param isOn true if charger is on
    */
-   private async setBoostMode(boostMode: ZappiBoostMode): Promise<void> {
+  private async setBoostMode(boostMode: ZappiBoostMode, kWh?: number, completeTime?: number): Promise<void> {
     const dev: ZappiDevice = this;
 
     try {
-      dev.setCapabilityValue('charge_mode', `${boostMode}`).catch(dev.error);
+      dev.setCapabilityValue('zappi_boost_mode', `${boostMode}`).catch(dev.error);
 
       const result = await dev.myenergiClient.setZappiBoostMode(dev.deviceId, boostMode);
       if (result.status !== 0) {
@@ -473,7 +486,7 @@ export class ZappiDevice extends Device {
       }
 
       dev.triggerBoostModeFlow(boostMode);
-      dev.log(`Zappi changed charge mode ${boostMode}`);
+      dev.log(`Zappi changed boost mode ${boostMode}`);
     } catch (error) {
       dev.error(error);
       throw new Error(`Switching the Zappi charge mode ${(boostMode)} failed!`);
@@ -540,6 +553,32 @@ export class ZappiDevice extends Device {
         return ZappiChargeModeText.Off;
       default:
         throw new Error(`Invalid charge mode ${value}`);
+    };
+  }
+
+  private getBoostMode(value: ZappiBoostModeText): ZappiBoostMode {
+    switch (value) {
+      case ZappiBoostModeText.Manual:
+        return ZappiBoostMode.Manual;
+      case ZappiBoostModeText.Smart:
+        return ZappiBoostMode.Smart;
+      case ZappiBoostModeText.Stop:
+        return ZappiBoostMode.Stop;
+      default:
+        throw new Error(`Invalid boost mode ${value}`);
+    };
+  }
+
+  private getBoostModeText(value: ZappiBoostMode): ZappiBoostModeText {
+    switch (value) {
+      case ZappiBoostMode.Manual:
+        return ZappiBoostModeText.Manual;
+      case ZappiBoostMode.Smart:
+        return ZappiBoostModeText.Smart;
+      case ZappiBoostMode.Stop:
+        return ZappiBoostModeText.Stop;
+      default:
+        throw new Error(`Invalid boost mode ${value}`);
     };
   }
 

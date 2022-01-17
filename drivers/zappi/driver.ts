@@ -25,6 +25,7 @@ export class ZappiDriver extends Driver {
     'measure_frequency',
     'charge_session_consumption',
     'meter_power',
+    'zappi_boost_mode',
   ];
 
   public zappiDevices: ZappiData[] = [];

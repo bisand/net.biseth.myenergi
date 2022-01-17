@@ -95,6 +95,51 @@
                     ]
                 }
             ]
+        },
+        {
+            "id": "set_boost_mode",
+            "title": {
+                "en": "Boost Mode",
+                "no": "Boost-modus",
+                "nl": "Boost-modus",
+                "sv": "Boost-läge",
+                "de": "Boost-modus"
+            },
+            "titleFormatted": {
+                "en": "Set Boost mode to [[boost_mode]]. End boost after [[boost_mode_kwh]] or [[boost_mode_complete_time]]"
+            },
+            "args": [
+                {
+                    "type": "text",
+                    "name": "boost_mode",
+                    "title": {
+                        "en": "Boost Mode"
+                    },
+                    "placeholder": {
+                        "en": "MANUAL, SMART or STOP"
+                    }
+                },
+                {
+                    "type": "number",
+                    "name": "boost_mode_kwh",
+                    "title": {
+                        "en": "kWh"
+                    },
+                    "placeholder": {
+                        "en": "Number of kWh to boost"
+                    }
+                },
+                {
+                    "type": "number",
+                    "name": "boost_mode_complete_time",
+                    "title": {
+                        "en": "Complete time"
+                    },
+                    "placeholder": {
+                        "en": "Boost until"
+                    }
+                }
+            ]
         }
     ],
     "conditions": [

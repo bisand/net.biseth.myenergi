@@ -210,7 +210,8 @@
         "measure_voltage",
         "measure_frequency",
         "charge_session_consumption",
-        "meter_power"
+        "meter_power",
+        "zappi_boost_mode"
       ],
       "capabilitiesOptions": {
         "button.reset_meter": {
@@ -644,6 +645,56 @@
                 }
               }
             ]
+          }
+        ]
+      },
+      {
+        "id": "set_boost_mode",
+        "title": {
+          "en": "Boost Mode",
+          "no": "Boost-modus",
+          "nl": "Boost-modus",
+          "sv": "Boost-läge",
+          "de": "Boost-modus"
+        },
+        "titleFormatted": {
+          "en": "Set Boost mode to [[boost_mode]]. End boost after [[boost_mode_kwh]] or [[boost_mode_complete_time]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "text",
+            "name": "boost_mode",
+            "title": {
+              "en": "Boost Mode"
+            },
+            "placeholder": {
+              "en": "MANUAL, SMART or STOP"
+            }
+          },
+          {
+            "type": "number",
+            "name": "boost_mode_kwh",
+            "title": {
+              "en": "kWh"
+            },
+            "placeholder": {
+              "en": "Number of kWh to boost"
+            }
+          },
+          {
+            "type": "number",
+            "name": "boost_mode_complete_time",
+            "title": {
+              "en": "Complete time"
+            },
+            "placeholder": {
+              "en": "Boost until"
+            }
           }
         ]
       }
@@ -1432,6 +1483,52 @@
       "icon": "/assets/solar_panel.svg",
       "min": 0,
       "decimals": 2
+    },
+    "zappi_boost_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Boost mode",
+        "no": "Boost-modus",
+        "nl": "Boost-modus",
+        "sv": "Boost-läge",
+        "de": "Boost-Modus"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": null,
+      "icon": "/assets/rocket.svg",
+      "values": [
+        {
+          "id": "STOP",
+          "title": {
+            "en": "Stop",
+            "no": "Stopp",
+            "nl": "Stoppen",
+            "sv": "Stopp",
+            "de": "Halt"
+          }
+        },
+        {
+          "id": "MANUAL",
+          "title": {
+            "en": "Manual",
+            "no": "Manuell",
+            "nl": "Handmatige",
+            "sv": "Manuell",
+            "de": "Manuelles"
+          }
+        },
+        {
+          "id": "SMART",
+          "title": {
+            "en": "Smart",
+            "no": "Smart",
+            "nl": "Smart",
+            "sv": "Smart",
+            "de": "Smart"
+          }
+        }
+      ]
     }
   }
 }
