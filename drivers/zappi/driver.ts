@@ -1,5 +1,7 @@
 import { Driver, FlowCardTriggerDevice } from 'homey';
 import { MyEnergiApp } from '../../app';
+import { Capability } from '../../models/Capability';
+import { CapabilityType } from '../../models/CapabilityType';
 import { ZappiData } from './ZappiData';
 
 export class ZappiDriver extends Driver {
@@ -11,35 +13,34 @@ export class ZappiDriver extends Driver {
   private _chargingStopped!: FlowCardTriggerDevice;
   private _chargeModeChanged!: FlowCardTriggerDevice;
   private _boostModeChanged!: FlowCardTriggerDevice;
-  private readonly _controlCapabilities: string[] = [
-    'onoff',
-    'charge_mode_selector',
-    'button.reset_meter',
-    'set_minimum_green_level',
-  ];
 
-  private readonly _sensorCapabilities: string[] = [
-    'charge_mode',
-    'charge_mode_txt',
-    'charger_status',
-    'charger_status_txt',
-    'measure_power',
-    'measure_current',
-    'measure_voltage',
-    'measure_frequency',
-    'charge_session_consumption',
-    'meter_power',
-    'zappi_boost_mode',
-    'minimum_green_level',
+  private _capabilities: Capability[] = [
+    new Capability('onoff', CapabilityType.Control, 1),
+    new Capability('charge_mode_selector', CapabilityType.Control, 2),
+    new Capability('button.reset_meter', CapabilityType.Control, 3),
+    new Capability('button.reload_capabilities', CapabilityType.Control, 4),
+    new Capability('set_minimum_green_level', CapabilityType.Control, 5),
+    new Capability('charge_mode', CapabilityType.Sensor, 6),
+    new Capability('charge_mode_txt', CapabilityType.Sensor, 7),
+    new Capability('charger_status', CapabilityType.Sensor, 8),
+    new Capability('charger_status_txt', CapabilityType.Sensor, 9),
+    new Capability('measure_power', CapabilityType.Sensor, 10),
+    new Capability('measure_current', CapabilityType.Sensor, 11),
+    new Capability('measure_voltage', CapabilityType.Sensor, 12),
+    new Capability('measure_frequency', CapabilityType.Sensor, 13),
+    new Capability('charge_session_consumption', CapabilityType.Sensor, 14),
+    new Capability('meter_power', CapabilityType.Sensor, 15),
+    new Capability('zappi_boost_mode', CapabilityType.Sensor, 16),
+    new Capability('minimum_green_level', CapabilityType.Sensor, 17),
   ];
 
   public zappiDevices: ZappiData[] = [];
   public get capabilities(): string[] {
-    return this._controlCapabilities.concat(this._sensorCapabilities);
+    return this._capabilities.sort((x, y) => x.order - y.order).map(value => value.name);
   }
 
-  public get sensorCapabilities(): string[] {
-    return this._sensorCapabilities;
+  public get capabilityObjects(): Capability[] {
+    return this._capabilities.sort((x, y) => x.order - y.order);
   }
 
   /**

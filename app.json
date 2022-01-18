@@ -202,6 +202,7 @@
         "charge_mode_selector",
         "set_minimum_green_level",
         "button.reset_meter",
+        "button.reload_capabilities",
         "charge_mode",
         "charge_mode_txt",
         "charger_status",
@@ -239,6 +240,15 @@
             "nl": "Reset het geaccumuleerde stroomverbruik (kWh), dit kan niet worden hersteld.",
             "de": "Setzen Sie den kumulierten Stromverbrauch zurück (kWh), dieser kann nicht wiederhergestellt werden.",
             "se": "Återställ den ackumulerade strömförbrukningen (kWh), detta kan inte återställas"
+          }
+        },
+        "button.reload_capabilities": {
+          "maintenanceAction": true,
+          "title": {
+            "en": "Reload capabilities"
+          },
+          "desc": {
+            "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
           }
         }
       },

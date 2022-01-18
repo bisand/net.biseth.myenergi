@@ -48,7 +48,7 @@ export class ZappiDevice extends Device {
 
     // Make sure capabilities are up to date.
     if (dev.detectCapabilityChanges()) {
-      await dev.InitializeCapabilities(dev._driver.sensorCapabilities);
+      await dev.InitializeCapabilities();
     }
 
     dev._settings = dev.getSettings();
@@ -80,6 +80,9 @@ export class ZappiDevice extends Device {
     dev.registerCapabilityListener('set_minimum_green_level', dev.onCapabilityGreenLevel.bind(this));
     dev.registerCapabilityListener('button.reset_meter', async () => {
       dev.setCapabilityValue('meter_power', 0);
+    });
+    dev.registerCapabilityListener('button.reload_capabilities', async () => {
+      dev.InitializeCapabilities();
     });
 
     // Flow logic
@@ -180,7 +183,7 @@ export class ZappiDevice extends Device {
   /**
    * Validate capabilities. Add new and delete removed capabilities.
    */
-  private async InitializeCapabilities(sensorCapabilities: string[]): Promise<void> {
+  private async InitializeCapabilities(): Promise<void> {
     const dev: ZappiDevice = this;
     await this.setUnavailable().catch(dev.error);
     dev.log(`****** Initializing Zappi sensor capabilities ******`);
@@ -189,8 +192,6 @@ export class ZappiDevice extends Device {
     // Remove all capabilities in case the order has changed
     for (const cap of caps) {
       try {
-        if (!sensorCapabilities.includes(cap))
-          continue;
         tmpCaps[cap] = this.getCapabilityValue(cap);
         await dev.removeCapability(cap).catch(dev.error);
         dev.log(`*** ${cap} - Removed`);
@@ -201,7 +202,7 @@ export class ZappiDevice extends Device {
     // Re-apply all capabilities.
     for (const cap of dev._driver.capabilities) {
       try {
-        if (!sensorCapabilities.includes(cap))
+        if (dev.hasCapability(cap))
           continue;
         await dev.addCapability(cap).catch(dev.error);
         if (tmpCaps[cap])
@@ -415,6 +416,8 @@ export class ZappiDevice extends Device {
   private async dataUpdated(data: ZappiData[]): Promise<void> {
     const dev: ZappiDevice = this;
     dev.log('Received data from driver.');
+    if (!dev.getAvailable())
+      return;
     if (data) {
       data.forEach((zappi: ZappiData) => {
         if (zappi && zappi.sno === dev.deviceId) {
