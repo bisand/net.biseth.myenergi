@@ -11,11 +11,14 @@ export class ZappiDriver extends Driver {
   private _chargingStopped!: FlowCardTriggerDevice;
   private _chargeModeChanged!: FlowCardTriggerDevice;
   private _boostModeChanged!: FlowCardTriggerDevice;
-  private readonly _capabilities: string[] = [
+  private readonly _controlCapabilities: string[] = [
     'onoff',
     'charge_mode_selector',
     'button.reset_meter',
     'set_minimum_green_level',
+  ];
+
+  private readonly _sensorCapabilities: string[] = [
     'charge_mode',
     'charge_mode_txt',
     'charger_status',
@@ -32,7 +35,11 @@ export class ZappiDriver extends Driver {
 
   public zappiDevices: ZappiData[] = [];
   public get capabilities(): string[] {
-    return this._capabilities;
+    return this._controlCapabilities.concat(this._sensorCapabilities);
+  }
+
+  public get sensorCapabilities(): string[] {
+    return this._sensorCapabilities;
   }
 
   /**
@@ -124,7 +131,7 @@ export class ZappiDriver extends Driver {
         store: {
           myenergiClientId: v.myenergiClientId,
         },
-        capabilities: this._capabilities,
+        capabilities: this.capabilities,
         capabilitiesOptions: {
         },
       };

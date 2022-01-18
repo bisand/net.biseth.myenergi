@@ -200,8 +200,8 @@
       "capabilities": [
         "onoff",
         "charge_mode_selector",
-        "button.reset_meter",
         "set_minimum_green_level",
+        "button.reset_meter",
         "charge_mode",
         "charge_mode_txt",
         "charger_status",
@@ -216,6 +216,14 @@
         "minimum_green_level"
       ],
       "capabilitiesOptions": {
+        "charge_mode_selector": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "set_minimum_green_level": {
+          "preventTag": true,
+          "preventInsights": true
+        },
         "button.reset_meter": {
           "maintenanceAction": true,
           "title": {
