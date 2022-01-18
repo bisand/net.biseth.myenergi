@@ -15,6 +15,7 @@ export class ZappiDriver extends Driver {
     'onoff',
     'charge_mode_selector',
     'button.reset_meter',
+    'set_minimum_green_level',
     'charge_mode',
     'charge_mode_txt',
     'charger_status',
@@ -26,6 +27,7 @@ export class ZappiDriver extends Driver {
     'charge_session_consumption',
     'meter_power',
     'zappi_boost_mode',
+    'minimum_green_level',
   ];
 
   public zappiDevices: ZappiData[] = [];

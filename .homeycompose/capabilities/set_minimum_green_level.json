@@ -1,0 +1,17 @@
+{
+    "type": "number",
+    "title": {
+        "en": "Set minimum green level"
+    },
+    "getable": true,
+    "setable": true,
+    "uiComponent": "slider",
+    "units": {
+        "en": "%"
+    },
+    "icon": "/assets/solar_recycle.svg",
+    "min": 0,
+    "max": 100,
+    "step": 10,
+    "decimals": 0
+}

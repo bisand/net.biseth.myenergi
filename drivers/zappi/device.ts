@@ -26,6 +26,7 @@ export class ZappiDevice extends Device {
   private _chargingCurrent: number = 0;
   private _chargeAdded: number = 0;
   private _frequency: number = 0;
+  private _minimumGreenLevel: number = 0;
   private _settings: any;
   private _powerCalculationModeSetToAuto!: boolean;
 
@@ -76,6 +77,7 @@ export class ZappiDevice extends Device {
 
     dev.registerCapabilityListener('onoff', dev.onCapabilityOnoff.bind(this));
     dev.registerCapabilityListener('charge_mode_selector', dev.onCapabilityChargeMode.bind(this));
+    dev.registerCapabilityListener('set_minimum_green_level', dev.onCapabilityGreenLevel.bind(this));
     dev.registerCapabilityListener('button.reset_meter', async () => {
       dev.setCapabilityValue('meter_power', 0);
     });
@@ -257,6 +259,8 @@ export class ZappiDevice extends Device {
     dev.setCapabilityValue('charge_session_consumption', dev._chargeAdded ? dev._chargeAdded : 0).catch(dev.error);
     dev.setCapabilityValue('measure_frequency', dev._frequency ? dev._frequency : 0).catch(dev.error);
     dev.setCapabilityValue('meter_power', dev.calculateEnergy()).catch(dev.error);
+    dev.setCapabilityValue('minimum_green_level', dev._minimumGreenLevel).catch(dev.error);
+    dev.setCapabilityValue('set_minimum_green_level', dev._minimumGreenLevel).catch(dev.error);
   }
 
   /**
@@ -315,6 +319,7 @@ export class ZappiDevice extends Device {
     dev._chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
     dev._chargeAdded = zappi.che ? zappi.che : 0;
     dev._frequency = zappi.frq ? zappi.frq : 0;
+    dev._minimumGreenLevel = zappi.mgl ? zappi.mgl : 0;
     dev._chargingCurrent = (dev._chargingVoltage > 0) ? (dev._chargingPower / dev._chargingVoltage) : 0; // P=U*I -> I=P/U
 
     if (dev._powerCalculationModeSetToAuto) {
@@ -445,6 +450,23 @@ export class ZappiDevice extends Device {
   }
 
   /**
+   * Set Zappi minimum green level.
+   * @param value Percentage generated power
+   */
+  private async setMinimumGreenLevel(value: number): Promise<void> {
+    const dev: ZappiDevice = this;
+    try {
+      const result = await dev.myenergiClient.setZappiGreenLevel(dev.deviceId, value);
+      if (result.mgl !== value) {
+        throw new Error(JSON.stringify(result));
+      }
+    } catch (error) {
+      dev.error(error);
+      throw new Error(`Switching the Zappi ${value ? 'on' : 'off'} failed!`);
+    }
+  }
+
+  /**
    * Turn Zappi on or off. On is last charge mode.
    * @param isOn true if charger is on
    */
@@ -523,6 +545,19 @@ export class ZappiDevice extends Device {
     dev.setCapabilityValue('charge_mode', value ? `${dev._chargeMode}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
     dev.setCapabilityValue('charge_mode_txt', value ? `${dev.getChargeModeText(dev._chargeMode)}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
     dev.setCapabilityValue('charge_mode_selector', value ? `${dev._chargeMode}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
+  }
+
+  /**
+   * Event handler for onoff capability listener
+   * @param value On or off
+   * @param opts Options
+   */
+  private async onCapabilityGreenLevel(value: number, opts: any): Promise<void> {
+    const dev: ZappiDevice = this;
+    dev.log(`Minimum Green Level: ${value}`);
+    dev.setCapabilityValue('minimum_green_level', value).catch(dev.error);
+    dev.setCapabilityValue('set_minimum_green_level', value).catch(dev.error);
+    await dev.setMinimumGreenLevel(value);
   }
 
   private getChargeMode(value: ZappiChargeModeText): ZappiChargeMode {

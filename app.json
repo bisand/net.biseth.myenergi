@@ -201,6 +201,7 @@
         "onoff",
         "charge_mode_selector",
         "button.reset_meter",
+        "set_minimum_green_level",
         "charge_mode",
         "charge_mode_txt",
         "charger_status",
@@ -211,7 +212,8 @@
         "measure_frequency",
         "charge_session_consumption",
         "meter_power",
-        "zappi_boost_mode"
+        "zappi_boost_mode",
+        "minimum_green_level"
       ],
       "capabilitiesOptions": {
         "button.reset_meter": {
@@ -1509,6 +1511,40 @@
       "icon": "/assets/solar_panel.svg",
       "min": 0,
       "decimals": 2
+    },
+    "minimum_green_level": {
+      "type": "number",
+      "title": {
+        "en": "Minimum green level"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "%"
+      },
+      "icon": "/assets/solar_recycle.svg",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "decimals": 0
+    },
+    "set_minimum_green_level": {
+      "type": "number",
+      "title": {
+        "en": "Set minimum green level"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "units": {
+        "en": "%"
+      },
+      "icon": "/assets/solar_recycle.svg",
+      "min": 0,
+      "max": 100,
+      "step": 10,
+      "decimals": 0
     },
     "zappi_boost_mode": {
       "type": "enum",
