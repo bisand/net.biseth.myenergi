@@ -12,6 +12,6 @@
     "icon": "/assets/solar_recycle.svg",
     "min": 0,
     "max": 100,
-    "step": 10,
+    "step": 1,
     "decimals": 0
 }

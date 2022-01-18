@@ -637,6 +637,39 @@
         ]
       },
       {
+        "id": "set_minimum_green_level",
+        "title": {
+          "en": "Minimum green level",
+          "no": "Minimum grønt niva",
+          "nl": "Minimaal groen niveau",
+          "sv": "Minsta gröna nivå",
+          "de": "Minimaler Grünpegel"
+        },
+        "titleFormatted": {
+          "en": "Set minimum green level to [[minimum_green_level]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "number",
+            "name": "minimum_green_level",
+            "title": {
+              "en": "Minimum green level"
+            },
+            "placeholder": {
+              "en": "Min % green power"
+            },
+            "min": 0,
+            "max": 100,
+            "step": 1
+          }
+        ]
+      },
+      {
         "id": "select_charge_mode",
         "title": {
           "en": "Select Charge Mode",
@@ -739,7 +772,7 @@
               "en": "Complete time"
             },
             "placeholder": {
-              "en": "Boost until"
+              "en": "Boost until (HHMM)"
             }
           }
         ]
@@ -1544,7 +1577,7 @@
       "icon": "/assets/solar_recycle.svg",
       "min": 0,
       "max": 100,
-      "step": 10,
+      "step": 1,
       "decimals": 0
     },
     "set_minimum_green_level": {
@@ -1561,7 +1594,7 @@
       "icon": "/assets/solar_recycle.svg",
       "min": 0,
       "max": 100,
-      "step": 10,
+      "step": 1,
       "decimals": 0
     },
     "zappi_boost_mode": {

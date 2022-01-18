@@ -130,10 +130,17 @@ export class ZappiDevice extends Device {
     setBoostModeAction.registerRunListener(async (args, state) => {
       dev.log(`Boost Mode: ${args.boost_mode_txt}, Boost Mode: ${args.boost_mode_kwh}, Boost Mode: ${args.boost_mode_complete_time}`);
       const kwh = args.boost_mode_kwh as number;
-      const completeTime = args.boost_mode_complete_time as number;
+      const completeTime = args.boost_mode_complete_time;
       dev._boostMode = dev.getBoostMode(args.boost_mode_txt);
       dev._lastBoostState = dev._boostMode;
       await dev.setBoostMode(dev._boostMode, kwh, completeTime);
+    });
+
+    const setMinimumGreenLevelAction = dev.homey.flow.getActionCard('set_minimum_green_level');
+    setMinimumGreenLevelAction.registerRunListener(async (args, state) => {
+      dev.log(`Minimum Green Level: ${args.minimum_green_level}`);
+      dev._minimumGreenLevel = args.minimum_green_level;
+      await dev.setMinimumGreenLevel(dev._minimumGreenLevel);
     });
 
     dev.log(`ZappiDevice ${dev.deviceId} has been initialized`);
@@ -466,6 +473,8 @@ export class ZappiDevice extends Device {
       if (result.mgl !== value) {
         throw new Error(JSON.stringify(result));
       }
+      dev.setCapabilityValue('minimum_green_level', value).catch(dev.error);
+      dev.setCapabilityValue('set_minimum_green_level', value).catch(dev.error);
     } catch (error) {
       dev.error(error);
       throw new Error(`Switching the Zappi ${value ? 'on' : 'off'} failed!`);
@@ -502,13 +511,13 @@ export class ZappiDevice extends Device {
    * Turn Zappi on or off. On is last charge mode.
    * @param isOn true if charger is on
    */
-  private async setBoostMode(boostMode: ZappiBoostMode, kWh?: number, completeTime?: number): Promise<void> {
+  private async setBoostMode(boostMode: ZappiBoostMode, kWh?: number, completeTime?: string): Promise<void> {
     const dev: ZappiDevice = this;
 
     try {
       dev.setCapabilityValue('zappi_boost_mode', `${dev.getBoostModeText(boostMode)}`).catch(dev.error);
 
-      const result = await dev.myenergiClient.setZappiBoostMode(dev.deviceId, boostMode);
+      const result = await dev.myenergiClient.setZappiBoostMode(dev.deviceId, boostMode, kWh, completeTime);
       if (result.status !== 0) {
         throw new Error(result);
       }
@@ -561,8 +570,6 @@ export class ZappiDevice extends Device {
   private async onCapabilityGreenLevel(value: number, opts: any): Promise<void> {
     const dev: ZappiDevice = this;
     dev.log(`Minimum Green Level: ${value}`);
-    dev.setCapabilityValue('minimum_green_level', value).catch(dev.error);
-    dev.setCapabilityValue('set_minimum_green_level', value).catch(dev.error);
     await dev.setMinimumGreenLevel(value);
   }
 
