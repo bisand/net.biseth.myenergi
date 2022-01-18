@@ -78,6 +78,7 @@ export class ZappiDevice extends Device {
     dev.registerCapabilityListener('onoff', dev.onCapabilityOnoff.bind(this));
     dev.registerCapabilityListener('charge_mode_selector', dev.onCapabilityChargeMode.bind(this));
     dev.registerCapabilityListener('set_minimum_green_level', dev.onCapabilityGreenLevel.bind(this));
+
     dev.registerCapabilityListener('button.reset_meter', async () => {
       dev.setCapabilityValue('meter_power', 0);
     });
