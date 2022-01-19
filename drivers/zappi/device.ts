@@ -557,9 +557,9 @@ export class ZappiDevice extends Device {
     const dev: ZappiDevice = this;
     dev.log(`onoff: ${value}`);
     await dev.setChargerState(value);
-    dev.setCapabilityValue('charge_mode', value ? `${dev._chargeMode}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode', value ? `${dev._chargeMode}` : `${ZappiChargeMode.Off}`).catch(dev.error);
     dev.setCapabilityValue('charge_mode_txt', value ? `${dev.getChargeModeText(dev._chargeMode)}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
-    dev.setCapabilityValue('charge_mode_selector', value ? `${dev._chargeMode}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode_selector', value ? `${dev._chargeMode}` : `${ZappiChargeMode.Off}`).catch(dev.error);
   }
 
   /**
@@ -584,8 +584,7 @@ export class ZappiDevice extends Device {
       case ZappiChargeModeText.Off:
         return ZappiChargeMode.Off;
       default:
-        throw new Error(`Invalid charge mode ${value}`);
-        ;
+        throw new Error(`Invalid charge mode text ${value}`);
     };
   }
 
@@ -613,7 +612,7 @@ export class ZappiDevice extends Device {
       case ZappiBoostModeText.Stop:
         return ZappiBoostMode.Stop;
       default:
-        throw new Error(`Invalid boost mode ${value}`);
+        throw new Error(`Invalid boost mode text ${value}`);
     };
   }
 
