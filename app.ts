@@ -4,6 +4,11 @@ sourceMapSupport.install();
 import Homey from 'homey';
 import { MyEnergi } from 'myenergi-api';
 
+// Start debuger
+//if (process.env.DEBUG === '1') {
+//  require('inspector').open(9229, '0.0.0.0', false);
+//  require(“inspector”).open(9229, “0.0.0.0”, true);
+//}
 export class MyEnergiApp extends Homey.App {
 
   private _dataUpdateInterval: number = 60 * 1000;

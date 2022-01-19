@@ -545,7 +545,7 @@ export class ZappiDevice extends Device {
     await dev.setChargerState(dev._chargeMode !== ZappiChargeMode.Off);
     dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
     dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
-    dev.setCapabilityValue('charge_mode_txt', `${dev.getChargeModeText(dev._chargeMode)}`).catch(dev.error);
+    dev.setCapabilityValue('charge_mode_txt', `${dev.getChargeModeText(dev._chargeMode as ZappiChargeMode)}`).catch(dev.error);
   }
 
   /**
@@ -574,78 +574,68 @@ export class ZappiDevice extends Device {
   }
 
   private getChargeMode(value: ZappiChargeModeText): ZappiChargeMode {
-    switch (value) {
-      case ZappiChargeModeText.Fast:
-        return ZappiChargeMode.Fast;
-      case ZappiChargeModeText.Eco:
-        return ZappiChargeMode.Eco;
-      case ZappiChargeModeText.EcoPlus:
-        return ZappiChargeMode.EcoPlus;
-      case ZappiChargeModeText.Off:
-        return ZappiChargeMode.Off;
-      default:
-        throw new Error(`Invalid charge mode text ${value}`);
-    };
+    if (value == ZappiChargeModeText.Fast)
+      return ZappiChargeMode.Fast;
+    else if (value == ZappiChargeModeText.Eco)
+      return ZappiChargeMode.Eco;
+    else if (value == ZappiChargeModeText.EcoPlus)
+      return ZappiChargeMode.EcoPlus;
+    else if (value == ZappiChargeModeText.Off)
+      return ZappiChargeMode.Off;
+    else
+      throw new Error(`Invalid charge mode text ${value}`);
   }
 
   private getChargeModeText(value: ZappiChargeMode): ZappiChargeModeText {
-    switch (value) {
-      case ZappiChargeMode.Fast:
-        return ZappiChargeModeText.Fast;
-      case ZappiChargeMode.Eco:
-        return ZappiChargeModeText.Eco;
-      case ZappiChargeMode.EcoPlus:
-        return ZappiChargeModeText.EcoPlus;
-      case ZappiChargeMode.Off:
-        return ZappiChargeModeText.Off;
-      default:
-        throw new Error(`Invalid charge mode ${value}`);
-    };
+    if (value == ZappiChargeMode.Fast)
+      return ZappiChargeModeText.Fast;
+    else if (value == ZappiChargeMode.Eco)
+      return ZappiChargeModeText.Eco;
+    else if (value == ZappiChargeMode.EcoPlus)
+      return ZappiChargeModeText.EcoPlus;
+    else if (value == ZappiChargeMode.Off)
+      return ZappiChargeModeText.Off;
+    else
+      throw new Error(`Invalid charge mode ${value}`);
   }
 
   private getBoostMode(value: ZappiBoostModeText): ZappiBoostMode {
-    switch (value) {
-      case ZappiBoostModeText.Manual:
-        return ZappiBoostMode.Manual;
-      case ZappiBoostModeText.Smart:
-        return ZappiBoostMode.Smart;
-      case ZappiBoostModeText.Stop:
-        return ZappiBoostMode.Stop;
-      default:
-        throw new Error(`Invalid boost mode text ${value}`);
-    };
+    if (value == ZappiBoostModeText.Manual)
+      return ZappiBoostMode.Manual;
+    else if (value == ZappiBoostModeText.Smart)
+      return ZappiBoostMode.Smart;
+    else if (value == ZappiBoostModeText.Stop)
+      return ZappiBoostMode.Stop;
+    else
+      throw new Error(`Invalid boost mode text ${value}`);
   }
 
   private getBoostModeText(value: ZappiBoostMode): ZappiBoostModeText {
-    switch (value) {
-      case ZappiBoostMode.Manual:
-        return ZappiBoostModeText.Manual;
-      case ZappiBoostMode.Smart:
-        return ZappiBoostModeText.Smart;
-      case ZappiBoostMode.Stop:
-        return ZappiBoostModeText.Stop;
-      default:
-        throw new Error(`Invalid boost mode ${value}`);
-    };
+    if (value == ZappiBoostMode.Manual)
+      return ZappiBoostModeText.Manual;
+    else if (value == ZappiBoostMode.Smart)
+      return ZappiBoostModeText.Smart;
+    else if (value == ZappiBoostMode.Stop)
+      return ZappiBoostModeText.Stop;
+    else
+      throw new Error(`Invalid boost mode ${value}`);
   }
 
   private getChargerStatusText(value: ZappiStatus): ZappiStatusText {
-    switch (value) {
-      case ZappiStatus.Charging:
-        return ZappiStatusText.Charging;
-      case ZappiStatus.EvConnected:
-        return ZappiStatusText.EvConnected;
-      case ZappiStatus.EvDisconnected:
-        return ZappiStatusText.EvDisconnected;
-      case ZappiStatus.EvReadyToCharge:
-        return ZappiStatusText.EvReadyToCharge;
-      case ZappiStatus.Fault:
-        return ZappiStatusText.Fault;
-      case ZappiStatus.WaitingForEv:
-        return ZappiStatusText.WaitingForEv;
-      default:
-        return ZappiStatusText.EvDisconnected;
-    };
+    if (value == ZappiStatus.Charging)
+      return ZappiStatusText.Charging;
+    else if (value == ZappiStatus.EvConnected)
+      return ZappiStatusText.EvConnected;
+    else if (value == ZappiStatus.EvDisconnected)
+      return ZappiStatusText.EvDisconnected;
+    else if (value == ZappiStatus.EvReadyToCharge)
+      return ZappiStatusText.EvReadyToCharge;
+    else if (value == ZappiStatus.Fault)
+      return ZappiStatusText.Fault;
+    else if (value == ZappiStatus.WaitingForEv)
+      return ZappiStatusText.WaitingForEv;
+    else
+    throw new Error(`Invalid charger status ${value}`);
   }
 
   /**
