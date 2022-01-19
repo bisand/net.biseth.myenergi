@@ -214,7 +214,9 @@
         "charge_session_consumption",
         "meter_power",
         "zappi_boost_mode",
-        "minimum_green_level"
+        "minimum_green_level",
+        "zappi_boost_kwh",
+        "zappi_boost_time"
       ],
       "capabilitiesOptions": {
         "charge_mode_selector": {
@@ -1597,6 +1599,27 @@
       "step": 1,
       "decimals": 0
     },
+    "zappi_boost_kwh": {
+      "type": "number",
+      "title": {
+        "en": "Boost mode kWh",
+        "no": "Boost-modus kWh",
+        "nl": "Boost-modus kWh",
+        "sv": "Boost-läge kWh",
+        "de": "Boost-Modus kWh"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "%"
+      },
+      "icon": "/assets/kwh_limit.svg",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "decimals": 0
+    },
     "zappi_boost_mode": {
       "type": "enum",
       "title": {
@@ -1642,6 +1665,27 @@
           }
         }
       ]
+    },
+    "zappi_boost_time": {
+      "type": "number",
+      "title": {
+        "en": "Boost mode time",
+        "no": "Boost-modus tid",
+        "nl": "Boost modus tijd",
+        "sv": "Boost-läge tid",
+        "de": "Zeit im Boost-Modus"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "%"
+      },
+      "icon": "/assets/stopwatch.svg",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "decimals": 0
     }
   }
 }
