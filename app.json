@@ -1612,7 +1612,7 @@
       "setable": true,
       "uiComponent": "sensor",
       "units": {
-        "en": "%"
+        "en": "kWh"
       },
       "icon": "/assets/kwh_limit.svg",
       "min": 0,
@@ -1667,7 +1667,7 @@
       ]
     },
     "zappi_boost_time": {
-      "type": "number",
+      "type": "string",
       "title": {
         "en": "Boost mode time",
         "no": "Boost-modus tid",

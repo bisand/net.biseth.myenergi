@@ -11,7 +11,7 @@
     "setable": true,
     "uiComponent": "sensor",
     "units": {
-        "en": "%"
+        "en": "kWh"
     },
     "icon": "/assets/kwh_limit.svg",
     "min": 0,

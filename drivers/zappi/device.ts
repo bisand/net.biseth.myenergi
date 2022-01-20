@@ -388,10 +388,10 @@ export class ZappiDevice extends Device {
     dev._minimumGreenLevel = zappi.mgl ? zappi.mgl : 0;
     dev._chargingCurrent = (dev._chargingVoltage > 0) ? (dev._chargingPower / dev._chargingVoltage) : 0; // P=U*I -> I=P/U
 
-    dev._boostMode = zappi.bsm === 1 && zappi.tbk ? ZappiBoostMode.Manual : zappi.bsm === 1 ? ZappiBoostMode.Smart : ZappiBoostMode.Stop;
+    dev._boostMode = (zappi.bsm === 1 && zappi.tbk ? ZappiBoostMode.Manual : (zappi.bsm === 1 ? ZappiBoostMode.Smart : ZappiBoostMode.Stop));
     dev._boostManualKwh = zappi.tbk ? zappi.tbk : 0;
     dev._boostSmartKwh = zappi.sbk ? zappi.sbk : 0;
-    dev._boostSmartTime = zappi.sbh ? dev.format_two_digits(zappi.sbh) : '00' + ':' + zappi.sbm ? dev.format_two_digits(zappi.sbm) : '00';
+    dev._boostSmartTime = (zappi.sbh ? dev.format_two_digits(zappi.sbh) : '00') + ':' + (zappi.sbm ? dev.format_two_digits(zappi.sbm) : '00');
 
     if (dev._powerCalculationModeSetToAuto) {
       dev._powerCalculationModeSetToAuto = false;
