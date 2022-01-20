@@ -21,6 +21,7 @@ export class ZappiDevice extends Device {
   private _chargerStatus: ZappiStatus = ZappiStatus.EvDisconnected;
   private _boostMode: ZappiBoostMode = ZappiBoostMode.Stop;
   private _lastBoostState: ZappiBoostMode = ZappiBoostMode.Stop;
+  private _boostKwh: number = 0;
   private _chargingPower: number = 0;
   private _chargingVoltage: number = 0;
   private _chargingCurrent: number = 0;
@@ -129,8 +130,9 @@ export class ZappiDevice extends Device {
     const setBoostModeAction = dev.homey.flow.getActionCard('set_boost_mode');
     setBoostModeAction.registerRunListener(async (args, state) => {
       dev.log(`Boost Mode: ${args.boost_mode_txt}, Boost Mode: ${args.boost_mode_kwh}, Boost Mode: ${args.boost_mode_complete_time}`);
-      const kwh = args.boost_mode_kwh as number;
-      const completeTime = args.boost_mode_complete_time;
+      const kwh = args.boost_mode_kwh ? args.boost_mode_kwh as number : 0;
+      const completeTime = dev.roundTimeQuarterHour(args.boost_mode_complete_time ? args.boost_mode_complete_time : '0000');
+      dev.log(`Complete time: ${completeTime}`);
       dev._boostMode = dev.getBoostMode(args.boost_mode_txt);
       dev._lastBoostState = dev._boostMode;
       await dev.setBoostMode(dev._boostMode, kwh, completeTime);
@@ -290,6 +292,22 @@ export class ZappiDevice extends Device {
     return newEnergy;
   }
 
+  private pad(num: number, size: number): string {
+    let res = num.toString();
+    while (res.length < size) res = "0" + res;
+    return res;
+  }
+
+  //TODO Fix round time
+  private roundTimeQuarterHour(time: string): string {
+    var timeToReturn = new Date(time);
+
+    timeToReturn.setMilliseconds(Math.round(timeToReturn.getMilliseconds() / 1000) * 1000);
+    timeToReturn.setSeconds(Math.round(timeToReturn.getSeconds() / 60) * 60);
+    timeToReturn.setMinutes(Math.round(timeToReturn.getMinutes() / 15) * 15);
+    return timeToReturn.toTimeString();
+  }
+
   /**
    * Assign and calculate values from Zappi.
    */
@@ -333,6 +351,8 @@ export class ZappiDevice extends Device {
     dev._minimumGreenLevel = zappi.mgl ? zappi.mgl : 0;
     dev._chargingCurrent = (dev._chargingVoltage > 0) ? (dev._chargingPower / dev._chargingVoltage) : 0; // P=U*I -> I=P/U
 
+    // dev._boostKwh = zappi.tbk;
+    // dev._boostTime = zappi.
     if (dev._powerCalculationModeSetToAuto) {
       dev._powerCalculationModeSetToAuto = false;
       const tmpSettings: any =
@@ -519,7 +539,7 @@ export class ZappiDevice extends Device {
 
       const result = await dev.myenergiClient.setZappiBoostMode(dev.deviceId, boostMode, kWh, completeTime);
       if (result.status !== 0) {
-        throw new Error(result);
+        throw new Error(JSON.stringify(result));
       }
 
       dev.triggerBoostModeFlow(boostMode);
@@ -635,7 +655,7 @@ export class ZappiDevice extends Device {
     else if (value == ZappiStatus.WaitingForEv)
       return ZappiStatusText.WaitingForEv;
     else
-    throw new Error(`Invalid charger status ${value}`);
+      throw new Error(`Invalid charger status ${value}`);
   }
 
   /**

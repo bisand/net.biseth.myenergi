@@ -159,14 +159,14 @@
                     }
                 },
                 {
-                    "type": "number",
+                    "type": "text",
                     "name": "boost_mode_complete_time",
                     "required": false,
                     "title": {
                         "en": "Complete time"
                     },
                     "placeholder": {
-                        "en": "Boost until (HHMM)"
+                        "en": "Until (HHMM) 15 min interval"
                     }
                 }
             ]
