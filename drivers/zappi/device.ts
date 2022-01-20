@@ -62,7 +62,7 @@ export class ZappiDevice extends Device {
     try {
       // Collect data.
       dev.myenergiClient = dev._app.clients[dev.myenergiClientId];
-      const zappi: Zappi | null = await dev.myenergiClient.getStatusZappi(dev.deviceId);
+      const zappi = await dev.myenergiClient?.getStatusZappi(dev.deviceId).catch(dev.error);
       if (zappi) {
         dev.calculateValues(zappi); // P=U*I -> I=P/U
         if (dev._chargeMode !== ZappiChargeMode.Off) {
@@ -510,7 +510,7 @@ export class ZappiDevice extends Device {
   private async setChargerState(isOn: boolean): Promise<void> {
     const dev: ZappiDevice = this;
     try {
-      const result = await dev.myenergiClient.setZappiChargeMode(dev.deviceId, isOn ? dev._lastOnState : ZappiChargeMode.Off);
+      const result = await dev.myenergiClient?.setZappiChargeMode(dev.deviceId, isOn ? dev._lastOnState : ZappiChargeMode.Off);
       if (result.status !== 0) {
         throw new Error(result);
       }
@@ -529,7 +529,7 @@ export class ZappiDevice extends Device {
   private async setMinimumGreenLevel(value: number): Promise<void> {
     const dev: ZappiDevice = this;
     try {
-      const result = await dev.myenergiClient.setZappiGreenLevel(dev.deviceId, value);
+      const result = await dev.myenergiClient?.setZappiGreenLevel(dev.deviceId, value);
       if (result.mgl !== value) {
         throw new Error(JSON.stringify(result));
       }
@@ -554,7 +554,7 @@ export class ZappiDevice extends Device {
       dev.setCapabilityValue('charge_mode_selector', `${chargeMode}`).catch(dev.error);
       dev.setCapabilityValue('charge_mode_txt', `${dev.getChargeModeText(chargeMode)}`).catch(dev.error);
 
-      const result = await dev.myenergiClient.setZappiChargeMode(dev.deviceId, chargeMode);
+      const result = await dev.myenergiClient?.setZappiChargeMode(dev.deviceId, chargeMode);
       if (result.status !== 0) {
         throw new Error(result);
       }
@@ -579,7 +579,7 @@ export class ZappiDevice extends Device {
       dev.setCapabilityValue('zappi_boost_kwh', kWh ? kWh : 0).catch(dev.error);
       dev.setCapabilityValue('zappi_boost_time', `${dev.getBoostModeTime(completeTime ? completeTime : '0000')}`).catch(dev.error);
 
-      const result = await dev.myenergiClient.setZappiBoostMode(dev.deviceId, boostMode, kWh, completeTime);
+      const result = await dev.myenergiClient?.setZappiBoostMode(dev.deviceId, boostMode, kWh, completeTime);
       if (result.status !== 0) {
         throw new Error(JSON.stringify(result));
       }
@@ -729,7 +729,7 @@ export class ZappiDevice extends Device {
       dev._settings.powerCalculationMode = newSettings.powerCalculationMode;
       if (newSettings.powerCalculationMode === "automatic") {
         dev._powerCalculationModeSetToAuto = true;
-        const zappi = await dev.myenergiClient.getStatusZappi(dev.deviceId);
+        const zappi = await dev.myenergiClient?.getStatusZappi(dev.deviceId).catch(dev.error);
         if (zappi) {
           dev.log(zappi);
           const tmpSettings: any =

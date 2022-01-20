@@ -49,9 +49,10 @@ export class MyEnergiApp extends Homey.App {
         this.log(`Fetching data for ${c}`);
         const client: MyEnergi = this.clients[c] as MyEnergi;
         const data = await client.getStatusAll().catch(this.error);
-        this._dataUpdateCallbacks.forEach(callback => {
-          callback(data);
-        });
+        if (data)
+          this._dataUpdateCallbacks.forEach(callback => {
+            callback(data);
+          });
       });
     }
     this._dataUpdateId = setTimeout(() => {

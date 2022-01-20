@@ -108,22 +108,18 @@ export class ZappiDriver extends Driver {
   }
 
   private async loadZappiDevices(): Promise<ZappiData[]> {
-    try {
-      for (const key in this._app.clients) {
-        if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
-          const client = this._app.clients[key];
-          const zappis: ZappiData[] = await client.getStatusZappiAll();
-          for (const zappi of zappis) {
-            if (this.zappiDevices.findIndex((z: ZappiData) => z.sno === zappi.sno) === -1) {
-              zappi.myenergiClientId = key;
-              this.zappiDevices.push(zappi);
-            }
+    for (const key in this._app.clients) {
+      if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
+        const client = this._app.clients[key];
+        const zappis: ZappiData[] = await client.getStatusZappiAll();
+        for (const zappi of zappis) {
+          if (this.zappiDevices.findIndex((z: ZappiData) => z.sno === zappi.sno) === -1) {
+            zappi.myenergiClientId = key;
+            this.zappiDevices.push(zappi);
           }
-          return this.zappiDevices;
         }
+        return this.zappiDevices;
       }
-    } catch (error) {
-      this.error(error);
     }
     return [];
   }
@@ -151,22 +147,12 @@ export class ZappiDriver extends Driver {
    * This should return an array with the data of devices that are available for pairing.
    */
   public async onPairListDevices() {
-    return this.getZappiDevices();
-  }
-
-  public async onPair(session: any) {
-    session.setHandler('list_devices', () => {
-      const devices = this.getZappiDevices();
-
-      // you can emit when devices are still being searched
-      // session.emit("list_devices", devices);
-      // return devices when searching is done
-      return devices;
-      // when no devices are found, return an empty array
-      // return [];
-      // or throw an Error to show that instead
-      // throw new Error('Something bad has occured!');
-    });
+    try {
+      const devs = await this.getZappiDevices();
+      return devs ? devs : [];
+    } catch (error) {
+      throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`);
+    }
   }
 
 }
