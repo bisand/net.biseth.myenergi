@@ -13,5 +13,14 @@
             ],
             "type": "pwa-node"
         },
+        {
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Homey",
+			"address": "192.168.86.49",
+			"port": 9229,
+			"localRoot": "${workspaceFolder}",
+			"remoteRoot": "/"
+		}
     ]
 }

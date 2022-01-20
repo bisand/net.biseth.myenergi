@@ -1,5 +1,7 @@
-import { Driver } from 'homey';
+import { Driver, FlowCardTriggerDevice } from 'homey';
 import { MyEnergiApp } from '../../app';
+import { Capability } from '../../models/Capability';
+import { CapabilityType } from '../../models/CapabilityType';
 import { ZappiData } from './ZappiData';
 
 export class ZappiDriver extends Driver {
@@ -7,27 +9,40 @@ export class ZappiDriver extends Driver {
   private _app!: MyEnergiApp;
 
   private _dataUpdateCallbacks: any[] = [];
-  private _chargingStarted: any;
-  private _chargingStopped: any;
-  private readonly _capabilities: string[] = [
-    'onoff',
-    'charge_mode_selector',
-    'button.reset_meter',
-    'charge_mode',
-    'charge_mode_txt',
-    'charger_status',
-    'charger_status_txt',
-    'measure_power',
-    'measure_current',
-    'measure_voltage',
-    'measure_frequency',
-    'charge_session_consumption',
-    'meter_power',
+  private _chargingStarted!: FlowCardTriggerDevice;
+  private _chargingStopped!: FlowCardTriggerDevice;
+  private _chargeModeChanged!: FlowCardTriggerDevice;
+  private _boostModeChanged!: FlowCardTriggerDevice;
+
+  private _capabilities: Capability[] = [
+    new Capability('onoff', CapabilityType.Control, 1),
+    new Capability('charge_mode_selector', CapabilityType.Control, 2),
+    new Capability('button.reset_meter', CapabilityType.Control, 3),
+    new Capability('button.reload_capabilities', CapabilityType.Control, 4),
+    new Capability('set_minimum_green_level', CapabilityType.Control, 5),
+    new Capability('charge_mode', CapabilityType.Sensor, 6),
+    new Capability('charge_mode_txt', CapabilityType.Sensor, 7),
+    new Capability('charger_status', CapabilityType.Sensor, 8),
+    new Capability('charger_status_txt', CapabilityType.Sensor, 9),
+    new Capability('charge_session_consumption', CapabilityType.Sensor, 10),
+    new Capability('meter_power', CapabilityType.Sensor, 11),
+    new Capability('measure_power', CapabilityType.Sensor, 12),
+    new Capability('measure_current', CapabilityType.Sensor, 13),
+    new Capability('measure_voltage', CapabilityType.Sensor, 14),
+    new Capability('measure_frequency', CapabilityType.Sensor, 15),
+    new Capability('zappi_boost_mode', CapabilityType.Sensor, 16),
+    new Capability('minimum_green_level', CapabilityType.Sensor, 17),
+    new Capability('zappi_boost_kwh', CapabilityType.Sensor, 18),
+    new Capability('zappi_boost_time', CapabilityType.Sensor, 19),
   ];
 
   public zappiDevices: ZappiData[] = [];
   public get capabilities(): string[] {
-    return this._capabilities;
+    return this._capabilities.sort((x, y) => x.order - y.order).map(value => value.name);
+  }
+
+  public get capabilityObjects(): Capability[] {
+    return this._capabilities.sort((x, y) => x.order - y.order);
   }
 
   /**
@@ -38,6 +53,8 @@ export class ZappiDriver extends Driver {
     this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this._chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
     this._chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
+    this._chargeModeChanged = this.homey.flow.getDeviceTriggerCard('charge_mode_changed');
+    this._boostModeChanged = this.homey.flow.getDeviceTriggerCard('boost_mode_changed');
     this.log('ZappiDriver has been initialized');
   }
 
@@ -52,6 +69,20 @@ export class ZappiDriver extends Driver {
     this._chargingStopped
       .trigger(device, tokens, state)
       .then((x: any) => this.log(`triggerChargingStoppedFlow: ${x}`))
+      .catch(this.error);
+  }
+
+  public triggerChargeModeFlow(device: any, tokens: any, state: any) {
+    this._chargeModeChanged
+      .trigger(device, tokens, state)
+      .then((x: any) => this.log(`triggerChargeModeFlow: ${x}`))
+      .catch(this.error);
+  }
+
+  public triggerBoostModeFlow(device: any, tokens: any, state: any) {
+    this._boostModeChanged
+      .trigger(device, tokens, state)
+      .then((x: any) => this.log(`triggerBoostModeFlow: ${x}`))
       .catch(this.error);
   }
 
@@ -76,26 +107,26 @@ export class ZappiDriver extends Driver {
     }
   }
 
-  private async loadZappiDevices() {
-    const res = new Promise((resolve, reject) => {
-      Object.keys(this._app.clients).forEach(async (key, i, arr) => {
+  private async loadZappiDevices(): Promise<ZappiData[]> {
+    for (const key in this._app.clients) {
+      if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
         const client = this._app.clients[key];
         const zappis: ZappiData[] = await client.getStatusZappiAll();
-        zappis.forEach((zappi: ZappiData) => {
+        for (const zappi of zappis) {
           if (this.zappiDevices.findIndex((z: ZappiData) => z.sno === zappi.sno) === -1) {
             zappi.myenergiClientId = key;
             this.zappiDevices.push(zappi);
           }
-        });
-        resolve(this.zappiDevices);
-      });
-    });
-    return res;
+        }
+        return this.zappiDevices;
+      }
+    }
+    return [];
   }
 
   private async getZappiDevices() {
-    await this.loadZappiDevices();
-    return this.zappiDevices.map((v, i, a) => {
+    const zappiDevices = await this.loadZappiDevices();
+    return zappiDevices.map((v, i, a) => {
       return {
         name: `Zappi ${v.sno}`,
         data: { id: v.sno },
@@ -103,7 +134,7 @@ export class ZappiDriver extends Driver {
         store: {
           myenergiClientId: v.myenergiClientId,
         },
-        capabilities: this._capabilities,
+        capabilities: this.capabilities,
         capabilitiesOptions: {
         },
       };
@@ -116,22 +147,12 @@ export class ZappiDriver extends Driver {
    * This should return an array with the data of devices that are available for pairing.
    */
   public async onPairListDevices() {
-    return this.getZappiDevices();
-  }
-
-  public async onPair(session: any) {
-    session.setHandler('list_devices', () => {
-      const devices = this.getZappiDevices();
-
-      // you can emit when devices are still being searched
-      // session.emit("list_devices", devices);
-      // return devices when searching is done
-      return devices;
-      // when no devices are found, return an empty array
-      // return [];
-      // or throw an Error to show that instead
-      // throw new Error('Something bad has occured!');
-    });
+    try {
+      const devs = await this.getZappiDevices();
+      return devs ? devs : [];
+    } catch (error) {
+      throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`);
+    }
   }
 
 }

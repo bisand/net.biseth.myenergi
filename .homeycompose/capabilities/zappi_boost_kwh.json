@@ -1,0 +1,21 @@
+{
+    "type": "number",
+    "title": {
+        "en": "Boost mode kWh",
+        "no": "Boost-modus kWh",
+        "nl": "Boost-modus kWh",
+        "sv": "Boost-läge kWh",
+        "de": "Boost-Modus kWh"
+    },
+    "getable": true,
+    "setable": true,
+    "uiComponent": "sensor",
+    "units": {
+        "en": "kWh"
+    },
+    "icon": "/assets/kwh_limit.svg",
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "decimals": 0
+}

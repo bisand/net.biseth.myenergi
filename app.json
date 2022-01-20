@@ -200,7 +200,9 @@
       "capabilities": [
         "onoff",
         "charge_mode_selector",
+        "set_minimum_green_level",
         "button.reset_meter",
+        "button.reload_capabilities",
         "charge_mode",
         "charge_mode_txt",
         "charger_status",
@@ -210,9 +212,21 @@
         "measure_voltage",
         "measure_frequency",
         "charge_session_consumption",
-        "meter_power"
+        "meter_power",
+        "zappi_boost_mode",
+        "minimum_green_level",
+        "zappi_boost_kwh",
+        "zappi_boost_time"
       ],
       "capabilitiesOptions": {
+        "charge_mode_selector": {
+          "preventTag": true,
+          "preventInsights": true
+        },
+        "set_minimum_green_level": {
+          "preventTag": true,
+          "preventInsights": true
+        },
         "button.reset_meter": {
           "maintenanceAction": true,
           "title": {
@@ -228,6 +242,15 @@
             "nl": "Reset het geaccumuleerde stroomverbruik (kWh), dit kan niet worden hersteld.",
             "de": "Setzen Sie den kumulierten Stromverbrauch zurück (kWh), dieser kann nicht wiederhergestellt werden.",
             "se": "Återställ den ackumulerade strömförbrukningen (kWh), detta kan inte återställas"
+          }
+        },
+        "button.reload_capabilities": {
+          "maintenanceAction": true,
+          "title": {
+            "en": "Reload capabilities"
+          },
+          "desc": {
+            "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
           }
         }
       },
@@ -450,6 +473,78 @@
             "filter": "driver_id=zappi"
           }
         ]
+      },
+      {
+        "id": "charge_mode_changed",
+        "title": {
+          "en": "Charge mode changed",
+          "no": "Lademodus endret",
+          "nl": "Laadmodus veranderde",
+          "sv": "Laddningsläget ändrats",
+          "de": "Lademodus geändert"
+        },
+        "hint": {
+          "en": "When Zappi changed the charge mode",
+          "no": "Da Zappi endret lademodusen",
+          "nl": "Wanneer Zappi de laadmodus veranderde",
+          "sv": "När Zappi bytte laddningsläge",
+          "de": "Wenn Zappi den Lademodus geändert hat"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "charger_status_changed",
+        "title": {
+          "en": "Charger status changed",
+          "no": "Laderstatus endret",
+          "nl": "Status van oplader gewijzigd",
+          "sv": "Laddarens status har ändrats",
+          "de": "Status des Ladegeräts geändert"
+        },
+        "hint": {
+          "en": "When Zappi changed the charger status",
+          "no": "Da Zappi endret lademodusen",
+          "nl": "Wanneer Zappi de status van de oplader veranderde",
+          "sv": "När Zappi ändrade laddarens status",
+          "de": "Wenn Zappi den Ladezustand geändert hat "
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "boost_mode_changed",
+        "title": {
+          "en": "Boost mode changed",
+          "no": "Boost-modus endret",
+          "nl": "Boost-modus gewijzigd",
+          "sv": "Boost-läge har ändrats",
+          "de": "Boost-modus geändert"
+        },
+        "hint": {
+          "en": "When Zappi changed the boost mode",
+          "no": "Da Zappi endret boost-modus",
+          "nl": "Wanneer Zappi de boost-mode veranderde",
+          "sv": "När Zappi ändrade laddarens boost-läge",
+          "de": "Wenn Zappi den boost-modus geändert hat "
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
       }
     ],
     "conditions": [
@@ -510,6 +605,177 @@
             "type": "device",
             "name": "device",
             "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "set_charge_mode",
+        "title": {
+          "en": "Charge Mode",
+          "no": "Lademodus",
+          "nl": "Laadmodus",
+          "sv": "Laddningsläge",
+          "de": "Lademodus"
+        },
+        "titleFormatted": {
+          "en": "Set charge mode to [[charge_mode_txt]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "text",
+            "name": "charge_mode_txt",
+            "title": {
+              "en": "Charge Mode"
+            },
+            "placeholder": {
+              "en": "FAST, ECO, ECO_PLUS or OFF"
+            }
+          }
+        ]
+      },
+      {
+        "id": "set_minimum_green_level",
+        "title": {
+          "en": "Minimum green level",
+          "no": "Minimum grønt niva",
+          "nl": "Minimaal groen niveau",
+          "sv": "Minsta gröna nivå",
+          "de": "Minimaler Grünpegel"
+        },
+        "titleFormatted": {
+          "en": "Set minimum green level to [[minimum_green_level]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "number",
+            "name": "minimum_green_level",
+            "title": {
+              "en": "Minimum green level"
+            },
+            "placeholder": {
+              "en": "Min % green power"
+            },
+            "min": 0,
+            "max": 100,
+            "step": 1
+          }
+        ]
+      },
+      {
+        "id": "select_charge_mode",
+        "title": {
+          "en": "Select Charge Mode",
+          "no": "Velg Lademodus",
+          "nl": "Selecteer Laadmodus",
+          "sv": "Välj Laddningsläge",
+          "de": "Lademodus wählen"
+        },
+        "titleFormatted": {
+          "en": "Select charge mode to [[charge_mode_selector]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "dropdown",
+            "name": "charge_mode_selector",
+            "title": {
+              "en": "Select Charge Mode"
+            },
+            "placeholder": {
+              "en": "Select a value"
+            },
+            "values": [
+              {
+                "id": "FAST",
+                "label": {
+                  "en": "Fast"
+                }
+              },
+              {
+                "id": "ECO",
+                "label": {
+                  "en": "Eco"
+                }
+              },
+              {
+                "id": "ECO_PLUS",
+                "label": {
+                  "en": "Eco+"
+                }
+              },
+              {
+                "id": "OFF",
+                "label": {
+                  "en": "Off"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_boost_mode",
+        "title": {
+          "en": "Boost Mode",
+          "no": "Boost-modus",
+          "nl": "Boost-modus",
+          "sv": "Boost-läge",
+          "de": "Boost-modus"
+        },
+        "titleFormatted": {
+          "en": "Set Boost mode to [[boost_mode_txt]]. End boost after [[boost_mode_kwh]] or [[boost_mode_complete_time]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "text",
+            "name": "boost_mode_txt",
+            "title": {
+              "en": "Boost Mode"
+            },
+            "placeholder": {
+              "en": "MANUAL, SMART or STOP"
+            }
+          },
+          {
+            "type": "number",
+            "name": "boost_mode_kwh",
+            "required": false,
+            "title": {
+              "en": "kWh"
+            },
+            "placeholder": {
+              "en": "Number of kWh to boost"
+            }
+          },
+          {
+            "type": "text",
+            "name": "boost_mode_complete_time",
+            "required": false,
+            "title": {
+              "en": "Complete time"
+            },
+            "placeholder": {
+              "en": "Until (HHMM) 15 min interval"
+            }
           }
         ]
       }
@@ -1298,6 +1564,125 @@
       "icon": "/assets/solar_panel.svg",
       "min": 0,
       "decimals": 2
+    },
+    "minimum_green_level": {
+      "type": "number",
+      "title": {
+        "en": "Minimum green level"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "%"
+      },
+      "icon": "/assets/solar_recycle.svg",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "decimals": 0
+    },
+    "set_minimum_green_level": {
+      "type": "number",
+      "title": {
+        "en": "Set minimum green level"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "slider",
+      "units": {
+        "en": "%"
+      },
+      "icon": "/assets/solar_recycle.svg",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "decimals": 0
+    },
+    "zappi_boost_kwh": {
+      "type": "number",
+      "title": {
+        "en": "Boost mode kWh",
+        "no": "Boost-modus kWh",
+        "nl": "Boost-modus kWh",
+        "sv": "Boost-läge kWh",
+        "de": "Boost-Modus kWh"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "kWh"
+      },
+      "icon": "/assets/kwh_limit.svg",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "decimals": 0
+    },
+    "zappi_boost_mode": {
+      "type": "enum",
+      "title": {
+        "en": "Boost mode",
+        "no": "Boost-modus",
+        "nl": "Boost-modus",
+        "sv": "Boost-läge",
+        "de": "Boost-Modus"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/rocket.svg",
+      "values": [
+        {
+          "id": "STOP",
+          "title": {
+            "en": "Stop",
+            "no": "Stopp",
+            "nl": "Stoppen",
+            "sv": "Stopp",
+            "de": "Halt"
+          }
+        },
+        {
+          "id": "MANUAL",
+          "title": {
+            "en": "Manual",
+            "no": "Manuell",
+            "nl": "Handmatige",
+            "sv": "Manuell",
+            "de": "Manuelles"
+          }
+        },
+        {
+          "id": "SMART",
+          "title": {
+            "en": "Smart",
+            "no": "Smart",
+            "nl": "Smart",
+            "sv": "Smart",
+            "de": "Smart"
+          }
+        }
+      ]
+    },
+    "zappi_boost_time": {
+      "type": "string",
+      "title": {
+        "en": "Boost mode time",
+        "no": "Boost-modus tid",
+        "nl": "Boost modus tijd",
+        "sv": "Boost-läge tid",
+        "de": "Zeit im Boost-Modus"
+      },
+      "getable": true,
+      "setable": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/stopwatch.svg",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "decimals": 0
     }
   }
 }

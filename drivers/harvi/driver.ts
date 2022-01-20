@@ -94,21 +94,6 @@ export class HarviDriver extends Driver {
     return this.getHarviDevices();
   }
 
-  public async onPair(session: any) {
-    session.setHandler('list_devices', () => {
-      const devices = this.getHarviDevices();
-
-      // you can emit when devices are still being searched
-      // session.emit("list_devices", devices);
-      // return devices when searching is done
-      return devices;
-      // when no devices are found, return an empty array
-      // return [];
-      // or throw an Error to show that instead
-      // throw new Error('Something bad has occured!');
-    });
-  }
-
 }
 
 module.exports = HarviDriver;

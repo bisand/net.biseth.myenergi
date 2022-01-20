@@ -1,0 +1,17 @@
+{
+    "type": "number",
+    "title": {
+        "en": "Minimum green level"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "units": {
+        "en": "%"
+    },
+    "icon": "/assets/solar_recycle.svg",
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "decimals": 0
+}
