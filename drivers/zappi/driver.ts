@@ -107,26 +107,30 @@ export class ZappiDriver extends Driver {
     }
   }
 
-  private async loadZappiDevices() {
-    const res = new Promise((resolve, reject) => {
-      Object.keys(this._app.clients).forEach(async (key, i, arr) => {
-        const client = this._app.clients[key];
-        const zappis: ZappiData[] = await client.getStatusZappiAll();
-        zappis.forEach((zappi: ZappiData) => {
-          if (this.zappiDevices.findIndex((z: ZappiData) => z.sno === zappi.sno) === -1) {
-            zappi.myenergiClientId = key;
-            this.zappiDevices.push(zappi);
+  private async loadZappiDevices(): Promise<ZappiData[]> {
+    try {
+      for (const key in this._app.clients) {
+        if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
+          const client = this._app.clients[key];
+          const zappis: ZappiData[] = await client.getStatusZappiAll();
+          for (const zappi of zappis) {
+            if (this.zappiDevices.findIndex((z: ZappiData) => z.sno === zappi.sno) === -1) {
+              zappi.myenergiClientId = key;
+              this.zappiDevices.push(zappi);
+            }
           }
-        });
-        resolve(this.zappiDevices);
-      });
-    });
-    return res;
+          return this.zappiDevices;
+        }
+      }
+    } catch (error) {
+      this.error(error);
+    }
+    return [];
   }
 
   private async getZappiDevices() {
-    await this.loadZappiDevices();
-    return this.zappiDevices.map((v, i, a) => {
+    const zappiDevices = await this.loadZappiDevices();
+    return zappiDevices.map((v, i, a) => {
       return {
         name: `Zappi ${v.sno}`,
         data: { id: v.sno },
