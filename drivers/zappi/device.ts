@@ -21,7 +21,9 @@ export class ZappiDevice extends Device {
   private _chargerStatus: ZappiStatus = ZappiStatus.EvDisconnected;
   private _boostMode: ZappiBoostMode = ZappiBoostMode.Stop;
   private _lastBoostState: ZappiBoostMode = ZappiBoostMode.Stop;
-  private _boostKwh: number = 0;
+  private _boostManualKwh: number = 0;
+  private _boostSmartKwh: number = 0;
+  private _boostSmartTime: string = '';
   private _chargingPower: number = 0;
   private _chargingVoltage: number = 0;
   private _chargingCurrent: number = 0;
@@ -131,7 +133,7 @@ export class ZappiDevice extends Device {
     setBoostModeAction.registerRunListener(async (args, state) => {
       dev.log(`Boost Mode: ${args.boost_mode_txt}, Boost Mode: ${args.boost_mode_kwh}, Boost Mode: ${args.boost_mode_complete_time}`);
       const kwh = args.boost_mode_kwh ? args.boost_mode_kwh as number : 0;
-      const completeTime = dev.roundTimeQuarterHour(args.boost_mode_complete_time ? args.boost_mode_complete_time : '0000');
+      const completeTime = dev.getValidBoostTime(args.boost_mode_complete_time ? args.boost_mode_complete_time : '0000');
       dev.log(`Complete time: ${completeTime}`);
       dev._boostMode = dev.getBoostMode(args.boost_mode_txt);
       dev._lastBoostState = dev._boostMode;
@@ -274,6 +276,9 @@ export class ZappiDevice extends Device {
     dev.setCapabilityValue('meter_power', dev.calculateEnergy()).catch(dev.error);
     dev.setCapabilityValue('minimum_green_level', dev._minimumGreenLevel).catch(dev.error);
     dev.setCapabilityValue('set_minimum_green_level', dev._minimumGreenLevel).catch(dev.error);
+    dev.setCapabilityValue('zappi_boost_mode', `${dev.getBoostModeText(dev._boostMode)}`).catch(dev.error);
+    dev.setCapabilityValue('zappi_boost_kwh', dev._boostMode === ZappiBoostMode.Manual ? dev._boostManualKwh : dev._boostMode === ZappiBoostMode.Smart ? dev._boostSmartKwh : 0).catch(dev.error);
+    dev.setCapabilityValue('zappi_boost_time', `${dev._boostSmartTime}`).catch(dev.error);
   }
 
   /**
@@ -292,20 +297,52 @@ export class ZappiDevice extends Device {
     return newEnergy;
   }
 
-  private pad(num: number, size: number): string {
-    let res = num.toString();
-    while (res.length < size) res = "0" + res;
-    return res;
+  /**
+   * Convert a number to a two digit string.
+   * @param n Number to be converted to a two digit representation.
+   * @returns String containing the two digit representation of the provided number.
+   */
+  private format_two_digits(n: number): string {
+    return n < 10 ? '0' + n.toString() : n.toString();
   }
 
-  //TODO Fix round time
-  private roundTimeQuarterHour(time: string): string {
-    var timeToReturn = new Date(time);
+  private getBoostModeTime(value: string): string {
+    value = value ? value : '0000';
+    while (value.length < 4) {
+      value = '0' + value;
+    }
+    return value.slice(0, 2) + ':' + value.slice(2);
+  }
 
-    timeToReturn.setMilliseconds(Math.round(timeToReturn.getMilliseconds() / 1000) * 1000);
-    timeToReturn.setSeconds(Math.round(timeToReturn.getSeconds() / 60) * 60);
-    timeToReturn.setMinutes(Math.round(timeToReturn.getMinutes() / 15) * 15);
-    return timeToReturn.toTimeString();
+
+  /**
+   * Takes a time string and tries to validate it and return valid representation of a boost time. Zappi only allows time devided in 15 minutes.
+   * @param timeString Must be a string in the time format HHMM
+   * @returns Valid boost time string
+   */
+  private getValidBoostTime(timeString: string): string {
+    const dev: ZappiDevice = this;
+    try {
+      var timeString = timeString.replace(/\D+/g, '');
+      while (timeString.length < 4) {
+        timeString = '0' + timeString;
+      }
+      timeString = timeString.substring(timeString.length - 4);
+      let d = new Date();
+      d.setHours(Number(timeString.substring(0, 2)), Number(timeString.substring(2, 4)), 0)
+      d.setMilliseconds(Math.round(d.getMilliseconds() / 1000) * 1000);
+      d.setSeconds(Math.round(d.getSeconds() / 60) * 60);
+      d.setMinutes(Math.round(d.getMinutes() / 15) * 15);
+
+      let hours = this.format_two_digits(d.getHours());
+      let minutes = this.format_two_digits(d.getMinutes());
+
+      return `${hours}${minutes}`;
+
+    } catch (error) {
+      dev.error(error);
+    }
+    return '0000';
   }
 
   /**
@@ -351,8 +388,11 @@ export class ZappiDevice extends Device {
     dev._minimumGreenLevel = zappi.mgl ? zappi.mgl : 0;
     dev._chargingCurrent = (dev._chargingVoltage > 0) ? (dev._chargingPower / dev._chargingVoltage) : 0; // P=U*I -> I=P/U
 
-    // dev._boostKwh = zappi.tbk;
-    // dev._boostTime = zappi.
+    dev._boostMode = zappi.bsm === 1 && zappi.tbk ? ZappiBoostMode.Manual : zappi.bsm === 1 ? ZappiBoostMode.Smart : ZappiBoostMode.Stop;
+    dev._boostManualKwh = zappi.tbk ? zappi.tbk : 0;
+    dev._boostSmartKwh = zappi.sbk ? zappi.sbk : 0;
+    dev._boostSmartTime = zappi.sbh ? dev.format_two_digits(zappi.sbh) : '00' + ':' + zappi.sbm ? dev.format_two_digits(zappi.sbm) : '00';
+
     if (dev._powerCalculationModeSetToAuto) {
       dev._powerCalculationModeSetToAuto = false;
       const tmpSettings: any =
@@ -536,6 +576,8 @@ export class ZappiDevice extends Device {
 
     try {
       dev.setCapabilityValue('zappi_boost_mode', `${dev.getBoostModeText(boostMode)}`).catch(dev.error);
+      dev.setCapabilityValue('zappi_boost_kwh', kWh ? kWh : 0).catch(dev.error);
+      dev.setCapabilityValue('zappi_boost_time', `${dev.getBoostModeTime(completeTime ? completeTime : '0000')}`).catch(dev.error);
 
       const result = await dev.myenergiClient.setZappiBoostMode(dev.deviceId, boostMode, kWh, completeTime);
       if (result.status !== 0) {
