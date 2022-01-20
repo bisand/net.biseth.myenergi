@@ -277,7 +277,7 @@ export class ZappiDevice extends Device {
     dev.setCapabilityValue('minimum_green_level', dev._minimumGreenLevel).catch(dev.error);
     dev.setCapabilityValue('set_minimum_green_level', dev._minimumGreenLevel).catch(dev.error);
     dev.setCapabilityValue('zappi_boost_mode', `${dev.getBoostModeText(dev._boostMode)}`).catch(dev.error);
-    dev.setCapabilityValue('zappi_boost_kwh', dev._boostMode === ZappiBoostMode.Manual ? dev._boostManualKwh : dev._boostMode === ZappiBoostMode.Smart ? dev._boostSmartKwh : 0).catch(dev.error);
+    dev.setCapabilityValue('zappi_boost_kwh', (dev._boostMode === ZappiBoostMode.Manual ? dev._boostManualKwh : (dev._boostMode === ZappiBoostMode.Smart ? dev._boostSmartKwh : 0))).catch(dev.error);
     dev.setCapabilityValue('zappi_boost_time', `${dev._boostSmartTime}`).catch(dev.error);
   }
 
