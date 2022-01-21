@@ -13,5 +13,8 @@
   },
   "1.3.0": {
     "en": "Added total energy consumption (power meter) to Zappi"
+  },
+  "1.4.0": {
+    "en": "Added more human readable variables and tags (#13). Added THEN cards to support charge mode and boost mode (#17). Added slider to manually set min. green level. Reordered the sensor page and some bug fixes."
   }
 }
