@@ -197,7 +197,7 @@ export class ZappiDevice extends Device {
    */
   private async InitializeCapabilities(): Promise<void> {
     const dev: ZappiDevice = this;
-    await this.setUnavailable().catch(dev.error);
+    await this.setUnavailable('Zappi is currently doing some maintenance taks and will be back shortly.').catch(dev.error);
     dev.log(`****** Initializing Zappi sensor capabilities ******`);
     const caps = dev.getCapabilities();
     const tmpCaps: any = {};
