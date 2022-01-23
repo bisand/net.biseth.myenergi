@@ -108,9 +108,6 @@ export class ZappiDriver extends Driver {
   }
 
   private async loadZappiDevices(): Promise<ZappiData[]> {
-    if (!this._app.clients || this._app.clients.length < 1)
-      throw new Error("Can not find any myenergi hubs. Please add the hub credentials under myenergi app settings.");
-
     for (const key in this._app.clients) {
       if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
         const client = this._app.clients[key];
@@ -150,6 +147,9 @@ export class ZappiDriver extends Driver {
    * This should return an array with the data of devices that are available for pairing.
    */
   public async onPairListDevices() {
+    if (!this._app.clients || this._app.clients.length < 1)
+      throw new Error("Can not find any myenergi hubs. Please add the hub credentials under myenergi app settings.");
+
     try {
       const devs = await this.getZappiDevices();
       return devs ? devs : [];
