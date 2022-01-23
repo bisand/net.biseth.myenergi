@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "net.biseth.myenergi",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#2bcc64",
@@ -95,7 +95,7 @@
     "url": "https://github.com/bisand/net.biseth.myenergi/issues"
   },
   "source": "https://github.com/bisand/net.biseth.myenergi",
-  "homepage": "https://myenergi.com",
+  "homepage": "https://github.com/bisand/net.biseth.myenergi",
   "support": "https://github.com/bisand/net.biseth.myenergi/issues",
   "contributors": {
     "translators": [
