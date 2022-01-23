@@ -20,7 +20,7 @@
     "typescript": "^4.5.4"
   },
   "dependencies": {
-    "myenergi-api": "^0.9.4",
+    "myenergi-api": "^1.0.2",
     "source-map-support": "^0.5.21"
   }
 }
