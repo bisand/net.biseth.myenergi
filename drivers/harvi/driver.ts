@@ -51,26 +51,26 @@ export class HarviDriver extends Driver {
     }
   }
 
-  private async loadHarviDevices() {
-    const res = new Promise((resolve, reject) => {
-      Object.keys(this._app.clients).forEach(async (key, i, arr) => {
+  private async loadHarviDevices(): Promise<HarviData[]> {
+    for (const key in this._app.clients) {
+      if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
         const client = this._app.clients[key];
         const harvis: HarviData[] = await client.getStatusHarviAll();
-        harvis.forEach((harvi: HarviData) => {
-          if (this.harviDevices.findIndex(h => h.sno === harvi.sno) === -1) {
+        for (const harvi of harvis) {
+          if (this.harviDevices.findIndex((h: HarviData) => h.sno === harvi.sno) === -1) {
             harvi.myenergiClientId = key;
             this.harviDevices.push(harvi);
           }
-        });
-        resolve(this.harviDevices);
-      });
-    });
-    return res;
+        }
+        return this.harviDevices;
+      }
+    }
+    return [];
   }
 
   private async getHarviDevices() {
-    await this.loadHarviDevices();
-    return this.harviDevices.map((v, i, a) => {
+    const harviDevices = await this.loadHarviDevices();
+    return harviDevices.map((v, i, a) => {
       return {
         name: `Harvi ${v.sno}`,
         data: { id: v.sno },
@@ -91,7 +91,15 @@ export class HarviDriver extends Driver {
    * This should return an array with the data of devices that are available for pairing.
    */
   public async onPairListDevices() {
-    return this.getHarviDevices();
+    if (!this._app.clients || this._app.clients.length < 1)
+      throw new Error("Can not find any myenergi hubs. Please add the hub credentials under myenergi app settings.");
+
+    try {
+      const devs = await this.getHarviDevices();
+      return devs ? devs : [];
+    } catch (error) {
+      throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`);
+    }
   }
 
 }
