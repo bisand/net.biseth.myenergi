@@ -3,7 +3,7 @@
 [![DeepScan grade](https://deepscan.io/api/teams/16513/projects/19834/branches/520482/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=16513&pid=19834&bid=520482)
 ![GitHub](https://img.shields.io/github/license/bisand/net.biseth.myenergi?link=https://github.com/bisand/net.biseth.myenergi/blob/master/LICENSE)
 ![GitHub last commit](https://img.shields.io/github/last-commit/bisand/net.biseth.myenergi?link=https://github.com/bisand/net.biseth.myenergi/)
-![Travis (.com)](https://img.shields.io/travis/com/bisand/net.biseth.myenergi)
+[![Node.js CI](https://github.com/bisand/net.biseth.myenergi/actions/workflows/node.js.yml/badge.svg)](https://github.com/bisand/net.biseth.myenergi/actions/workflows/node.js.yml)
 
 ![](https://raw.githubusercontent.com/bisand/net.biseth.myenergi/master/assets/images/small.png)
 
