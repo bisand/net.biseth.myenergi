@@ -19,5 +19,8 @@
   },
   "1.4.1": {
     "en": "Improved pairing logic for Zappi"
+  },
+  "1.4.2": {
+    "en": "Improved pairing logic for Harvi and Eddi devices"
   }
 }
