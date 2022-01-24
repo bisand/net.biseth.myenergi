@@ -23,6 +23,8 @@ export class ZappiDevice extends Device {
   private _lastBoostState: ZappiBoostMode = ZappiBoostMode.Stop;
   private _boostManualKwh: number = 0;
   private _boostSmartKwh: number = 0;
+  private _boostManualKwhRemaining: number = 0;
+  private _boostSmartKwhRemaining: number = 0;
   private _boostSmartTime: string = '';
   private _chargingPower: number = 0;
   private _chargingVoltage: number = 0;
@@ -278,6 +280,7 @@ export class ZappiDevice extends Device {
     dev.setCapabilityValue('set_minimum_green_level', dev._minimumGreenLevel).catch(dev.error);
     dev.setCapabilityValue('zappi_boost_mode', `${dev.getBoostModeText(dev._boostMode)}`).catch(dev.error);
     dev.setCapabilityValue('zappi_boost_kwh', (dev._boostMode === ZappiBoostMode.Manual ? dev._boostManualKwh : (dev._boostMode === ZappiBoostMode.Smart ? dev._boostSmartKwh : 0))).catch(dev.error);
+    dev.setCapabilityValue('zappi_boost_kwh_remaining', (dev._boostMode === ZappiBoostMode.Manual ? dev._boostManualKwhRemaining : (dev._boostMode === ZappiBoostMode.Smart ? dev._boostSmartKwhRemaining : 0))).catch(dev.error);
     dev.setCapabilityValue('zappi_boost_time', `${dev._boostSmartTime}`).catch(dev.error);
   }
 
@@ -388,9 +391,11 @@ export class ZappiDevice extends Device {
     dev._minimumGreenLevel = zappi.mgl ? zappi.mgl : 0;
     dev._chargingCurrent = (dev._chargingVoltage > 0) ? (dev._chargingPower / dev._chargingVoltage) : 0; // P=U*I -> I=P/U
 
-    dev._boostMode = (zappi.bsm === 1 && zappi.tbk ? ZappiBoostMode.Manual : (zappi.bsm === 1 ? ZappiBoostMode.Smart : ZappiBoostMode.Stop));
+    dev._boostMode = (zappi.bsm === 1 && zappi.tbk ? ZappiBoostMode.Manual : (zappi.bss === 1 ? ZappiBoostMode.Smart : ZappiBoostMode.Stop));
     dev._boostManualKwh = zappi.tbk ? zappi.tbk : 0;
     dev._boostSmartKwh = zappi.sbk ? zappi.sbk : 0;
+    dev._boostManualKwhRemaining = (zappi.bsm === 1) ? zappi.tbk - zappi.che : 0;
+    dev._boostSmartKwhRemaining = (zappi.bss === 1) ? zappi.sbk - zappi.che : 0;
     dev._boostSmartTime = (zappi.sbh ? dev.format_two_digits(zappi.sbh) : '00') + ':' + (zappi.sbm ? dev.format_two_digits(zappi.sbm) : '00');
 
     if (dev._powerCalculationModeSetToAuto) {

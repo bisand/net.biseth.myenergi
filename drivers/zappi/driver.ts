@@ -34,6 +34,7 @@ export class ZappiDriver extends Driver {
     new Capability('minimum_green_level', CapabilityType.Sensor, 17),
     new Capability('zappi_boost_kwh', CapabilityType.Sensor, 18),
     new Capability('zappi_boost_time', CapabilityType.Sensor, 19),
+    new Capability('zappi_boost_kwh_remaining', CapabilityType.Sensor, 20),
   ];
 
   public zappiDevices: ZappiData[] = [];

@@ -1,11 +1,11 @@
 {
     "type": "number",
     "title": {
-        "en": "Boost energy",
-        "no": "Boost-energi",
-        "nl": "Boost energie",
-        "sv": "Boost-energi",
-        "de": "Boost-Energie"
+        "en": "Remaining Boost",
+        "no": "Gjenstående Boost",
+        "nl": "Resterende Boost",
+        "sv": "Återstående Boost",
+        "de": "Verbleibender Boost"
     },
     "getable": true,
     "setable": true,
@@ -15,7 +15,5 @@
     },
     "icon": "/assets/kwh_limit.svg",
     "min": 0,
-    "max": 100,
-    "step": 1,
-    "decimals": 0
+    "decimals": 2
 }

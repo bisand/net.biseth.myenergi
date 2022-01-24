@@ -1,11 +1,11 @@
 {
     "type": "string",
     "title": {
-        "en": "Boost mode time",
-        "no": "Boost-modus tid",
-        "nl": "Boost modus tijd",
-        "sv": "Boost-läge tid",
-        "de": "Zeit im Boost-Modus"
+        "en": "Boost time",
+        "no": "Boost-tid",
+        "nl": "Boost-tijd",
+        "sv": "Boost-tid",
+        "de": "Boost-Zeit"
     },
     "getable": true,
     "setable": true,
