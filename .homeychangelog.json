@@ -25,5 +25,8 @@
   },
   "1.5.0": {
     "en": "Added remaining boost kWh to sensor page."
+  },
+  "1.5.1": {
+    "en": "Improved text on flow card titles."
   }
 }
