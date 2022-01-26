@@ -23,11 +23,11 @@
         {
             "id": "set_charge_mode",
             "title": {
-                "en": "Charge Mode",
-                "no": "Lademodus",
-                "nl": "Laadmodus",
-                "sv": "Laddningsläge",
-                "de": "Lademodus"
+                "en": "Set charge mode",
+                "no": "Still inn Lademodus",
+                "nl": "Laadmodus instellen",
+                "sv": "Ställ in laddningsläge",
+                "de": "Lademodus einstellen"
             },
             "titleFormatted": {
                 "en": "Set charge mode to [[charge_mode_txt]]"
@@ -48,11 +48,11 @@
         {
             "id": "set_minimum_green_level",
             "title": {
-                "en": "Minimum green level",
-                "no": "Minimum grønt niva",
-                "nl": "Minimaal groen niveau",
-                "sv": "Minsta gröna nivå",
-                "de": "Minimaler Grünpegel"
+                "en": "Set minimum green level",
+                "no": "Still inn minimum grønt niva",
+                "nl": "Minimum groen niveau instellen",
+                "sv": "Ställ in lägsta grönnivå",
+                "de": "Stellen Sie den minimalen Grünwert ein"
             },
             "titleFormatted": {
                 "en": "Set minimum green level to [[minimum_green_level]]"
@@ -76,10 +76,10 @@
         {
             "id": "select_charge_mode",
             "title": {
-                "en": "Select Charge Mode",
-                "no": "Velg Lademodus",
-                "nl": "Selecteer Laadmodus",
-                "sv": "Välj Laddningsläge",
+                "en": "Select charge mode",
+                "no": "Velg lademodus",
+                "nl": "Selecteer laadmodus",
+                "sv": "Välj laddningsläge",
                 "de": "Lademodus wählen"
             },
             "titleFormatted": {
@@ -127,14 +127,14 @@
         {
             "id": "set_boost_mode",
             "title": {
-                "en": "Boost Mode",
-                "no": "Boost-modus",
-                "nl": "Boost-modus",
-                "sv": "Boost-läge",
-                "de": "Boost-modus"
+                "en": "Set boost mode",
+                "no": "Still inn boost-modus",
+                "nl": "Boost-modus instellen",
+                "sv": "Ställ in boost-läge",
+                "de": "Boost-Modus einstellen"
             },
             "titleFormatted": {
-                "en": "Set Boost mode to [[boost_mode_txt]]. End boost after [[boost_mode_kwh]] or [[boost_mode_complete_time]]"
+                "en": "Set Boost mode to [[boost_mode_txt]]. End boost after [[boost_mode_kwh]] kWh, before [[boost_mode_complete_time]] o'clock for SMART"
             },
             "args": [
                 {
