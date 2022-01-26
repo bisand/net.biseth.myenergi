@@ -1,14 +1,21 @@
 [
     {
-        "id": "showNegativeValues",
-        "type": "checkbox",
-        "value": true,
+        "id": "totalEnergyOffset",
+        "type": "number",
+        "value": 0,
+        "min": 0,
         "label": {
-            "en": "Show negative values",
-            "no": "Vis negative verdier",
-            "nl": "Negatieve waarden weergeven",
-            "sv": "Visa negativa värden",
-            "de": "Negative Werte anzeigen"
+            "en": "Total energy consumption offset",
+            "no": "Totalt energiforbruk offset",
+            "nl": "Totaal energieverbruik offset",
+            "sv": "Total energiförbrukning offset",
+            "de": "Gesamtenergieverbrauch offset"
+        },
+        "units": {
+            "en": "kWh"
+        },
+        "hint": {
+            "en": "If you want, you can add an offset to the total energi consumption."
         }
     },
     {
@@ -138,5 +145,17 @@
                 }
             }
         ]
+    },
+    {
+        "id": "showNegativeValues",
+        "type": "checkbox",
+        "value": true,
+        "label": {
+            "en": "Show negative values",
+            "no": "Vis negative verdier",
+            "nl": "Negatieve waarden weergeven",
+            "sv": "Visa negativa värden",
+            "de": "Negative Werte anzeigen"
+        }
     }
 ]
