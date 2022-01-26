@@ -758,6 +758,14 @@ export class ZappiDevice extends Device {
         dev._settings.includeCT6 = newSettings.includeCT6;
       }
     }
+    if (changedKeys.includes('totalEnergyOffset')) {
+      let prevEnergy: number = dev.getCapabilityValue('meter_power');
+      dev.setCapabilityValue('meter_power', prevEnergy + newSettings.totalEnergyOffset);
+      dev._settings.totalEnergyOffset = 0;
+      setTimeout(() => {
+        dev.setSettings({ totalEnergyOffset: 0 })
+      }, 100);
+    }
   }
 
   /**

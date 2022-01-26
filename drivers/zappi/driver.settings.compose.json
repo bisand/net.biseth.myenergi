@@ -3,7 +3,6 @@
         "id": "totalEnergyOffset",
         "type": "number",
         "value": 0,
-        "min": 0,
         "label": {
             "en": "Total energy consumption offset",
             "no": "Totalt energiforbruk offset",
@@ -15,7 +14,7 @@
             "en": "kWh"
         },
         "hint": {
-            "en": "If you want, you can add an offset to the total energi consumption."
+            "en": "If you want, you can add an offset to the total energi consumption. This setting will add the value to the current energy consumtion and reset itself back to zero."
         }
     },
     {
