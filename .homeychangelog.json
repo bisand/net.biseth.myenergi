@@ -28,5 +28,8 @@
   },
   "1.5.1": {
     "en": "Improved text on flow card titles."
+  },
+  "1.5.2": {
+    "en": "Added a setting for adjusting total energy consumption offset for Zappi"
   }
 }
