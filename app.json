@@ -248,10 +248,12 @@
         "button.reload_capabilities": {
           "maintenanceAction": true,
           "title": {
-            "en": "Reload capabilities"
+            "en": "Reload capabilities",
+            "sv": "Ladda om funktioner"
           },
           "desc": {
-            "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
+            "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order.",
+            "sv": "Ladda om sensorfunktioner. Använd detta för att ladda om sensorfunktioner om några av dem saknas eller är ur funktion. "
           }
         }
       },
@@ -305,7 +307,8 @@
           "label": {
             "en": "Power calculations",
             "nl": "Vermogen berekenen",
-            "de": "Leistungsberechnungen"
+            "de": "Leistungsberechnungen",
+            "sv": "Effektberäkningar"
           },
           "children": [
             {
@@ -315,7 +318,8 @@
               "label": {
                 "en": "Default mode",
                 "nl": "Standaard modus",
-                "de": "Standardmodus"
+                "de": "Standardmodus",
+                "sv": "Standardläge"
               },
               "values": [
                 {
@@ -323,7 +327,8 @@
                   "label": {
                     "en": "Automatically select CTs",
                     "nl": "Selecteer CT's automatisch",
-                    "de": "CTs automatisch auswählen"
+                    "de": "CTs automatisch auswählen",
+                    "sv": "Välj CT automatiskt"
                   }
                 },
                 {
@@ -331,7 +336,8 @@
                   "label": {
                     "en": "Manual override CTs",
                     "nl": "Handmatige instelling CT's",
-                    "de": "CTs manuell Überbrücken"
+                    "de": "CTs manuell Überbrücken",
+                    "sv": "Manuell CT konfiguration"
                   }
                 }
               ]
@@ -342,13 +348,15 @@
               "label": {
                 "en": "Include CT 1",
                 "nl": "CT 1 meenemen",
-                "de": "Inklusive CT 1"
+                "de": "Inklusive CT 1",
+                "sv": "Inkludera CT 1"
               },
               "value": false,
               "hint": {
                 "en": "Include CT 1 in the power calculation.",
                 "nl": "CT 1 meenemen in berekening.",
-                "de": "Beziehen Sie CT 1 in die Leistungsberechnung ein."
+                "de": "Beziehen Sie CT 1 in die Leistungsberechnung ein.",
+                "sv": "Inkludera CT 1 i effektberäkningen."
               }
             },
             {
@@ -357,13 +365,15 @@
               "label": {
                 "en": "Include CT 2",
                 "nl": "CT 2 meenemen",
-                "de": "Inklusive CT 2"
+                "de": "Inklusive CT 2",
+                "sv": "Inkludera CT 2"
               },
               "value": false,
               "hint": {
                 "en": "Include CT 2 in the power calculation.",
                 "nl": "CT 2 meenemen in berekening.",
-                "de": "Beziehen Sie CT 2 in die Leistungsberechnung ein."
+                "de": "Beziehen Sie CT 2 in die Leistungsberechnung ein.",
+                "sv": "Inkludera CT 2 i effektberäkningen."
               }
             },
             {
@@ -372,13 +382,15 @@
               "label": {
                 "en": "Include CT 3",
                 "nl": "CT 3 meenemen",
-                "de": "Inklusive CT 3"
+                "de": "Inklusive CT 3",
+                "sv": "Inkludera CT 3"
               },
               "value": false,
               "hint": {
                 "en": "Include CT 3 in the power calculation.",
                 "nl": "CT 3 meenemen in berekening.",
-                "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein."
+                "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein.",
+                "sv": "Inkludera CT 3 i effektberäkningen."
               }
             },
             {
@@ -387,13 +399,15 @@
               "label": {
                 "en": "Include CT 4",
                 "nl": "CT 4 meenemen",
-                "de": "Inklusive CT 4"
+                "de": "Inklusive CT 4",
+                "sv": "Inkludera CT 4"
               },
               "value": false,
               "hint": {
                 "en": "Include CT 4 in the power calculation.",
                 "nl": "CT 4 meenemen in berekening.",
-                "de": "Beziehen Sie CT 4 in die Leistungsberechnung ein."
+                "de": "Beziehen Sie CT 4 in die Leistungsberechnung ein.",
+                "sv": "Inkludera CT 4 i effektberäkningen."
               }
             },
             {
@@ -402,13 +416,15 @@
               "label": {
                 "en": "Include CT 5",
                 "nl": "CT 5 meenemen",
-                "de": "Inklusive CT 5"
+                "de": "Inklusive CT 5",
+                "sv": "Inkludera CT 5"
               },
               "value": false,
               "hint": {
                 "en": "Include CT 5 in the power calculation.",
                 "nl": "CT 5 meenemen in berekening.",
-                "de": "Beziehen Sie CT 5 in die Leistungsberechnung ein."
+                "de": "Beziehen Sie CT 5 in die Leistungsberechnung ein.",
+                "sv": "Inkludera CT 5 i effektberäkningen."
               }
             },
             {
@@ -417,13 +433,15 @@
               "label": {
                 "en": "Include CT 6",
                 "nl": "CT 6 meenemen",
-                "de": "Inklusive CT 6"
+                "de": "Inklusive CT 6",
+                "sv": "Inkludera CT 6"
               },
               "value": false,
               "hint": {
                 "en": "Include CT 6 in the power calculation.",
                 "nl": "CT 6 meenemen in berekening.",
-                "de": "Beziehen Sie CT 6 in die Leistungsberechnung ein."
+                "de": "Beziehen Sie CT 6 in die Leistungsberechnung ein.",
+                "sv": "Inkludera CT 6 i effektberäkningen."
               }
             }
           ]
