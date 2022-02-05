@@ -3,12 +3,13 @@
         "en": "Heater 2",
         "no": "Varmeelement 2",
         "nl": "Verwarmingselement 2",
-        "sv": "Värmeelement 2"
+        "sv": "Värmeelement 2",
+        "de": "Heizelement 2"
     },
     "type": "string",
     "getable": true,
     "setable": false,
-    "uiComponent": "media",
+    "uiComponent": "sensor",
     "$flow": {
         "triggers": [
             {
@@ -17,7 +18,8 @@
                     "en": "The name changed",
                     "no": "Navnet ble endret",
                     "nl": "De naam is veranderd",
-                    "sv": "Namnet ändrades"
+                    "sv": "Namnet ändrades",
+                    "de": "Der Name hat sich geändert"
                 }
             }
         ]

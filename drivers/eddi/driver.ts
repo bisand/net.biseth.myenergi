@@ -1,18 +1,30 @@
 import { Driver } from 'homey';
-import { Eddi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
-
-export interface EddiData extends Eddi {
-  myenergiClientId: string;
-}
+import { EddiData } from './EddiData';
 
 export class EddiDriver extends Driver {
 
   private _app!: MyEnergiApp;
 
   private _dataUpdateCallbacks: any[] = [];
+  private readonly _capabilities: string[] = [
+    'onoff',
+    'heater_status',
+    'heater_session_transferred',
+    'measure_power_ct1',
+    'measure_power_ct2',
+    'measure_power_generated',
+    'measure_current_ct1',
+    'measure_current_ct2',
+    'measure_voltage',
+    'heater_1_name',
+    'heater_2_name',
+  ];
 
   public eddiDevices: EddiData[] = [];
+  public get capabilities(): string[] {
+    return this._capabilities;
+  }
 
   /**
    * onInit is called when the driver is initialized.
@@ -44,26 +56,26 @@ export class EddiDriver extends Driver {
     }
   }
 
-  private async loadEddiDevices() {
-    const res = new Promise((resolve, reject) => {
-      Object.keys(this._app.clients).forEach(async (key, i, arr) => {
+  private async loadEddiDevices(): Promise<EddiData[]> {
+    for (const key in this._app.clients) {
+      if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
         const client = this._app.clients[key];
         const eddis: EddiData[] = await client.getStatusEddiAll();
-        eddis.forEach((eddi: EddiData) => {
-          if (this.eddiDevices.findIndex(z => z.sno === eddi.sno) === -1) {
+        for (const eddi of eddis) {
+          if (this.eddiDevices.findIndex((e: EddiData) => e.sno === eddi.sno) === -1) {
             eddi.myenergiClientId = key;
             this.eddiDevices.push(eddi);
           }
-        });
-        resolve(this.eddiDevices);
-      });
-    });
-    return res;
+        }
+        return this.eddiDevices;
+      }
+    }
+    return [];
   }
 
   private async getEddiDevices() {
-    await this.loadEddiDevices();
-    return this.eddiDevices.map((v, i, a) => {
+    const eddiDevices = await this.loadEddiDevices();
+    return eddiDevices.map((v, i, a) => {
       return {
         name: `Eddi ${v.sno}`,
         data: { id: v.sno },
@@ -71,19 +83,7 @@ export class EddiDriver extends Driver {
         store: {
           myenergiClientId: v.myenergiClientId,
         },
-        capabilities: [
-          'onoff',
-          'heater_status',
-          'heater_session_transferred',
-          'measure_power_ct1',
-          'measure_power_ct2',
-          'measure_power_generated',
-          'measure_current_ct1',
-          'measure_current_ct2',
-          'measure_voltage',
-          'heater_1_name',
-          'heater_2_name',
-        ],
+        capabilities: this._capabilities,
         capabilitiesOptions: {
         },
       };
@@ -96,22 +96,15 @@ export class EddiDriver extends Driver {
    * This should return an array with the data of devices that are available for pairing.
    */
   public async onPairListDevices() {
-    return this.getEddiDevices();
-  }
+    if (!this._app.clients || this._app.clients.length < 1)
+      throw new Error("Can not find any myenergi hubs. Please add the hub credentials under myenergi app settings.");
 
-  public async onPair(session: any) {
-    session.setHandler('list_devices', () => {
-      const devices = this.getEddiDevices();
-
-      // you can emit when devices are still being searched
-      // session.emit("list_devices", devices);
-      // return devices when searching is done
-      return devices;
-      // when no devices are found, return an empty array
-      // return [];
-      // or throw an Error to show that instead
-      // throw new Error('Something bad has occured!');
-    });
+    try {
+      const devs = await this.getEddiDevices();
+      return devs ? devs : [];
+    } catch (error) {
+      throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`);
+    }
   }
 
 }

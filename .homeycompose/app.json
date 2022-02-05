@@ -1,6 +1,6 @@
 {
   "id": "net.biseth.myenergi",
-  "version": "1.1.4",
+  "version": "1.5.2",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#2bcc64",
@@ -14,7 +14,8 @@
     "en": "Sustainable future through eco-smart technology.",
     "no": "Bærekraftig fremtid gjennom eco-smart teknologi.",
     "nl": "Duurzame toekomst door eco-smart technologie.",
-    "sv": "Hållbar framtid genom miljösmart teknik. "
+    "sv": "Hållbar framtid genom miljösmart teknik.",
+    "de": "Durch ökologisch intelligente Technologie in eine nachhaltige Zukunft."
   },
   "category": [
     "energy"
@@ -59,6 +60,17 @@
       "laddning",
       "elbil",
       "solceller"
+    ],
+    "de": [
+      "energie",
+      "myenergi",
+      "zappi",
+      "harvi",
+      "ladeleistung",
+      "elektrofahrzeuge",
+      "EV",
+      "e-auto",
+      "solaranlage"
     ]
   },
   "permissions": [],
@@ -82,7 +94,7 @@
     "url": "https://github.com/bisand/net.biseth.myenergi/issues"
   },
   "source": "https://github.com/bisand/net.biseth.myenergi",
-  "homepage": "https://myenergi.com",
+  "homepage": "https://github.com/bisand/net.biseth.myenergi",
   "support": "https://github.com/bisand/net.biseth.myenergi/issues",
   "contributors": {
     "translators": [

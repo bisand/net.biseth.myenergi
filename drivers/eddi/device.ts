@@ -1,7 +1,8 @@
 import { Device } from 'homey';
-import { EddiMode, EddiHeaterStatus, MyEnergi } from 'myenergi-api';
+import { EddiMode, EddiHeaterStatus, MyEnergi, Eddi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
-import { EddiData, EddiDriver } from './driver';
+import { EddiDriver } from './driver';
+import { EddiData } from "./EddiData";
 
 export class EddiDevice extends Device {
 
@@ -30,80 +31,103 @@ export class EddiDevice extends Device {
    * onInit is called when the device is initialized.
    */
   public async onInit() {
-    this._app = this.homey.app as MyEnergiApp;
-    this._driver = this.driver as EddiDriver;
-    this._callbackId = this._driver.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data)) - 1;
-    this.deviceId = this.getData().id;
-    this.log(`Device ID: ${this.deviceId}`);
-    this.myenergiClientId = this.getStoreValue('myenergiClientId');
+    const dev = this as EddiDevice;
+    dev._app = dev.homey.app as MyEnergiApp;
+    dev._driver = dev.driver as EddiDriver;
+    dev._callbackId = dev._driver.registerDataUpdateCallback((data: any[]) => dev.dataUpdated(data)) - 1;
+    dev.deviceId = dev.getData().id;
+    dev.log(`Device ID: ${dev.deviceId}`);
+    dev.myenergiClientId = dev.getStoreValue('myenergiClientId');
+
     try {
-      this.myenergiClient = this._app.clients[this.myenergiClientId];
-      const eddi = await this.myenergiClient.getStatusEddi(this.deviceId);
+      dev.myenergiClient = dev._app.clients[dev.myenergiClientId];
+      const eddi: Eddi | null = await dev.myenergiClient.getStatusEddi(dev.deviceId);
       if (eddi) {
-        this._heaterStatus = eddi.sta;
-        this._heater1Power = eddi.ectp1 ? eddi.ectp1 : 0;
-        this._heater2Power = eddi.ectp2 ? eddi.ectp2 : 0;
-        this._heater1Name = eddi.ht1 ? eddi.ht1 : this._heater1Name;
-        this._heater2Name = eddi.ht2 ? eddi.ht2 : this._heater2Name;
-        this._systemVoltage = eddi.vol ? (eddi.vol / 10) : 0;
-        this._generatedPower = eddi.gen ? eddi.gen : 0;
-        this._energyTransferred = eddi.che ? eddi.che : 0;
-        this._heater1Current = (this._systemVoltage > 0) ? (this._heater1Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
-        this._heater2Current = (this._systemVoltage > 0) ? (this._heater2Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
-        this._lastHeaterStatus = this._heaterStatus;
+        dev.calculateValues(eddi); // P=U*I -> I=P/U
+        dev._lastHeaterStatus = dev._heaterStatus;
       }
     } catch (error) {
-      this.error(error);
+      dev.error(error);
     }
 
-    this.setCapabilityValue('onoff', this._onOff !== EddiMode.Off).catch(this.error);
-    this.setCapabilityValue('heater_status', `${this._heaterStatus}`).catch(this.error);
-    this.setCapabilityValue('heater_1_name', `${this._heater1Name}`).catch(this.error);
-    this.setCapabilityValue('heater_2_name', `${this._heater2Name}`).catch(this.error);
-    this.setCapabilityValue('measure_voltage', this._systemVoltage).catch(this.error);
-    this.setCapabilityValue('measure_power_ct1', this._heater1Power).catch(this.error);
-    this.setCapabilityValue('measure_power_ct2', this._heater2Power).catch(this.error);
-    this.setCapabilityValue('measure_current_ct1', this._heater1Current).catch(this.error);
-    this.setCapabilityValue('measure_current_ct2', this._heater2Current).catch(this.error);
-    this.setCapabilityValue('measure_power_generated', this._generatedPower).catch(this.error);
-    this.setCapabilityValue('heater_session_transferred', this._energyTransferred).catch(this.error);
-    this.log(`Status: ${this._heaterStatus}`);
+    dev.validateCapabilities();
+    dev.setCapabilityValues();
+    dev.log(`Status: ${dev._heaterStatus}`);
 
-    this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
+    dev.registerCapabilityListener('onoff', dev.onCapabilityOnoff.bind(this));
 
-    this.log('EddiDevice has been initialized');
+    dev.log('EddiDevice has been initialized');
+  }
+
+  private calculateValues(eddi: Eddi) {
+    const dev: EddiDevice = this;
+    dev._heaterStatus = eddi.sta;
+    dev._heater1Power = eddi.ectp1 ? eddi.ectp1 : 0;
+    dev._heater2Power = eddi.ectp2 ? eddi.ectp2 : 0;
+    dev._heater1Name = eddi.ht1 ? eddi.ht1 : dev._heater1Name;
+    dev._heater2Name = eddi.ht2 ? eddi.ht2 : dev._heater2Name;
+    dev._systemVoltage = eddi.vol ? (eddi.vol / 10) : 0;
+    dev._generatedPower = eddi.gen ? eddi.gen : 0;
+    dev._energyTransferred = eddi.che ? eddi.che : 0;
+    dev._heater1Current = (dev._systemVoltage > 0) ? (dev._heater1Power / dev._systemVoltage) : 0; // P=U*I -> I=P/U
+    dev._heater2Current = (dev._systemVoltage > 0) ? (dev._heater2Power / dev._systemVoltage) : 0; // P=U*I -> I=P/U
+  }
+
+  private setCapabilityValues() {
+    const dev: EddiDevice = this;
+    dev.setCapabilityValue('onoff', dev._onOff !== EddiMode.Off).catch(dev.error);
+    dev.setCapabilityValue('heater_status', `${dev._heaterStatus}`).catch(dev.error);
+    dev.setCapabilityValue('heater_1_name', `${dev._heater1Name}`).catch(dev.error);
+    dev.setCapabilityValue('heater_2_name', `${dev._heater2Name}`).catch(dev.error);
+    dev.setCapabilityValue('measure_voltage', dev._systemVoltage).catch(dev.error);
+    dev.setCapabilityValue('measure_power_ct1', dev._heater1Power).catch(dev.error);
+    dev.setCapabilityValue('measure_power_ct2', dev._heater2Power).catch(dev.error);
+    dev.setCapabilityValue('measure_current_ct1', dev._heater1Current).catch(dev.error);
+    dev.setCapabilityValue('measure_current_ct2', dev._heater2Current).catch(dev.error);
+    dev.setCapabilityValue('measure_power_generated', dev._generatedPower).catch(dev.error);
+    dev.setCapabilityValue('heater_session_transferred', dev._energyTransferred).catch(dev.error);
+  }
+
+  private validateCapabilities() {
+    const dev: EddiDevice = this;
+    dev.log(`Validating Eddi capabilities...`);
+    const caps = dev.getCapabilities();
+    caps.forEach(async cap => {
+      if (!dev._driver.capabilities.includes(cap)) {
+        try {
+          await dev.removeCapability(cap);
+          dev.log(`${cap} - Removed`);
+        } catch (error) {
+          dev.error(error);
+        }
+      }
+    });
+    dev._driver.capabilities.forEach(async cap => {
+      try {
+        if (!dev.hasCapability(cap)) {
+          await dev.addCapability(cap);
+          dev.log(`${cap} - Added`);
+        } else {
+          dev.log(`${cap} - OK`);
+        }
+      } catch (error) {
+        dev.error(error);
+      }
+    });
   }
 
   private dataUpdated(data: EddiData[]) {
-    this.log('Received data from driver.');
+    const dev: EddiDevice = this;
+    dev.log('Received data from driver.');
     if (data) {
       data.forEach((eddi: EddiData) => {
-        if (eddi && eddi.sno === this.deviceId) {
+        if (eddi && eddi.sno === dev.deviceId) {
           try {
-            this._lastHeaterStatus = eddi.sta;
-            this._heaterStatus = eddi.sta;
-            this._heater1Power = eddi.ectp1 ? eddi.ectp1 : 0;
-            this._heater2Power = eddi.ectp2 ? eddi.ectp2 : 0;
-            this._heater1Name = eddi.ht1 ? eddi.ht1 : this._heater1Name;
-            this._heater2Name = eddi.ht2 ? eddi.ht2 : this._heater2Name;
-            this._systemVoltage = eddi.vol ? (eddi.vol / 10) : 0;
-            this._generatedPower = eddi.gen ? eddi.gen : 0;
-            this._energyTransferred = eddi.che ? eddi.che : 0;
-            this._heater1Current = (this._systemVoltage > 0) ? (this._heater1Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
-            this._heater2Current = (this._systemVoltage > 0) ? (this._heater2Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
-            this.setCapabilityValue('onoff', this._onOff !== EddiMode.Off).catch(this.error);
-            this.setCapabilityValue('heater_status', `${this._heaterStatus}`).catch(this.error);
-            this.setCapabilityValue('heater_1_name', `${this._heater1Name}`).catch(this.error);
-            this.setCapabilityValue('heater_2_name', `${this._heater2Name}`).catch(this.error);
-            this.setCapabilityValue('measure_voltage', this._systemVoltage).catch(this.error);
-            this.setCapabilityValue('measure_power_ct1', this._heater1Power).catch(this.error);
-            this.setCapabilityValue('measure_power_ct2', this._heater2Power).catch(this.error);
-            this.setCapabilityValue('measure_current_ct1', this._heater1Current).catch(this.error);
-            this.setCapabilityValue('measure_current_ct2', this._heater2Current).catch(this.error);
-            this.setCapabilityValue('measure_power_generated', this._generatedPower).catch(this.error);
-            this.setCapabilityValue('heater_session_transferred', this._energyTransferred).catch(this.error);
+            dev._lastHeaterStatus = eddi.sta;
+            dev.calculateValues(eddi)
+            dev.setCapabilityValues();
           } catch (error) {
-            this.error(error);
+            dev.error(error);
           }
         }
       });
@@ -111,23 +135,25 @@ export class EddiDevice extends Device {
   }
 
   private async setEddiMode(isOn: boolean) {
+    const dev: EddiDevice = this;
     try {
-      const result = await this.myenergiClient.setEddiMode(this.deviceId, isOn ? EddiMode.On : EddiMode.Off);
+      const result = await dev.myenergiClient.setEddiMode(dev.deviceId, isOn ? EddiMode.On : EddiMode.Off);
       if (result.status !== 0) {
         throw new Error(result);
       }
-      this.log(`Eddi was switched ${isOn ? 'on' : 'off'}`);
+      dev.log(`Eddi was switched ${isOn ? 'on' : 'off'}`);
     } catch (error) {
-      this.error(error);
+      dev.error(error);
       throw new Error(`Switching the Eddi ${isOn ? 'on' : 'off'} failed!`);
     }
   }
 
   public async onCapabilityOnoff(value: boolean, opts: any) {
-    this.log(`onoff: ${value}`);
-    await this.setEddiMode(value);
-    this.setCapabilityValue('onoff', value ? EddiMode.On : EddiMode.Off).catch(this.error);
-    this.setCapabilityValue('heater_status', value ? `${this._lastHeaterStatus}` : EddiHeaterStatus.Stopped).catch(this.error);
+    const dev: EddiDevice = this;
+    dev.log(`onoff: ${value}`);
+    await dev.setEddiMode(value);
+    dev.setCapabilityValue('onoff', value ? EddiMode.On : EddiMode.Off).catch(dev.error);
+    dev.setCapabilityValue('heater_status', value ? `${dev._lastHeaterStatus}` : EddiHeaterStatus.Stopped).catch(dev.error);
   }
 
   /**

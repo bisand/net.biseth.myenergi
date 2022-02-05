@@ -1,0 +1,18 @@
+{
+    "type": "string",
+    "title": {
+        "en": "Boost time",
+        "no": "Boost-tid",
+        "nl": "Boost-tijd",
+        "sv": "Boost-tid",
+        "de": "Boost-Zeit"
+    },
+    "getable": true,
+    "setable": true,
+    "uiComponent": "sensor",
+    "icon": "/assets/stopwatch.svg",
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "decimals": 0
+}

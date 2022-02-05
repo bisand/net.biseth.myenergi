@@ -1,19 +1,19 @@
 {
     "type": "enum",
     "title": {
-        "en": "Charger Status ID",
-        "no": "Ladestatus ID",
-        "nl": "Laderstatus ID",
-        "sv": "Laddningsstatus ID",
-        "de": "Ladegerätstatus ID"
+        "en": "Charger Status",
+        "no": "Ladestatus",
+        "nl": "Laderstatus",
+        "sv": "Laddningsstatus",
+        "de": "Ladegerätstatus"
     },
     "getable": true,
     "setable": false,
-    "uiComponent": null,
+    "uiComponent": "sensor",
     "icon": "/assets/accessories.svg",
     "values": [
         {
-            "id": "A",
+            "id": "EV_DISCONNECTED",
             "title": {
                 "en": "EV Disconnected",
                 "no": "Bil Frakoblet",
@@ -23,7 +23,7 @@
             }
         },
         {
-            "id": "B1",
+            "id": "EV_CONNECTED",
             "title": {
                 "en": "EV Connected",
                 "no": "Bil Tilkoblet",
@@ -33,7 +33,7 @@
             }
         },
         {
-            "id": "B2",
+            "id": "WAITING_FOR_EV",
             "title": {
                 "en": "Waiting for EV",
                 "no": "Venter på Bil",
@@ -43,7 +43,7 @@
             }
         },
         {
-            "id": "C1",
+            "id": "READY_TO_CHARGE",
             "title": {
                 "en": "EV ready to charge",
                 "no": "Bil klar for lading",
@@ -53,7 +53,7 @@
             }
         },
         {
-            "id": "C2",
+            "id": "CHARGING",
             "title": {
                 "en": "Charging",
                 "no": "Lader",
@@ -63,7 +63,7 @@
             }
         },
         {
-            "id": "F",
+            "id": "FAULT",
             "title": {
                 "en": "Fault",
                 "no": "Feil",

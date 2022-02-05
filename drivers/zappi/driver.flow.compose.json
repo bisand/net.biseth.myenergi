@@ -6,7 +6,8 @@
                 "en": "Start charging the car",
                 "no": "Start lading av bilen",
                 "nl": "Start laden van EV",
-                "sv": "Börja ladda bilen"
+                "sv": "Börja ladda bilen",
+                "de": "Ladevorgang des EV starten"
             }
         },
         {
@@ -15,8 +16,160 @@
                 "en": "Stop charging the car",
                 "no": "Stopp lading av bilen",
                 "nl": "Stop laden van EV",
-                "sv": "Sluta ladda bilen"
+                "sv": "Sluta ladda bilen",
+                "de": "Ladevorgang des EV beenden"
             }
+        },
+        {
+            "id": "set_charge_mode",
+            "title": {
+                "en": "Set charge mode",
+                "no": "Still inn Lademodus",
+                "nl": "Laadmodus instellen",
+                "sv": "Ställ in laddningsläge",
+                "de": "Lademodus einstellen"
+            },
+            "titleFormatted": {
+                "en": "Set charge mode to [[charge_mode_txt]]"
+            },
+            "args": [
+                {
+                    "type": "text",
+                    "name": "charge_mode_txt",
+                    "title": {
+                        "en": "Charge Mode"
+                    },
+                    "placeholder": {
+                        "en": "FAST, ECO, ECO_PLUS or OFF"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "set_minimum_green_level",
+            "title": {
+                "en": "Set minimum green level",
+                "no": "Still inn minimum grønt niva",
+                "nl": "Minimum groen niveau instellen",
+                "sv": "Ställ in lägsta grönnivå",
+                "de": "Stellen Sie den minimalen Grünwert ein"
+            },
+            "titleFormatted": {
+                "en": "Set minimum green level to [[minimum_green_level]]"
+            },
+            "args": [
+                {
+                    "type": "number",
+                    "name": "minimum_green_level",
+                    "title": {
+                        "en": "Minimum green level"
+                    },
+                    "placeholder": {
+                        "en": "Min % green power"
+                    },
+                    "min": 0,
+                    "max": 100,
+                    "step": 1
+                }
+            ]
+        },
+        {
+            "id": "select_charge_mode",
+            "title": {
+                "en": "Select charge mode",
+                "no": "Velg lademodus",
+                "nl": "Selecteer laadmodus",
+                "sv": "Välj laddningsläge",
+                "de": "Lademodus wählen"
+            },
+            "titleFormatted": {
+                "en": "Select charge mode to [[charge_mode_selector]]"
+            },
+            "args": [
+                {
+                    "type": "dropdown",
+                    "name": "charge_mode_selector",
+                    "title": {
+                        "en": "Select Charge Mode"
+                    },
+                    "placeholder": {
+                        "en": "Select a value"
+                    },
+                    "values": [
+                        {
+                            "id": "FAST",
+                            "label": {
+                                "en": "Fast"
+                            }
+                        },
+                        {
+                            "id": "ECO",
+                            "label": {
+                                "en": "Eco"
+                            }
+                        },
+                        {
+                            "id": "ECO_PLUS",
+                            "label": {
+                                "en": "Eco+"
+                            }
+                        },
+                        {
+                            "id": "OFF",
+                            "label": {
+                                "en": "Off"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "set_boost_mode",
+            "title": {
+                "en": "Set boost mode",
+                "no": "Still inn boost-modus",
+                "nl": "Boost-modus instellen",
+                "sv": "Ställ in boost-läge",
+                "de": "Boost-Modus einstellen"
+            },
+            "titleFormatted": {
+                "en": "Set Boost mode to [[boost_mode_txt]]. End boost after [[boost_mode_kwh]] kWh, before [[boost_mode_complete_time]] o'clock for SMART"
+            },
+            "args": [
+                {
+                    "type": "text",
+                    "name": "boost_mode_txt",
+                    "title": {
+                        "en": "Boost Mode"
+                    },
+                    "placeholder": {
+                        "en": "MANUAL, SMART or STOP"
+                    }
+                },
+                {
+                    "type": "number",
+                    "name": "boost_mode_kwh",
+                    "required": false,
+                    "title": {
+                        "en": "kWh"
+                    },
+                    "placeholder": {
+                        "en": "Number of kWh to boost"
+                    }
+                },
+                {
+                    "type": "text",
+                    "name": "boost_mode_complete_time",
+                    "required": false,
+                    "title": {
+                        "en": "Complete time"
+                    },
+                    "placeholder": {
+                        "en": "Until (HHMM) 15 min interval"
+                    }
+                }
+            ]
         }
     ],
     "conditions": [
@@ -26,13 +179,15 @@
                 "en": "Car !{{is|isn't}} charging",
                 "no": "Bilen !{{lader|lader ikke}}",
                 "nl": "EV !{{is|is niet}} aan het laden",
-                "sv": "Bilen !{{laddar|laddar inte}}"
+                "sv": "Bilen !{{laddar|laddar inte}}",
+                "de": "EV !{{wird geladen|lädt nicht}}"
             },
             "hint": {
                 "en": "Checks if the car is currently being charged by Zappi",
                 "no": "Sjekker om bilen blir laded av Zappi",
                 "nl": "Controleert of de EV wordt opgeladen door de Zappi",
-                "sv": "Kontrollerar om bilen för närvarande laddas av Zappi"
+                "sv": "Kontrollerar om bilen för närvarande laddas av Zappi",
+                "de": "Überprüft, ob das EV gerade von Zappi geladen wird"
             }
         }
     ],
@@ -43,13 +198,15 @@
                 "en": "Charging started",
                 "no": "Lading startet",
                 "nl": "Laden gestart",
-                "sv": "Laddning startade"
+                "sv": "Laddning startade",
+                "de": "Ladevorgang gestartet"
             },
             "hint": {
                 "en": "When Zappi starts charging the connected car",
                 "no": "Når Zappi starter lading av den tilkoblede bilen",
                 "nl": "Wanneer Zappi de verbonden EV begint op te laden",
-                "sv": "När Zappi börjar ladda den uppkopplade bilen "
+                "sv": "När Zappi börjar ladda den uppkopplade bilen",
+                "de": "Wenn Zappi beginnt, das vernetzte EV aufzuladen"
             }
         },
         {
@@ -58,13 +215,66 @@
                 "en": "Charging stopped",
                 "no": "Lading stoppet",
                 "nl": "Laden gestopt",
-                "sv": "Laddningen avbröts"
+                "sv": "Laddningen avbröts",
+                "de": "Ladevorgang gestoppt"
             },
             "hint": {
                 "en": "When Zappi stops charging the connected car",
                 "no": "Når Zappi stopper ladingen av den tilkoblede bilen",
                 "nl": "Wanneer de Zappi is gestopt met het opladen van de verbonden EV",
-                "sv": "När Zappi slutar ladda den anslutna bilen "
+                "sv": "När Zappi slutar ladda den anslutna bilen",
+                "de": "Wenn der Zappi das Aufladen des angeschlossenen EV beendet hat"
+            }
+        },
+        {
+            "id": "charge_mode_changed",
+            "title": {
+                "en": "Charge mode changed",
+                "no": "Lademodus endret",
+                "nl": "Laadmodus veranderde",
+                "sv": "Laddningsläget ändrats",
+                "de": "Lademodus geändert"
+            },
+            "hint": {
+                "en": "When Zappi changed the charge mode",
+                "no": "Da Zappi endret lademodusen",
+                "nl": "Wanneer Zappi de laadmodus veranderde",
+                "sv": "När Zappi bytte laddningsläge",
+                "de": "Wenn Zappi den Lademodus geändert hat"
+            }
+        },
+        {
+            "id": "charger_status_changed",
+            "title": {
+                "en": "Charger status changed",
+                "no": "Laderstatus endret",
+                "nl": "Status van oplader gewijzigd",
+                "sv": "Laddarens status har ändrats",
+                "de": "Status des Ladegeräts geändert"
+            },
+            "hint": {
+                "en": "When Zappi changed the charger status",
+                "no": "Da Zappi endret lademodusen",
+                "nl": "Wanneer Zappi de status van de oplader veranderde",
+                "sv": "När Zappi ändrade laddarens status",
+                "de": "Wenn Zappi den Ladezustand geändert hat "
+            }
+        },
+        {
+            "id": "boost_mode_changed",
+            "title": {
+                "en": "Boost mode changed",
+                "no": "Boost-modus endret",
+                "nl": "Boost-modus gewijzigd",
+                "sv": "Boost-läge har ändrats",
+                "de": "Boost-modus geändert"
+            },
+            "hint": {
+                "en": "When Zappi changed the boost mode",
+                "no": "Da Zappi endret boost-modus",
+                "nl": "Wanneer Zappi de boost-mode veranderde",
+                "sv": "När Zappi ändrade laddarens boost-läge",
+                "de": "Wenn Zappi den boost-modus geändert hat "
             }
         }
     ]

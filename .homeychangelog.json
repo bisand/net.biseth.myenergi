@@ -7,5 +7,29 @@
   },
   "1.1.4": {
     "en": "Added Dutch translation (Thanks to Spijkmans). Included accumulated power consumption for all Zappi CTs with type Internal Load. Also included a setting for displaying negative values or not."
+  },
+  "1.2.0": {
+    "en": "Added frequency and settings for customizing charging power calculation for Zappi."
+  },
+  "1.3.0": {
+    "en": "Added total energy consumption (power meter) to Zappi"
+  },
+  "1.4.0": {
+    "en": "Added more human readable variables and tags (#13). Added THEN cards to support charge mode and boost mode (#17). Added slider to manually set min. green level. Reordered the sensor page and some bug fixes."
+  },
+  "1.4.1": {
+    "en": "Improved pairing logic for Zappi"
+  },
+  "1.4.2": {
+    "en": "Improved pairing logic for Harvi and Eddi devices"
+  },
+  "1.5.0": {
+    "en": "Added remaining boost kWh to sensor page."
+  },
+  "1.5.1": {
+    "en": "Improved text on flow card titles."
+  },
+  "1.5.2": {
+    "en": "Added a setting for adjusting total energy consumption offset for Zappi"
   }
 }

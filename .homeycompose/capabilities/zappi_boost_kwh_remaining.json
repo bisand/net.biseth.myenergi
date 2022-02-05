@@ -1,0 +1,19 @@
+{
+    "type": "number",
+    "title": {
+        "en": "Remaining Boost",
+        "no": "Gjenstående Boost",
+        "nl": "Resterende Boost",
+        "sv": "Återstående Boost",
+        "de": "Verbleibender Boost"
+    },
+    "getable": true,
+    "setable": true,
+    "uiComponent": "sensor",
+    "units": {
+        "en": "kWh"
+    },
+    "icon": "/assets/kwh_limit.svg",
+    "min": 0,
+    "decimals": 2
+}

@@ -1,18 +1,25 @@
 import { Driver } from 'homey';
-import { Harvi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
-
-export interface HarviData extends Harvi {
-  myenergiClientId: string;
-}
+import { HarviData } from './HarviData';
 
 export class HarviDriver extends Driver {
 
   private _app!: MyEnergiApp;
 
   private _dataUpdateCallbacks: any[] = [];
+  private readonly _capabilities = [
+    'ct1_type',
+    'measure_power_ct1',
+    'ct2_type',
+    'measure_power_ct2',
+    'ct3_type',
+    'measure_power_ct3',
+  ];
 
   public harviDevices: HarviData[] = [];
+  public get capabilities() {
+    return this._capabilities;
+  }
 
   /**
    * onInit is called when the driver is initialized.
@@ -44,26 +51,26 @@ export class HarviDriver extends Driver {
     }
   }
 
-  private async loadHarviDevices() {
-    const res = new Promise((resolve, reject) => {
-      Object.keys(this._app.clients).forEach(async (key, i, arr) => {
+  private async loadHarviDevices(): Promise<HarviData[]> {
+    for (const key in this._app.clients) {
+      if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
         const client = this._app.clients[key];
         const harvis: HarviData[] = await client.getStatusHarviAll();
-        harvis.forEach((harvi: HarviData) => {
-          if (this.harviDevices.findIndex(h => h.sno === harvi.sno) === -1) {
+        for (const harvi of harvis) {
+          if (this.harviDevices.findIndex((h: HarviData) => h.sno === harvi.sno) === -1) {
             harvi.myenergiClientId = key;
             this.harviDevices.push(harvi);
           }
-        });
-        resolve(this.harviDevices);
-      });
-    });
-    return res;
+        }
+        return this.harviDevices;
+      }
+    }
+    return [];
   }
 
   private async getHarviDevices() {
-    await this.loadHarviDevices();
-    return this.harviDevices.map((v, i, a) => {
+    const harviDevices = await this.loadHarviDevices();
+    return harviDevices.map((v, i, a) => {
       return {
         name: `Harvi ${v.sno}`,
         data: { id: v.sno },
@@ -71,14 +78,7 @@ export class HarviDriver extends Driver {
         store: {
           myenergiClientId: v.myenergiClientId,
         },
-        capabilities: [
-          'ct1_type',
-          'measure_power_ct1',
-          'ct2_type',
-          'measure_power_ct2',
-          'ct3_type',
-          'measure_power_ct3',
-        ],
+        capabilities: this._capabilities,
         capabilitiesOptions: {
         },
       };
@@ -91,22 +91,15 @@ export class HarviDriver extends Driver {
    * This should return an array with the data of devices that are available for pairing.
    */
   public async onPairListDevices() {
-    return this.getHarviDevices();
-  }
+    if (!this._app.clients || this._app.clients.length < 1)
+      throw new Error("Can not find any myenergi hubs. Please add the hub credentials under myenergi app settings.");
 
-  public async onPair(session: any) {
-    session.setHandler('list_devices', () => {
-      const devices = this.getHarviDevices();
-
-      // you can emit when devices are still being searched
-      // session.emit("list_devices", devices);
-      // return devices when searching is done
-      return devices;
-      // when no devices are found, return an empty array
-      // return [];
-      // or throw an Error to show that instead
-      // throw new Error('Something bad has occured!');
-    });
+    try {
+      const devs = await this.getHarviDevices();
+      return devs ? devs : [];
+    } catch (error) {
+      throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`);
+    }
   }
 
 }

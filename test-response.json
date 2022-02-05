@@ -1,0 +1,79 @@
+[
+    {
+        "eddi": []
+    },
+    {
+        "zappi": [
+            {
+                "sno": 10000000,
+                "dat": "20-01-2022",
+                "tim": "10:12:25",
+                "ectp1": 6710,
+                "ectp2": -4,
+                "ectt1": "Internal Load",
+                "ectt2": "None",
+                "ectt3": "None",
+                "bsm -> Boost Mode On": "1",
+                "bsm": 1,
+                "bst": 0,
+                "cmt": 0,
+                "dst": 1,
+                "div": 6710,
+                "frq": 50.01,
+                "fwv": "3300S0.000",
+                "grd": 7584,
+                "pha": 1,
+                "pri": 1,
+                "sta": 4,
+                "tz": 0,
+                "vol": 2279,
+                "che": 8.2,
+                "bss": 0,
+                "lck": 16,
+                "pst": "C2",
+                "tbk -> Manual Target Boost Mode. If present": "MANUAL BOOST",
+                "tbk": 15,
+                "zmo": 2,
+                "pwm": 5000,
+                "zs": 100,
+                "rdc": 3,
+                "rac": 1,
+                "rrac": 2,
+                "zsl": 100,
+                "ectt4": "None",
+                "ectt5": "None",
+                "ectt6": "None",
+                "mgl": 75,
+                "sbh -> Smart Boost Mode hour target": "",
+                "sbh": 13,
+                "sbk -> Smart Boost Mode kWh Target. If (bst === 1 && tbk === undefined)": "SMART BOOST",
+                "sbk": 14,
+                "sbm -> Smart Boost Mode minute target.": "",
+                "sbm": 45
+            }
+        ]
+    },
+    {
+        "harvi": [
+            {
+                "sno": 10000000,
+                "dat": "20-01-2022",
+                "tim": "10:12:25",
+                "ectp1": 7584,
+                "ectp2": -6257,
+                "ectp3": 1392,
+                "ectt1": "Grid",
+                "ectt2": "Grid",
+                "ectt3": "Grid",
+                "ect1p": 1,
+                "ect2p": 2,
+                "ect3p": 3,
+                "fwv": "3170S0.000"
+            }
+        ]
+    },
+    {
+        "asn": "s18.myenergi.net",
+        "fwv": "3401S3.077"
+    }
+]

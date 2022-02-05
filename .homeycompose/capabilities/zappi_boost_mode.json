@@ -1,0 +1,46 @@
+{
+    "type": "enum",
+    "title": {
+        "en": "Boost mode",
+        "no": "Boost-modus",
+        "nl": "Boost-modus",
+        "sv": "Boost-läge",
+        "de": "Boost-Modus"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "icon": "/assets/rocket.svg",
+    "values": [
+        {
+            "id": "STOP",
+            "title": {
+                "en": "Stop",
+                "no": "Stopp",
+                "nl": "Stoppen",
+                "sv": "Stopp",
+                "de": "Halt"
+            }
+        },
+        {
+            "id": "MANUAL",
+            "title": {
+                "en": "Manual",
+                "no": "Manuell",
+                "nl": "Handmatige",
+                "sv": "Manuell",
+                "de": "Manuelles"
+            }
+        },
+        {
+            "id": "SMART",
+            "title": {
+                "en": "Smart",
+                "no": "Smart",
+                "nl": "Smart",
+                "sv": "Smart",
+                "de": "Smart"
+            }
+        }
+    ]
+}
