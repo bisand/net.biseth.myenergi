@@ -20,7 +20,7 @@
 
         <div class="field row">
             <label for="apiBaseUrl">Hub name</label>
-            <input id="apiBaseUrl" name="apiBaseUrl" type="url" value="" placeholder="https://s18.myenergi.net" required
+            <input id="apiBaseUrl" name="apiBaseUrl" type="text" value="" placeholder="https://s18.myenergi.net" required
                 pattern="@(https?)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS" />
         </div>
     </fieldset>
@@ -53,7 +53,7 @@
         </div>
         <div class="field row">
             <input type="hidden" name="hubIndex" id="hubIndex" value="0" />
-            <button id="deleteHub" class="center deleteHub" data-hubIndex="0">Remove Hub</button>
+            <button id="deleteHub" class="right deleteHub" data-hubIndex="0">Remove Hub</button>
         </div>
     </fieldset>
 
@@ -68,13 +68,17 @@
             // Tell Homey we're ready to be displayed
             Homey.ready();
 
+            var myenergiHubs = [];
+
             // Register delete hub buton click.
             function deleteHub(event) {
                 //Calling function on click
 
-                var hubIndex = JSON.stringify(event.target);
+                var hubIndex = event.data.hubIndex;
                 Homey.confirm(`Do you want to delete this hub (${hubIndex})?`, 'warning', (error, result) => {
                     if (result) {
+                        myenergiHubs.splice(hubIndex, 1);
+                        populateFields();
                         Homey.alert(`Hub ${result} deleted!`, 'info', () => {
 
                         });
@@ -89,14 +93,23 @@
                 var hubIndex = elementToReplicate.find('#hubIndex').val();
                 hubIndex++;
                 clonedElement.find('input').val(''); //Clear cloned elements value on each new addition
-                clonedElement.find('#hubIndex').val(hubIndex);
-                clonedElement.find('.deleteHub').data("hubIndex", hubIndex);
-                clonedElement.find('.deleteHub').on('click', deleteHub);
+                clonedElement.find('.deleteHub').on('click', { hubIndex: hubIndex }, deleteHub);
                 clonedElement.insertBefore($('#addHub'));
             }
 
-            function populateFields(myenergiHubs) {
+            function removeFields() {
+                var fieldCount = $('.fieldset').length
+                for (let index = fieldCount - 1; index > 0; index--) {
+                    $('.fieldset').last().remove();
+                }
+            }
+
+            function populateFields() {
                 var i = 0;
+                removeFields();
+                for (let i = 1; i < myenergiHubs.length; i++) {
+                    replicateFields();
+                }
                 $('.fieldset').each(function () {
                     const hub = myenergiHubs[i++];
                     $(this).find('input[name="hubname"]').val(hub.hubname);
@@ -110,14 +123,14 @@
 
             //Calling function on click
             $('#addHub').on('click', function () {
-                replicateFields();
+                populateFields();
             });
 
-            $('.deleteHub').on('click', deleteHub);
+            $('.deleteHub').on('click', { hubIndex: 0 }, deleteHub);
 
             //Go through inputs filling up the array of arrays.
             $('#saveHubs').on('click', function () {
-                var myenergiHubs = [];
+                myenergiHubs = [];
                 $('.fieldset').each(function () {
                     const hubName = (
                         '' +
@@ -145,32 +158,30 @@
                         pollInterval: pollInterval,
                     });
                 });
-                const apiBaseUrl = $(this).find('input[name="apiBaseUrl"]').val();
+                const apiBaseUrl = $('input[name="apiBaseUrl"]').val();
 
                 // $('#log').val(JSON.stringify(myenergiHubs));
                 Homey.set('apiBaseUrl', apiBaseUrl, function (err) {
                     if (err) return Homey.alert(err);
-                    Homey.set('myenergiHubs', myenergiHubs, function (err) {
-                        if (err) return Homey.alert(err);
-                    });
+                });
+                Homey.set('myenergiHubs', myenergiHubs, function (err) {
+                    if (err) return Homey.alert(err);
                 });
             });
 
-            Homey.get('myenergiHubs', function (err, myenergiHubs) {
+            Homey.get('myenergiHubs', function (err, hubs) {
                 if (err) return Homey.alert(err);
-                if (!myenergiHubs || myenergiHubs.length < 1) return;
-                const hubCount = myenergiHubs.length;
-                for (let i = 1; i < hubCount; i++) {
-                    replicateFields();
-                }
-                populateFields(myenergiHubs);
+                if (!hubs || hubs.length < 1) return;
+                myenergiHubs = hubs;
+                populateFields();
             });
 
             Homey.get('apiBaseUrl', function (err, apiBaseUrl) {
                 if (err) return Homey.alert(err);
-                if (!apiBaseUrl)
+                if (!apiBaseUrl && apiBaseUrl !== '') {
                     apiBaseUrl = 'https://s18.myenergi.net';
-                $(this).find('input[name="apiBaseUrl"]').val(apiBaseUrl);
+                }
+                $('input[name="apiBaseUrl"]').val(apiBaseUrl);
             });
         }
     </script>

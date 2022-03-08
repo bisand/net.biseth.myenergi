@@ -29,7 +29,7 @@ export class MyEnergiApp extends Homey.App {
       this.clients = {};
       hubs.forEach((hub: any, index: number) => {
         this.log(hub);
-        this.clients[`${hub.hubname}_${hub.username}`] = new MyEnergi(hub.username, hub.password);
+        this.clients[`${hub.hubname}_${hub.username}`] = new MyEnergi(hub.username, hub.password, this._apiBaseUrl);
         if (index === 0) {
           this._dataUpdateInterval = hub.pollInterval * 1000;
         }
