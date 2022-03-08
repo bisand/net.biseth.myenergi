@@ -14,6 +14,7 @@ export class MyEnergiApp extends Homey.App {
   private _dataUpdateInterval: number = 60 * 1000;
   private _dataUpdateId!: NodeJS.Timeout;
   private _dataUpdateCallbacks: any[] = [];
+  private _apiBaseUrl: string = 'https://s18.myenergi.net';
 
   public clients: any;
 
@@ -67,6 +68,12 @@ export class MyEnergiApp extends Homey.App {
     const myenergiHubs = this.homey.settings.get('myenergiHubs');
     this.initClients(myenergiHubs);
     this.homey.settings.on('set', key => {
+      if (key === 'apiBaseUrl') {
+        const apiBaseUrl = this.homey.settings.get('apiBaseUrl');
+        if (apiBaseUrl)
+          this._apiBaseUrl = apiBaseUrl;
+        //throw new Error("Test error!");        
+      }
       if (key === 'myenergiHubs') {
         const hubs = this.homey.settings.get('myenergiHubs');
         this.initClients(hubs);

@@ -4,7 +4,7 @@
 <head>
     <!-- The '/homey.js' script must be included in your settings view to work -->
     <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 
 <body>
@@ -14,6 +14,16 @@
     <p data-i18n="settings.subtitle">
         <!-- This field will also be translated -->
     </p>
+
+    <fieldset class="fieldset-api">
+        <legend>myenergi API base URI</legend>
+
+        <div class="field row">
+            <label for="apiBaseUrl">Hub name</label>
+            <input id="apiBaseUrl" name="apiBaseUrl" type="url" value="" placeholder="https://s18.myenergi.net" required
+                pattern="@(https?)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS" />
+        </div>
+    </fieldset>
 
     <fieldset class="fieldset">
         <legend>myenergi Hub</legend>
@@ -32,8 +42,18 @@
         </div>
         <div class="field row">
             <label for="pollInterval">Server poll interval (sec)</label>
-            <input id="pollInterval" name="pollInterval" type="number" min="5" max="86400" value="" /><br>
-            <span><i>Note! Be careful not to use too short intervals. This could cause you to be locked out from the myenergi API.</i></span>
+            <input id="pollInterval" name="pollInterval" type="number" min="5" max="86400" value="" />
+            <br />
+            <span>
+                <i>
+                    Note! Be careful not to use too short intervals. This could cause
+                    you to be locked out from the myenergi API.
+                </i>
+            </span>
+        </div>
+        <div class="field row">
+            <input type="hidden" name="hubIndex" id="hubIndex" value="0" />
+            <button id="deleteHub" class="center deleteHub" data-hubIndex="0">Remove Hub</button>
         </div>
     </fieldset>
 
@@ -48,11 +68,30 @@
             // Tell Homey we're ready to be displayed
             Homey.ready();
 
+            // Register delete hub buton click.
+            function deleteHub(event) {
+                //Calling function on click
+
+                var hubIndex = JSON.stringify(event.target);
+                Homey.confirm(`Do you want to delete this hub (${hubIndex})?`, 'warning', (error, result) => {
+                    if (result) {
+                        Homey.alert(`Hub ${result} deleted!`, 'info', () => {
+
+                        });
+                    }
+                });
+            }
+
             //Function to replicate fields in the form
             function replicateFields() {
-                var elementToReplicate = $('.fieldset').first(), //Only clone first group of inputs
-                    clonedElement = elementToReplicate.clone();//Cloned the element
+                var elementToReplicate = $('.fieldset').first(); //Only clone first group of inputs
+                clonedElement = elementToReplicate.clone(); //Cloned the element
+                var hubIndex = elementToReplicate.find('#hubIndex').val();
+                hubIndex++;
                 clonedElement.find('input').val(''); //Clear cloned elements value on each new addition
+                clonedElement.find('#hubIndex').val(hubIndex);
+                clonedElement.find('.deleteHub').data("hubIndex", hubIndex);
+                clonedElement.find('.deleteHub').on('click', deleteHub);
                 clonedElement.insertBefore($('#addHub'));
             }
 
@@ -63,25 +102,35 @@
                     $(this).find('input[name="hubname"]').val(hub.hubname);
                     $(this).find('input[name="username"]').val(hub.username);
                     $(this).find('input[name="password"]').val(hub.password);
-                    $(this).find('input[name="pollInterval"]').val(hub.pollInterval ? hub.pollInterval : 60);
+                    $(this)
+                        .find('input[name="pollInterval"]')
+                        .val(hub.pollInterval ? hub.pollInterval : 60);
                 });
             }
 
             //Calling function on click
-            $('#addHub').click(function () {
+            $('#addHub').on('click', function () {
                 replicateFields();
             });
 
+            $('.deleteHub').on('click', deleteHub);
+
             //Go through inputs filling up the array of arrays.
-            $('#saveHubs').click(function () {
+            $('#saveHubs').on('click', function () {
                 var myenergiHubs = [];
                 $('.fieldset').each(function () {
-                    const hubName = ('' + $(this).find('input[name="hubname"]').val() + '').replace(/[\W_]+/g, "_");
+                    const hubName = (
+                        '' +
+                        $(this).find('input[name="hubname"]').val() +
+                        ''
+                    ).replace(/[\W_]+/g, '_');
                     const userName = $(this).find('input[name="username"]').val();
                     const password = $(this).find('input[name="password"]').val();
                     let pollInterval = 60;
                     try {
-                        pollInterval = Number($(this).find('input[name="pollInterval"]').val());
+                        pollInterval = Number(
+                            $(this).find('input[name="pollInterval"]').val()
+                        );
                         if (pollInterval < 5) {
                             pollInterval = 5;
                         }
@@ -93,24 +142,35 @@
                         hubname: hubName,
                         username: userName,
                         password: password,
-                        pollInterval: pollInterval
+                        pollInterval: pollInterval,
                     });
                 });
+                const apiBaseUrl = $(this).find('input[name="apiBaseUrl"]').val();
+
                 // $('#log').val(JSON.stringify(myenergiHubs));
-                Homey.set("myenergiHubs", myenergiHubs, function (err) {
+                Homey.set('apiBaseUrl', apiBaseUrl, function (err) {
                     if (err) return Homey.alert(err);
+                    Homey.set('myenergiHubs', myenergiHubs, function (err) {
+                        if (err) return Homey.alert(err);
+                    });
                 });
             });
 
-            Homey.get("myenergiHubs", function (err, myenergiHubs) {
+            Homey.get('myenergiHubs', function (err, myenergiHubs) {
                 if (err) return Homey.alert(err);
-                if (!myenergiHubs || myenergiHubs.length < 1)
-                    return;
+                if (!myenergiHubs || myenergiHubs.length < 1) return;
                 const hubCount = myenergiHubs.length;
                 for (let i = 1; i < hubCount; i++) {
                     replicateFields();
                 }
-                populateFields(myenergiHubs)
+                populateFields(myenergiHubs);
+            });
+
+            Homey.get('apiBaseUrl', function (err, apiBaseUrl) {
+                if (err) return Homey.alert(err);
+                if (!apiBaseUrl)
+                    apiBaseUrl = 'https://s18.myenergi.net';
+                $(this).find('input[name="apiBaseUrl"]').val(apiBaseUrl);
             });
         }
     </script>
