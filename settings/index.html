@@ -210,7 +210,7 @@
                 //     Homey.alert('Invalid API URL. Please try again.');
                 //     return;
                 // }
-                // setTimeout(() => {
+                setTimeout(() => {
                     Homey.set('apiBaseUrl', apiBaseUrl, function (err) {
                         if (err) return Homey.alert(err);
                     });
