@@ -5,6 +5,26 @@
     <!-- The '/homey.js' script must be included in your settings view to work -->
     <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        .container {
+            /* width: 90%;
+            border: 1px solid rgb(59, 59, 59);
+            padding: 15px 15px 15px 15px;
+            margin: 10px 10px 10px 10px;
+            background: #bedef0;
+            overflow: visible;
+            box-shadow: 2px 2px 2px #adadad; */
+            position: relative;
+        }
+
+        .deleteHub {
+            position: absolute;
+            font-size: 20pt;
+            font-weight: bold;
+            top: -20px;
+            right: -10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -27,33 +47,34 @@
 
     <fieldset class="fieldset">
         <legend>myenergi Hub</legend>
-
-        <div class="field row">
-            <label for="hubname">Hub name</label>
-            <input id="hubname" name="hubname" type="text" value="" required pattern="[a-zA-Z0-9]+" />
-        </div>
-        <div class="field row">
-            <label for="username">Hub serial no</label>
-            <input id="username" name="username" type="text" value="" required pattern="[0-9]*" inputmode="numeric" />
-        </div>
-        <div class="field row">
-            <label for="password">Hub password</label>
-            <input id="password" name="password" type="password" value="" />
-        </div>
-        <div class="field row">
-            <label for="pollInterval">Server poll interval (sec)</label>
-            <input id="pollInterval" name="pollInterval" type="number" min="5" max="86400" value="" />
-            <br />
-            <span>
-                <i>
-                    Note! Be careful not to use too short intervals. This could cause
-                    you to be locked out from the myenergi API.
-                </i>
-            </span>
-        </div>
-        <div class="field row">
-            <input type="hidden" name="hubIndex" id="hubIndex" value="0" />
-            <button id="deleteHub" class="right deleteHub" data-hubIndex="0" style="display: none;">Remove Hub</button>
+        <div class="container">
+            <div class="field row">
+                <label for="hubname">Hub name</label>
+                <input id="hubname" name="hubname" type="text" value="" required pattern="[a-zA-Z0-9]+" />
+            </div>
+            <div class="field row">
+                <label for="username">Hub serial no</label>
+                <input id="username" name="username" type="text" value="" required pattern="[0-9]*" inputmode="numeric" />
+            </div>
+            <div class="field row">
+                <label for="password">Hub password</label>
+                <input id="password" name="password" type="password" value="" />
+            </div>
+            <div class="field row">
+                <label for="pollInterval">Server poll interval (sec)</label>
+                <input id="pollInterval" name="pollInterval" type="number" min="5" max="86400" value="" />
+                <br />
+                <span>
+                    <i>
+                        Note! Be careful not to use too short intervals. This could cause
+                        you to be locked out from the myenergi API.
+                    </i>
+                </span>
+            </div>
+            <div class="field row">
+                <input type="hidden" name="hubIndex" id="hubIndex" value="0" />
+                <button id="deleteHub" class="right deleteHub" data-hubIndex="0" style="display: none;">X</button>
+            </div>
         </div>
     </fieldset>
 
@@ -184,7 +205,12 @@
                 const apiBaseUrl = $('input[name="apiBaseUrl"]').val();
 
                 // $('#log').val(JSON.stringify(myenergiHubs));
-                setTimeout(() => {
+                // var regexp = new RegExp('@(https?)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS');
+                // if (!regexp.test(apiBaseUrl)) {
+                //     Homey.alert('Invalid API URL. Please try again.');
+                //     return;
+                // }
+                // setTimeout(() => {
                     Homey.set('apiBaseUrl', apiBaseUrl, function (err) {
                         if (err) return Homey.alert(err);
                     });

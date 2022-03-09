@@ -80,7 +80,7 @@ export class MyEnergiApp extends Homey.App {
         if (apiBaseUrl)
           this._apiBaseUrl = apiBaseUrl;
         this.log(`Saved apiBaseUrl ${this._apiBaseUrl}`);
-        //throw new Error("Test error!");        
+
         const hubs = this.homey.settings.get('myenergiHubs');
         this.initClients(hubs);
       }
