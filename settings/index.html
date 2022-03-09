@@ -41,7 +41,7 @@
         <div class="field row">
             <label for="apiBaseUrl">Hub name</label>
             <input id="apiBaseUrl" name="apiBaseUrl" type="text" value="" placeholder="https://s18.myenergi.net" required
-                pattern="@(https?)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS" />
+                pattern="/(https?):\/\/(-\.)?([^\s/?\.#-]+\.?)+(\/[^\s]*)?$/i" />
         </div>
     </fieldset>
 
@@ -159,6 +159,11 @@
                 }, 5000);
             }
 
+            function isValidURL(string) {
+                var res = string.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+                return (res !== null)
+            }
+
             //Calling function on click
             $('#addHub').on('click', function () {
                 myenergiHubs.push({
@@ -205,11 +210,10 @@
                 const apiBaseUrl = $('input[name="apiBaseUrl"]').val();
 
                 // $('#log').val(JSON.stringify(myenergiHubs));
-                // var regexp = new RegExp('@(https?)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$@iS');
-                // if (!regexp.test(apiBaseUrl)) {
-                //     Homey.alert('Invalid API URL. Please try again.');
-                //     return;
-                // }
+                if (!isValidURL(apiBaseUrl)) {
+                    Homey.alert(`Invalid API URL (${apiBaseUrl}). Please try again.`);
+                    return;
+                }
                 setTimeout(() => {
                     Homey.set('apiBaseUrl', apiBaseUrl, function (err) {
                         if (err) return Homey.alert(err);
