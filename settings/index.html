@@ -53,9 +53,11 @@
         </div>
         <div class="field row">
             <input type="hidden" name="hubIndex" id="hubIndex" value="0" />
-            <button id="deleteHub" class="right deleteHub" data-hubIndex="0">Remove Hub</button>
+            <button id="deleteHub" class="right deleteHub" data-hubIndex="0" style="display: none;">Remove Hub</button>
         </div>
     </fieldset>
+
+    <div id="statusMessage" style="display: none;"></div>
 
     <button id="addHub" class="left">Add Hub</button>
     <button id="saveHubs" class="right">Save changes</button>
@@ -79,9 +81,6 @@
                     if (result) {
                         myenergiHubs.splice(hubIndex, 1);
                         populateFields();
-                        Homey.alert(`Hub ${result} deleted!`, 'info', () => {
-
-                        });
                     }
                 });
             }
@@ -94,7 +93,8 @@
                 hubIndex++;
                 clonedElement.find('input').val(''); //Clear cloned elements value on each new addition
                 clonedElement.find('.deleteHub').on('click', { hubIndex: hubIndex }, deleteHub);
-                clonedElement.insertBefore($('#addHub'));
+                clonedElement.find('.deleteHub').css({ 'display': 'block' });
+                clonedElement.insertBefore($('#statusMessage'));
             }
 
             function removeFields() {
@@ -121,8 +121,31 @@
                 });
             }
 
+            function displayStatus(text, success = true) {
+                var backgroundColor = 'green'
+                var color = 'white'
+                if (!success) {
+                    var backgroundColor = 'red'
+                    var color = 'white'
+                }
+                $('#statusMessage').text(text);
+                $('#statusMessage').css({ 'background-color': backgroundColor, 'color': color, 'padding': '5px', 'margin-bottom': '5px' });
+                $('#statusMessage').show(500);
+                setTimeout(() => {
+                    $('#statusMessage').hide(500);
+                    $('#statusMessage').text('');
+                    $('#statusMessage').css({ 'background-color': '' });
+                }, 5000);
+            }
+
             //Calling function on click
             $('#addHub').on('click', function () {
+                myenergiHubs.push({
+                    hubname: '',
+                    username: '',
+                    password: '',
+                    pollInterval: 60,
+                });
                 populateFields();
             });
 
@@ -161,12 +184,17 @@
                 const apiBaseUrl = $('input[name="apiBaseUrl"]').val();
 
                 // $('#log').val(JSON.stringify(myenergiHubs));
-                Homey.set('apiBaseUrl', apiBaseUrl, function (err) {
-                    if (err) return Homey.alert(err);
-                });
-                Homey.set('myenergiHubs', myenergiHubs, function (err) {
-                    if (err) return Homey.alert(err);
-                });
+                setTimeout(() => {
+                    Homey.set('apiBaseUrl', apiBaseUrl, function (err) {
+                        if (err) return Homey.alert(err);
+                    });
+                    setTimeout(() => {
+                        Homey.set('myenergiHubs', myenergiHubs, function (err) {
+                            if (err) return Homey.alert(err);
+                        });
+                        displayStatus('Settings successfully saved.');
+                    }, 500);
+                }, 1);
             });
 
             Homey.get('myenergiHubs', function (err, hubs) {

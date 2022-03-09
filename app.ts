@@ -19,6 +19,7 @@ export class MyEnergiApp extends Homey.App {
   public clients: any;
 
   private async initClients(hubs: any) {
+    this.log(`Starting client init...`);
     if (this.clients) {
       Object.keys(this.clients).forEach((key, i, arr) => {
         this.log(key);
@@ -33,8 +34,10 @@ export class MyEnergiApp extends Homey.App {
         if (index === 0) {
           this._dataUpdateInterval = hub.pollInterval * 1000;
         }
+        this.log(`Added hub ${hub.hubname} with url ${this._apiBaseUrl}`);
       });
     }
+    this.log(`Client init complete.`);
   }
 
   public registerDataUpdateCallback(callback: any) {
@@ -66,19 +69,27 @@ export class MyEnergiApp extends Homey.App {
    */
   public async onInit() {
     const myenergiHubs = this.homey.settings.get('myenergiHubs');
+    const apiBaseUrl = this.homey.settings.get('apiBaseUrl');
+    if (apiBaseUrl)
+      this._apiBaseUrl = apiBaseUrl;
     this.initClients(myenergiHubs);
+
     this.homey.settings.on('set', key => {
       if (key === 'apiBaseUrl') {
         const apiBaseUrl = this.homey.settings.get('apiBaseUrl');
         if (apiBaseUrl)
           this._apiBaseUrl = apiBaseUrl;
+        this.log(`Saved apiBaseUrl ${this._apiBaseUrl}`);
         //throw new Error("Test error!");        
+        const hubs = this.homey.settings.get('myenergiHubs');
+        this.initClients(hubs);
       }
       if (key === 'myenergiHubs') {
         const hubs = this.homey.settings.get('myenergiHubs');
         this.initClients(hubs);
       }
     });
+
     this.runDataUpdate();
     this.log('myenergi app has been initialized');
   }
