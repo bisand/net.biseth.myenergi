@@ -31,5 +31,8 @@
   },
   "1.5.2": {
     "en": "Added a setting for adjusting total energy consumption offset for Zappi"
+  },
+  "1.5.3": {
+    "en": "Added improvements to settings page. Introduced API base url field in settings. Improved API authentication and redirection."
   }
 }
