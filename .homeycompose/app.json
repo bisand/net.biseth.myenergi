@@ -105,5 +105,11 @@
         "name": "Ted Dÿring"
       }
     ]
+  },
+  "api": {
+    "validateCredentials": {
+      "method": "POST",
+      "path": "/"
+    }
   }
 }

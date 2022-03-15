@@ -185,7 +185,7 @@
             $('.deleteHub').on('click', { hubIndex: 0 }, deleteHub);
 
             //Go through inputs filling up the array of arrays.
-            $('#saveHubs').on('click', function () {
+            $('#saveHubs').on('click', async function () {
                 myenergiHubs = [];
                 $('.fieldset').each(function () {
                     const hubName = (
@@ -221,16 +221,28 @@
                     Homey.alert(`Invalid API URL (${apiBaseUrl}). Please try again.`);
                     return;
                 }
+
+                let readyToSave = true;
+                for (const hub of myenergiHubs) {
+                    await Homey.api("POST", "/validateCredentials", { username: hub.username, password: hub.password }, function (err, result) {
+                        if (err) {
+                            readyToSave = false;
+                            return Homey.alert(`An error ocurred while trying to validate credentials: ${JSON.stringify(err)} ${JSON.stringify(result)}`);
+                        };
+                    });
+                }
+
                 setTimeout(() => {
                     Homey.set('apiBaseUrl', apiBaseUrl, function (err) {
                         if (err) return Homey.alert(err);
                     });
-                    setTimeout(() => {
-                        Homey.set('myenergiHubs', myenergiHubs, function (err) {
-                            if (err) return Homey.alert(err);
-                        });
-                        displayStatus('Settings successfully saved.');
-                    }, 500);
+                    if (readyToSave)
+                        setTimeout(() => {
+                            Homey.set('myenergiHubs', myenergiHubs, function (err) {
+                                if (err) return Homey.alert(err);
+                            });
+                            displayStatus('Settings successfully saved.');
+                        }, 500);
                 }, 1);
             });
 

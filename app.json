@@ -107,6 +107,12 @@
       }
     ]
   },
+  "api": {
+    "validateCredentials": {
+      "method": "POST",
+      "path": "/"
+    }
+  },
   "drivers": [
     {
       "name": {

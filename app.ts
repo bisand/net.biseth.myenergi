@@ -3,6 +3,8 @@ sourceMapSupport.install();
 
 import Homey from 'homey';
 import { MyEnergi } from 'myenergi-api';
+import { Credential } from './models/Credential';
+import { Response } from './models/Result';
 
 // Start debuger
 //if (process.env.DEBUG === '1') {
@@ -64,9 +66,26 @@ export class MyEnergiApp extends Homey.App {
     }, this._dataUpdateInterval);
   }
 
+  private async checkCredentials(apiBaseUrl: string, hubs: any[]): Promise<string[]> {
+    let result: string[] = [];
+    for (const hub of hubs) {
+      try {
+        const client = new MyEnergi(hub.username, hub.password, apiBaseUrl);
+        const data = await client.getStatusAll();
+        this.log(`Credential check: ${data}`);
+        if (data) {
+        }
+      } catch (error: any) {
+        this.log(`Credential check error: ${error}`);
+        result.push(error);
+      }
+    }
+    return result;
+  }
+
   /**
-   * onInit is called when the app is initialized.
-   */
+ * onInit is called when the app is initialized.
+ */
   public async onInit() {
     const myenergiHubs = this.homey.settings.get('myenergiHubs');
     const apiBaseUrl = this.homey.settings.get('apiBaseUrl');
@@ -74,25 +93,47 @@ export class MyEnergiApp extends Homey.App {
       this._apiBaseUrl = apiBaseUrl;
     this.initClients(myenergiHubs);
 
-    this.homey.settings.on('set', key => {
+    this.homey.settings.on('set', async key => {
+
+      const apiBaseUrl = this.homey.settings.get('apiBaseUrl');
+      const hubs = this.homey.settings.get('myenergiHubs');
+
       if (key === 'apiBaseUrl') {
-        const apiBaseUrl = this.homey.settings.get('apiBaseUrl');
+        this.log(`Saved apiBaseUrl ${apiBaseUrl}`);
         if (apiBaseUrl)
           this._apiBaseUrl = apiBaseUrl;
-        this.log(`Saved apiBaseUrl ${this._apiBaseUrl}`);
+      }
 
-        const hubs = this.homey.settings.get('myenergiHubs');
-        this.initClients(hubs);
-      }
       if (key === 'myenergiHubs') {
-        const hubs = this.homey.settings.get('myenergiHubs');
+        this.log(`Saved myenergiHubs ${hubs}`);
+        const errors = await this.checkCredentials(apiBaseUrl, hubs);
+        this.log(`Errors: ${errors.join(',')}`);
+        if (errors.length > 0) {
+          throw new Error(errors.join(','));
+        }
         this.initClients(hubs);
       }
+
     });
 
     this.runDataUpdate();
     this.log('myenergi app has been initialized');
   }
+
+  /*******************
+   * API functions   * 
+   *******************/
+
+  /**
+   * Validate credentials API call
+   * @param body Credentials
+   */
+  async validateCredentials(body: Credential): Promise<Response> {
+    let response = { result: 'error' };
+    return response;
+  }
+
+
 
 }
 
