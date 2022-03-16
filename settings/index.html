@@ -227,7 +227,6 @@
                 });
                 const apiBaseUrl = $('input[name="apiBaseUrl"]').val();
 
-                // $('#log').val(JSON.stringify(myenergiHubs));
                 if (!isValidURL(apiBaseUrl)) {
                     Homey.alert(`Invalid API URL (${apiBaseUrl}). Please try again.`);
                     return;
