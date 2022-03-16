@@ -108,8 +108,12 @@
     ]
   },
   "api": {
-    "validateCredentials": {
+    "postLogin": {
       "method": "POST",
+      "path": "/login/"
+    },
+    "getTest": {
+      "method": "GET",
       "path": "/"
     }
   },

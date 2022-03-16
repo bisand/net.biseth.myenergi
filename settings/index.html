@@ -66,7 +66,7 @@
                 <br />
                 <span>
                     <i>
-                        Note! Be careful not to use too short intervals. This could cause
+                        Note! Be careful not to use too short intervals. (Min 5 sec) This could cause
                         you to be locked out from the myenergi API.
                     </i>
                 </span>
@@ -162,6 +162,17 @@
                 return (res !== null)
             }
 
+            async function validateCredentials(hub) {
+                return await new Promise((resolve, reject) => {
+                    Homey.api('POST', '/login/', { username: hub.username, password: hub.password }, function (err, result) {
+                        if (err)
+                            reject('An error ocurred while validating credentials')
+                        else
+                            resolve(result);
+                    });
+                });
+            }
+
             $('input[name="apiBaseUrl"]').bind("propertychange change click keyup input paste", function (event) {
                 if (!isValidURL($(this).val())) {
                     $(this).css({ 'border-color': 'red', 'color': 'red' });
@@ -222,28 +233,26 @@
                     return;
                 }
 
-                let readyToSave = true;
-                for (const hub of myenergiHubs) {
-                    await Homey.api("POST", "/validateCredentials", { username: hub.username, password: hub.password }, function (err, result) {
-                        if (err) {
-                            readyToSave = false;
-                            return Homey.alert(`An error ocurred while trying to validate credentials: ${JSON.stringify(err)} ${JSON.stringify(result)}`);
-                        };
-                    });
-                }
+                Homey.set('apiBaseUrl', apiBaseUrl, function (err) {
+                    if (err) return Homey.alert(err);
+                });
 
-                setTimeout(() => {
-                    Homey.set('apiBaseUrl', apiBaseUrl, function (err) {
+                let saveHubs = [];
+                for (const hub of myenergiHubs) {
+                    try {
+                        const res = await validateCredentials(hub);
+                        saveHubs.push(res.result == 'ok');
+                        Homey.alert(`Success: ${JSON.stringify(res)}`);
+                    } catch (error) {
+                        Homey.alert(`Error: ${JSON.stringify(error)}`);
+                    }
+                }
+                if (saveHubs && saveHubs.length > 0 && saveHubs.every(x => x === true)) {
+                    Homey.set('myenergiHubs', myenergiHubs, function (err) {
                         if (err) return Homey.alert(err);
                     });
-                    if (readyToSave)
-                        setTimeout(() => {
-                            Homey.set('myenergiHubs', myenergiHubs, function (err) {
-                                if (err) return Homey.alert(err);
-                            });
-                            displayStatus('Settings successfully saved.');
-                        }, 500);
-                }, 1);
+                    displayStatus('Settings successfully saved.');
+                }
             });
 
             Homey.get('myenergiHubs', function (err, hubs) {

@@ -5,6 +5,7 @@ import Homey from 'homey';
 import { MyEnergi } from 'myenergi-api';
 import { Credential } from './models/Credential';
 import { Response } from './models/Result';
+import { resolve } from 'dns';
 
 // Start debuger
 //if (process.env.DEBUG === '1') {
@@ -69,18 +70,25 @@ export class MyEnergiApp extends Homey.App {
   private async checkCredentials(apiBaseUrl: string, hubs: any[]): Promise<string[]> {
     let result: string[] = [];
     for (const hub of hubs) {
-      try {
-        const client = new MyEnergi(hub.username, hub.password, apiBaseUrl);
-        const data = await client.getStatusAll();
-        this.log(`Credential check: ${data}`);
-        if (data) {
-        }
-      } catch (error: any) {
-        this.log(`Credential check error: ${error}`);
-        result.push(error);
-      }
+      const res = await this.checkCredential(hub.username, hub.password, apiBaseUrl);
+      if (!res)
+        result.push(`${hub.hubname} with serial ${hub.username} failed authentication.`);
     }
     return result;
+  }
+
+  private async checkCredential(apiBaseUrl: string, username: string, password: string): Promise<boolean> {
+    try {
+      const client = new MyEnergi(username, password, apiBaseUrl);
+      const data = await client.getStatusAll();
+      this.log(`Credential check: ${JSON.stringify(data)}`);
+      if (data && Array.isArray(data)) {
+        return true;
+      }
+    } catch (error) {
+      this.log(`Credential check error: ${JSON.stringify(error)}`);
+    }
+    return false;
   }
 
   /**
@@ -106,11 +114,6 @@ export class MyEnergiApp extends Homey.App {
 
       if (key === 'myenergiHubs') {
         this.log(`Saved myenergiHubs ${hubs}`);
-        const errors = await this.checkCredentials(apiBaseUrl, hubs);
-        this.log(`Errors: ${errors.join(',')}`);
-        if (errors.length > 0) {
-          throw new Error(errors.join(','));
-        }
         this.initClients(hubs);
       }
 
@@ -128,13 +131,10 @@ export class MyEnergiApp extends Homey.App {
    * Validate credentials API call
    * @param body Credentials
    */
-  async validateCredentials(body: Credential): Promise<Response> {
-    let response = { result: 'error' };
-    return response;
+  public async validateCredentials(body: Credential): Promise<Response> {
+    const res = await this.checkCredential(this._apiBaseUrl, body.username, body.password);
+    return res ? { result: 'ok' } : { result: 'error' } as Response;
   }
-
-
-
 }
 
 module.exports = MyEnergiApp;
