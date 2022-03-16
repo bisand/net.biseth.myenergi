@@ -241,10 +241,13 @@
                 for (const hub of myenergiHubs) {
                     try {
                         const res = await validateCredentials(hub);
-                        saveHubs.push(res.result == 'ok');
-                        Homey.alert(`Success: ${JSON.stringify(res)}`);
+                        saveHubs.push(res.result === 'ok');
+                        if (res.result !== 'ok') {
+                            Homey.alert(`Failed to authenticate hub ${hub.hubname} with serial ${hub.username}`);
+                            return;
+                        }
                     } catch (error) {
-                        Homey.alert(`Error: ${JSON.stringify(error)}`);
+                        saveHubs.push(false);
                     }
                 }
                 if (saveHubs && saveHubs.length > 0 && saveHubs.every(x => x === true)) {
