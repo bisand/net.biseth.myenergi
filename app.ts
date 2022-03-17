@@ -101,12 +101,10 @@ export class MyEnergiApp extends Homey.App {
         if (apiBaseUrl)
           this._apiBaseUrl = apiBaseUrl;
       }
-
       if (key === 'myenergiHubs') {
-        this.log(`Saved myenergiHubs ${hubs}`);
-        this.initClients(hubs);
+        this.log(`Saved myenergiHubs ${JSON.stringify(hubs)}`);
       }
-
+      this.initClients(hubs);
     });
 
     this.runDataUpdate();
