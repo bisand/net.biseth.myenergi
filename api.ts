@@ -1,7 +1,5 @@
-import { SimpleClass } from 'homey';
 import Homey from 'homey/lib/Homey';
 import { MyEnergiApp } from './app';
-import { Credential } from './models/Credential';
 
 module.exports = {
 

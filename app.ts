@@ -5,7 +5,6 @@ import Homey from 'homey';
 import { MyEnergi } from 'myenergi-api';
 import { Credential } from './models/Credential';
 import { Response } from './models/Result';
-import { resolve } from 'dns';
 
 // Start debuger
 //if (process.env.DEBUG === '1') {
