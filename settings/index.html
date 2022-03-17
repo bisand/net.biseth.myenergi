@@ -45,7 +45,7 @@
         </div>
     </fieldset>
 
-    <fieldset class="fieldset">
+    <fieldset class="fieldset" id="fieldset-1">
         <legend>myenergi Hub</legend>
         <div class="container">
             <div class="field row">
@@ -66,7 +66,7 @@
                 <br />
                 <span>
                     <i>
-                        Note! Be careful not to use too short intervals. (Min 5 sec) This could cause
+                        Note! Be careful not to use too short intervals. (min 5 sec) This could cause
                         you to be locked out from the myenergi API.
                     </i>
                 </span>
@@ -104,15 +104,26 @@
                 });
             }
 
+            function incrementString(str) {
+                // Find the trailing number or it will match the empty string
+                var count = str.match(/\d*$/);
+
+                // Take the substring up until where the integer was matched
+                // Concatenate it to the matched count incremented by 1
+                return str.substr(0, count.index) + (++count[0]);
+            }
+
             //Function to replicate fields in the form
             function replicateFields() {
-                var elementToReplicate = $('.fieldset').first(); //Only clone first group of inputs
+                var elementToReplicate = $('.fieldset').last(); //Only clone first group of inputs
                 clonedElement = elementToReplicate.clone(); //Cloned the element
                 var hubIndex = elementToReplicate.find('#hubIndex').val();
                 hubIndex++;
                 clonedElement.find('input').val(''); //Clear cloned elements value on each new addition
                 clonedElement.find('.deleteHub').on('click', { hubIndex: hubIndex }, deleteHub);
                 clonedElement.find('.deleteHub').css({ 'display': 'block' });
+                let id = elementToReplicate.attr('id');
+                clonedElement.attr('id', incrementString(id));
                 clonedElement.insertBefore($('#statusMessage'));
             }
 
@@ -237,17 +248,21 @@
                 });
 
                 let saveHubs = [];
+                let fieldsetId = 1;
                 for (const hub of myenergiHubs) {
                     try {
                         const res = await validateCredentials(hub);
                         saveHubs.push(res.result === 'ok');
                         if (res.result !== 'ok') {
+                            $(`#fieldset-${fieldsetId}`).css({ 'background-color': 'orange' });
                             Homey.alert(`Failed to authenticate hub ${hub.hubname} with serial ${hub.username}`);
                             return;
                         }
+                        $(`#fieldset-${fieldsetId}`).css({ 'background-color': '' });
                     } catch (error) {
                         saveHubs.push(false);
                     }
+                    fieldsetId++;
                 }
                 if (saveHubs && saveHubs.length > 0 && saveHubs.every(x => x === true)) {
                     Homey.set('myenergiHubs', myenergiHubs, function (err) {
