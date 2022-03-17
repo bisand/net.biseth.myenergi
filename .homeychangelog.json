@@ -37,5 +37,8 @@
   },
   "1.5.4": {
     "en": "Improved authentication logic on app settings page."
+  },
+  "1.5.5": {
+    "en": "Minor code cleanup"
   }
 }
