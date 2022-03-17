@@ -67,16 +67,6 @@ export class MyEnergiApp extends Homey.App {
     }, this._dataUpdateInterval);
   }
 
-  private async checkCredentials(apiBaseUrl: string, hubs: any[]): Promise<string[]> {
-    let result: string[] = [];
-    for (const hub of hubs) {
-      const res = await this.checkCredential(hub.username, hub.password, apiBaseUrl);
-      if (!res)
-        result.push(`${hub.hubname} with serial ${hub.username} failed authentication.`);
-    }
-    return result;
-  }
-
   private async checkCredential(apiBaseUrl: string, username: string, password: string): Promise<boolean> {
     try {
       const client = new MyEnergi(username, password, apiBaseUrl);
