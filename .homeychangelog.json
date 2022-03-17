@@ -34,5 +34,8 @@
   },
   "1.5.3": {
     "en": "Added improvements to settings page. Introduced API base url field in settings. Improved API authentication and redirection."
+  },
+  "1.5.4": {
+    "en": "Improved authentication logic on app settings page."
   }
 }
