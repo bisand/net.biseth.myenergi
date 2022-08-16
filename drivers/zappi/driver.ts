@@ -13,6 +13,8 @@ export class ZappiDriver extends Driver {
   private _chargingStopped!: FlowCardTriggerDevice;
   private _chargeModeChanged!: FlowCardTriggerDevice;
   private _boostModeChanged!: FlowCardTriggerDevice;
+  private _evConnected!: FlowCardTriggerDevice;
+  private _evDisconnected!: FlowCardTriggerDevice;
 
   private _capabilities: Capability[] = [
     new Capability('onoff', CapabilityType.Control, 1),
@@ -35,6 +37,7 @@ export class ZappiDriver extends Driver {
     new Capability('zappi_boost_kwh', CapabilityType.Sensor, 18),
     new Capability('zappi_boost_time', CapabilityType.Sensor, 19),
     new Capability('zappi_boost_kwh_remaining', CapabilityType.Sensor, 20),
+    new Capability('ev_connected', CapabilityType.Sensor, 21),
   ];
 
   public zappiDevices: ZappiData[] = [];
@@ -56,6 +59,8 @@ export class ZappiDriver extends Driver {
     this._chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
     this._chargeModeChanged = this.homey.flow.getDeviceTriggerCard('charge_mode_changed');
     this._boostModeChanged = this.homey.flow.getDeviceTriggerCard('boost_mode_changed');
+    this._evConnected = this.homey.flow.getDeviceTriggerCard('ev_connected');
+    this._evDisconnected = this.homey.flow.getDeviceTriggerCard('ev_disconnected');
     this.log('ZappiDriver has been initialized');
   }
 
@@ -84,6 +89,20 @@ export class ZappiDriver extends Driver {
     this._boostModeChanged
       .trigger(device, tokens, state)
       .then((x: any) => this.log(`triggerBoostModeFlow: ${x}`))
+      .catch(this.error);
+  }
+
+  public triggerEvConnectedFlow(device: any, tokens: any, state: any) {
+    this._evConnected
+      .trigger(device, tokens, state)
+      .then((x: any) => this.log(`triggerEvConnectedFlow: ${x}`))
+      .catch(this.error);
+  }
+
+  public triggerEvDisconnectedFlow(device: any, tokens: any, state: any) {
+    this._evDisconnected
+      .trigger(device, tokens, state)
+      .then((x: any) => this.log(`triggerEvDisconnectedFlow: ${x}`))
       .catch(this.error);
   }
 

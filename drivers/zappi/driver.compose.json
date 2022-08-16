@@ -23,7 +23,8 @@
     "minimum_green_level",
     "zappi_boost_kwh",
     "zappi_boost_time",
-    "zappi_boost_kwh_remaining"
+    "zappi_boost_kwh_remaining",
+    "ev_connected"
   ],
   "capabilitiesOptions": {
     "charge_mode_selector": {

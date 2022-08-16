@@ -282,6 +282,7 @@ export class ZappiDevice extends Device {
     dev.setCapabilityValue('zappi_boost_kwh', (dev._boostMode === ZappiBoostMode.Manual ? dev._boostManualKwh : (dev._boostMode === ZappiBoostMode.Smart ? dev._boostSmartKwh : 0))).catch(dev.error);
     dev.setCapabilityValue('zappi_boost_kwh_remaining', (dev._boostMode === ZappiBoostMode.Manual ? dev._boostManualKwhRemaining : (dev._boostMode === ZappiBoostMode.Smart ? dev._boostSmartKwhRemaining : 0))).catch(dev.error);
     dev.setCapabilityValue('zappi_boost_time', `${dev._boostSmartTime}`).catch(dev.error);
+    dev.setCapabilityValue('ev_connected', dev._chargerStatus !== ZappiStatus.EvDisconnected).catch(dev.error);
   }
 
   /**
