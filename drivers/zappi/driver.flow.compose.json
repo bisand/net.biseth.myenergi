@@ -276,6 +276,40 @@
                 "sv": "När Zappi ändrade laddarens boost-läge",
                 "de": "Wenn Zappi den boost-modus geändert hat "
             }
+        },
+        {
+            "id": "ev_connected",
+            "title": {
+                "en": "EV connected",
+                "no": "Elbil tilkoblet",
+                "nl": "EV aangesloten",
+                "sv": "Elbil ansluten",
+                "de": "EV verbunden"
+            },
+            "hint": {
+                "en": "When the EV is connected to Zappi",
+                "no": "Når elbilen blir tilkoblet Zappi",
+                "nl": "Wanneer de EV is aangesloten op Zappi",
+                "sv": "När elbilen är kopplad till Zappi",
+                "de": "Wenn das EV mit Zappi verbunden ist"
+            }
+        },
+        {
+            "id": "ev_disconnected",
+            "title": {
+                "en": "EV disconnected",
+                "no": "Elbil frakoblet",
+                "nl": "EV losgekoppeld",
+                "sv": "Elbil frånkopplad",
+                "de": "EV getrennt"
+            },
+            "hint": {
+                "en": "When the EV is disconnected from Zappi",
+                "no": "Når elbilen blir frakoblet Zappi",
+                "nl": "Wanneer de EV is losgekoppeld van Zappi",
+                "sv": "När elbilen är frånkopplad Zappi",
+                "de": "Wenn das EV von Zappi getrennt wird"
+            }
         }
     ]
 }

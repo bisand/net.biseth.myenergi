@@ -40,5 +40,8 @@
   },
   "1.5.5": {
     "en": "Minor code cleanup"
+  },
+  "1.6.0": {
+    "en": "Added new EV connected capability and included it in flows"
   }
 }
