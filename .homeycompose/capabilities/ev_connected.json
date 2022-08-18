@@ -1,0 +1,14 @@
+{
+    "type": "boolean",
+    "title": {
+        "en": "EV connected",
+        "no": "Elbil tilkoblet",
+        "nl": "EV aangesloten",
+        "sv": "Elbil ansluten",
+        "de": "EV verbunden"
+  },
+    "getable": true,
+    "setable": true,
+    "uiComponent": "sensor",
+    "icon": "/assets/accessories.svg"
+}

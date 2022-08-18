@@ -21,6 +21,7 @@ export class ZappiDevice extends Device {
   private _chargerStatus: ZappiStatus = ZappiStatus.EvDisconnected;
   private _boostMode: ZappiBoostMode = ZappiBoostMode.Stop;
   private _lastBoostState: ZappiBoostMode = ZappiBoostMode.Stop;
+  private _lastEvConnected: boolean = false;
   private _boostManualKwh: number = 0;
   private _boostSmartKwh: number = 0;
   private _boostManualKwhRemaining: number = 0;
@@ -66,7 +67,7 @@ export class ZappiDevice extends Device {
       dev.myenergiClient = dev._app.clients[dev.myenergiClientId];
       const zappi = await dev.myenergiClient?.getStatusZappi(dev.deviceId).catch(dev.error);
       if (zappi) {
-        dev.calculateValues(zappi); // P=U*I -> I=P/U
+        dev.calculateValues(zappi, true); // P=U*I -> I=P/U
         if (dev._chargeMode !== ZappiChargeMode.Off) {
           dev._lastOnState = dev._chargeMode;
           dev._lastChargingStarted = true;
@@ -282,6 +283,7 @@ export class ZappiDevice extends Device {
     dev.setCapabilityValue('zappi_boost_kwh', (dev._boostMode === ZappiBoostMode.Manual ? dev._boostManualKwh : (dev._boostMode === ZappiBoostMode.Smart ? dev._boostSmartKwh : 0))).catch(dev.error);
     dev.setCapabilityValue('zappi_boost_kwh_remaining', (dev._boostMode === ZappiBoostMode.Manual ? dev._boostManualKwhRemaining : (dev._boostMode === ZappiBoostMode.Smart ? dev._boostSmartKwhRemaining : 0))).catch(dev.error);
     dev.setCapabilityValue('zappi_boost_time', `${dev._boostSmartTime}`).catch(dev.error);
+    dev.setCapabilityValue('ev_connected', dev._chargerStatus !== ZappiStatus.EvDisconnected).catch(dev.error);
   }
 
   /**
@@ -351,7 +353,7 @@ export class ZappiDevice extends Device {
   /**
    * Assign and calculate values from Zappi.
    */
-  private async calculateValues(zappi: Zappi): Promise<void> {
+  private async calculateValues(zappi: Zappi, initializing: boolean = false): Promise<void> {
     const dev: ZappiDevice = this;
     dev._chargeMode = zappi.zmo;
     dev._chargerStatus = zappi.pst as ZappiStatus;
@@ -412,6 +414,12 @@ export class ZappiDevice extends Device {
 
       dev.setSettings(tmpSettings);
     }
+
+    let evConnected = dev._chargerStatus !== ZappiStatus.EvDisconnected;
+    if (!initializing && evConnected !== this._lastEvConnected) {
+      evConnected ? this.triggerEvConnectedFlow(evConnected) : this.triggerEvDisconnectedFlow(evConnected)
+    }
+    this._lastEvConnected = evConnected;
   }
 
   /**
@@ -479,6 +487,44 @@ export class ZappiDevice extends Device {
 
     dev.driver.ready().then(() => {
       (dev.driver as ZappiDriver).triggerBoostModeFlow(dev, tokens, state);
+    });
+  }
+
+  /**
+  * Trigger EV connected flows.
+  * @param evConnected true if charging has started
+  * @returns void
+  */
+   private async triggerEvConnectedFlow(evConnected: boolean): Promise<void> {
+    const dev: ZappiDevice = this;
+    const tokens = {}; //TODO Add tokens
+    const state = {};
+    if (evConnected === dev._lastEvConnected) {
+      return;
+    }
+    dev._lastEvConnected = evConnected;
+
+    dev.driver.ready().then(() => {
+      (dev.driver as ZappiDriver).triggerEvConnectedFlow(dev, tokens, state);
+    });
+  }
+
+  /**
+  * Trigger EV connected flows.
+  * @param evConnected true if charging has started
+  * @returns void
+  */
+   private async triggerEvDisconnectedFlow(evConnected: boolean): Promise<void> {
+    const dev: ZappiDevice = this;
+    const tokens = {}; //TODO Add tokens
+    const state = {};
+    if (evConnected === dev._lastEvConnected) {
+      return;
+    }
+    dev._lastEvConnected = evConnected;
+
+    dev.driver.ready().then(() => {
+      (dev.driver as ZappiDriver).triggerEvDisconnectedFlow(dev, tokens, state);
     });
   }
 
