@@ -1,5 +1,11 @@
 {
 	"version": "2.0.0",
 	"tasks": [
+		{
+			"label": "CopyBuild",
+			"type": "shell",
+			"command": "cp -f ./.homeybuild ./build",
+			"problemMatcher": []
+		}
 	]
 }

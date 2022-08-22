@@ -1,4 +1,5 @@
 import { Driver, FlowCardTriggerDevice } from 'homey';
+import { MyEnergi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
 import { Capability } from '../../models/Capability';
 import { CapabilityType } from '../../models/CapabilityType';
@@ -130,8 +131,8 @@ export class ZappiDriver extends Driver {
   private async loadZappiDevices(): Promise<ZappiData[]> {
     for (const key in this._app.clients) {
       if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
-        const client = this._app.clients[key];
-        const zappis: ZappiData[] = await client.getStatusZappiAll();
+        const client: MyEnergi = this._app.clients[key];
+        const zappis: ZappiData[] = await client.getStatusZappiAll() as ZappiData[];
         for (const zappi of zappis) {
           if (this.zappiDevices.findIndex((z: ZappiData) => z.sno === zappi.sno) === -1) {
             zappi.myenergiClientId = key;
@@ -146,7 +147,7 @@ export class ZappiDriver extends Driver {
 
   private async getZappiDevices() {
     const zappiDevices = await this.loadZappiDevices();
-    return zappiDevices.map((v, i, a) => {
+    const result = zappiDevices.map((v, i, a) => {
       return {
         name: `Zappi ${v.sno}`,
         data: { id: v.sno },
@@ -159,6 +160,15 @@ export class ZappiDriver extends Driver {
         },
       };
     });
+    if (process.env.DEBUG === '1') {
+      try {
+        const myenergiClientId = result[0]?.store.myenergiClientId;
+        result.push(this.getFakeZappi(myenergiClientId, '99999999', 'Zappi Test 123'));        
+      } catch (error) {
+        
+      }
+    }
+    return result;
   }
 
   /**
@@ -178,6 +188,46 @@ export class ZappiDriver extends Driver {
     }
   }
 
+  /**
+   * Generates a fake Zappi EV charger that can be used for testing/debug porposes.
+   * @returns A fake Zappi object.
+   */
+  private getFakeZappi(myenergiClientId: string, id: string, name: string): any {
+    return {
+      name: name,
+      data: {
+        id: id,
+      },
+      icon: 'icon.svg',
+      store: {
+        myenergiClientId: myenergiClientId
+      },
+      capabilities: [
+        "onoff",
+        "charge_mode_selector",
+        "set_minimum_green_level",
+        "button.reset_meter",
+        "button.reload_capabilities",
+        "charge_mode",
+        "charge_mode_txt",
+        "charger_status",
+        "charger_status_txt",
+        "measure_power",
+        "measure_current",
+        "measure_voltage",
+        "measure_frequency",
+        "charge_session_consumption",
+        "meter_power",
+        "zappi_boost_mode",
+        "minimum_green_level",
+        "zappi_boost_kwh",
+        "zappi_boost_time",
+        "zappi_boost_kwh_remaining",
+        "ev_connected"
+      ],
+      capabilitiesOptions: {}
+    };
+  }
 }
 
 module.exports = ZappiDriver;

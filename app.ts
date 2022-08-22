@@ -6,11 +6,6 @@ import { MyEnergi } from 'myenergi-api';
 import { Credential } from './models/Credential';
 import { Response } from './models/Result';
 
-// Start debuger
-//if (process.env.DEBUG === '1') {
-//  require('inspector').open(9229, '0.0.0.0', false);
-//  require(“inspector”).open(9229, “0.0.0.0”, true);
-//}
 export class MyEnergiApp extends Homey.App {
 
   private _dataUpdateInterval: number = 60 * 1000;
@@ -84,6 +79,13 @@ export class MyEnergiApp extends Homey.App {
  * onInit is called when the app is initialized.
  */
   public async onInit() {
+
+    // Start debuger
+    if (process.env.DEBUG === '1') {
+      require('inspector').open(9229, '0.0.0.0', true);
+      debugger;
+    }
+
     const myenergiHubs = this.homey.settings.get('myenergiHubs');
     const apiBaseUrl = this.homey.settings.get('apiBaseUrl');
     if (apiBaseUrl)

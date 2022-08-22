@@ -103,33 +103,49 @@ export class ZappiDevice extends Device {
     const startChargingAction = dev.homey.flow.getActionCard('start_charging');
     startChargingAction.registerRunListener(async (args, state) => {
       dev.log(`Start Charging: ${args} - ${state}`);
-      await dev.setChargerState(true);
+      try {
+        await dev.setChargerState(true);
+      } catch (error) {
+        dev.error(error);
+      }
     });
 
     const stopChargingAction = dev.homey.flow.getActionCard('stop_charging');
     stopChargingAction.registerRunListener(async (args, state) => {
       dev.log(`Stop Charging: ${args} - ${state}`);
-      await dev.setChargerState(false);
+      try {
+        await dev.setChargerState(false);
+      } catch (error) {
+        dev.error(error);
+      }
     });
 
     const setChargeModeAction = dev.homey.flow.getActionCard('set_charge_mode');
     setChargeModeAction.registerRunListener(async (args, state) => {
       dev.log(`Charge Mode: ${args.charge_mode_txt}`);
-      dev._chargeMode = dev.getChargeMode(args.charge_mode_txt);
-      if (dev._chargeMode !== ZappiChargeMode.Off) {
-        dev._lastOnState = dev._chargeMode;
+      try {
+        dev._chargeMode = dev.getChargeMode(args.charge_mode_txt);
+        if (dev._chargeMode !== ZappiChargeMode.Off) {
+          dev._lastOnState = dev._chargeMode;
+        }
+        await dev.setChargeMode(dev._chargeMode);
+      } catch (error) {
+        dev.error(error);
       }
-      await dev.setChargeMode(dev._chargeMode);
     });
 
     const selectChargeModeAction = dev.homey.flow.getActionCard('select_charge_mode');
     selectChargeModeAction.registerRunListener(async (args, state) => {
       dev.log(`Charge Mode: ${args.charge_mode_selector}`);
-      dev._chargeMode = dev.getChargeMode(args.charge_mode_selector);
-      if (dev._chargeMode !== ZappiChargeMode.Off) {
-        dev._lastOnState = dev._chargeMode;
+      try {
+        dev._chargeMode = dev.getChargeMode(args.charge_mode_selector);
+        if (dev._chargeMode !== ZappiChargeMode.Off) {
+          dev._lastOnState = dev._chargeMode;
+        }
+        await dev.setChargeMode(dev._chargeMode);
+      } catch (error) {
+        dev.error(error);
       }
-      await dev.setChargeMode(dev._chargeMode);
     });
 
     const setBoostModeAction = dev.homey.flow.getActionCard('set_boost_mode');
@@ -138,16 +154,24 @@ export class ZappiDevice extends Device {
       const kwh = args.boost_mode_kwh ? args.boost_mode_kwh as number : 0;
       const completeTime = dev.getValidBoostTime(args.boost_mode_complete_time ? args.boost_mode_complete_time : '0000');
       dev.log(`Complete time: ${completeTime}`);
-      dev._boostMode = dev.getBoostMode(args.boost_mode_txt);
-      dev._lastBoostState = dev._boostMode;
-      await dev.setBoostMode(dev._boostMode, kwh, completeTime);
+      try {
+        dev._boostMode = dev.getBoostMode(args.boost_mode_txt);
+        dev._lastBoostState = dev._boostMode;
+        await dev.setBoostMode(dev._boostMode, kwh, completeTime);
+      } catch (error) {
+        dev.error(error);
+      }
     });
 
     const setMinimumGreenLevelAction = dev.homey.flow.getActionCard('set_minimum_green_level');
     setMinimumGreenLevelAction.registerRunListener(async (args, state) => {
       dev.log(`Minimum Green Level: ${args.minimum_green_level}`);
       dev._minimumGreenLevel = args.minimum_green_level;
-      await dev.setMinimumGreenLevel(dev._minimumGreenLevel);
+      try {
+        await dev.setMinimumGreenLevel(dev._minimumGreenLevel);
+      } catch (error) {
+        dev.error(error);
+      }
     });
 
     dev.log(`ZappiDevice ${dev.deviceId} has been initialized`);
@@ -495,7 +519,7 @@ export class ZappiDevice extends Device {
   * @param evConnected true if charging has started
   * @returns void
   */
-   private async triggerEvConnectedFlow(evConnected: boolean): Promise<void> {
+  private async triggerEvConnectedFlow(evConnected: boolean): Promise<void> {
     const dev: ZappiDevice = this;
     const tokens = {}; //TODO Add tokens
     const state = {};
@@ -514,7 +538,7 @@ export class ZappiDevice extends Device {
   * @param evConnected true if charging has started
   * @returns void
   */
-   private async triggerEvDisconnectedFlow(evConnected: boolean): Promise<void> {
+  private async triggerEvDisconnectedFlow(evConnected: boolean): Promise<void> {
     const dev: ZappiDevice = this;
     const tokens = {}; //TODO Add tokens
     const state = {};
@@ -655,10 +679,15 @@ export class ZappiDevice extends Device {
     if (dev._chargeMode !== ZappiChargeMode.Off) {
       dev._lastOnState = dev._chargeMode;
     }
-    await dev.setChargerState(dev._chargeMode !== ZappiChargeMode.Off);
-    dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
-    dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
-    dev.setCapabilityValue('charge_mode_txt', `${dev.getChargeModeText(dev._chargeMode as ZappiChargeMode)}`).catch(dev.error);
+    try {
+      await dev.setChargerState(dev._chargeMode !== ZappiChargeMode.Off);
+      dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
+      dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
+      dev.setCapabilityValue('charge_mode_txt', `${dev.getChargeModeText(dev._chargeMode as ZappiChargeMode)}`).catch(dev.error);
+
+    } catch (error) {
+      dev.error(error);
+    }
   }
 
   /**
@@ -669,10 +698,14 @@ export class ZappiDevice extends Device {
   private async onCapabilityOnoff(value: boolean, opts: any): Promise<void> {
     const dev: ZappiDevice = this;
     dev.log(`onoff: ${value}`);
-    await dev.setChargerState(value);
-    dev.setCapabilityValue('charge_mode', value ? `${dev._chargeMode}` : `${ZappiChargeMode.Off}`).catch(dev.error);
-    dev.setCapabilityValue('charge_mode_txt', value ? `${dev.getChargeModeText(dev._chargeMode)}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
-    dev.setCapabilityValue('charge_mode_selector', value ? `${dev._chargeMode}` : `${ZappiChargeMode.Off}`).catch(dev.error);
+    try {
+      await dev.setChargerState(value);
+      dev.setCapabilityValue('charge_mode', value ? `${dev._chargeMode}` : `${ZappiChargeMode.Off}`).catch(dev.error);
+      dev.setCapabilityValue('charge_mode_txt', value ? `${dev.getChargeModeText(dev._chargeMode)}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
+      dev.setCapabilityValue('charge_mode_selector', value ? `${dev._chargeMode}` : `${ZappiChargeMode.Off}`).catch(dev.error);
+    } catch (error) {
+      dev.error(error);
+    }
   }
 
   /**

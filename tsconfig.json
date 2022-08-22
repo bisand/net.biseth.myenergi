@@ -2,6 +2,6 @@
   "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
     "outDir": "build/",
-    "sourceMap": true
+    "sourceMap": true,
   }
 }
