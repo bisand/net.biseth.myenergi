@@ -1,5 +1,5 @@
 import { Driver, FlowCardTriggerDevice } from 'homey';
-import { MyEnergi } from 'myenergi-api';
+import { MyEnergi, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
 import { Capability } from '../../models/Capability';
 import { CapabilityType } from '../../models/CapabilityType';
@@ -62,6 +62,96 @@ export class ZappiDriver extends Driver {
     this._boostModeChanged = this.homey.flow.getDeviceTriggerCard('boost_mode_changed');
     this._evConnected = this.homey.flow.getDeviceTriggerCard('ev_connected');
     this._evDisconnected = this.homey.flow.getDeviceTriggerCard('ev_disconnected');
+
+    // Flow logic
+    const chargingCondition = this.homey.flow.getConditionCard('is_charging');
+    chargingCondition.registerRunListener(async (args, state) => {
+      const dev = args.device;
+      dev.log(`Is Charging: ${args} - ${state}`);
+      const charging = dev._chargerStatus === ZappiStatus.Charging; // true or false
+      return charging;
+    });
+
+    const startChargingAction = this.homey.flow.getActionCard('start_charging');
+    startChargingAction.registerRunListener(async (args, state) => {
+      const dev = args.device;
+      dev.log(`Start Charging: ${args} - ${state}`);
+      try {
+        await dev.setChargerState(true);
+      } catch (error) {
+        dev.error(error);
+      }
+    });
+
+    const stopChargingAction = this.homey.flow.getActionCard('stop_charging');
+    stopChargingAction.registerRunListener(async (args, state) => {
+      const dev = args.device;
+      dev.log(`Stop Charging: ${args} - ${state}`);
+      try {
+        await dev.setChargerState(false);
+      } catch (error) {
+        dev.error(error);
+      }
+    });
+
+    const setChargeModeAction = this.homey.flow.getActionCard('set_charge_mode');
+    setChargeModeAction.registerRunListener(async (args, state) => {
+      const dev = args.device;
+      dev.log(`Charge Mode: ${args.charge_mode_txt}`);
+      try {
+        dev._chargeMode = dev.getChargeMode(args.charge_mode_txt);
+        if (dev._chargeMode !== ZappiChargeMode.Off) {
+          dev._lastOnState = dev._chargeMode;
+        }
+        await dev.setChargeMode(dev._chargeMode);
+      } catch (error) {
+        dev.error(error);
+      }
+    });
+
+    const selectChargeModeAction = this.homey.flow.getActionCard('select_charge_mode');
+    selectChargeModeAction.registerRunListener(async (args, state) => {
+      const dev = args.device;
+      dev.log(`Charge Mode: ${args.charge_mode_selector}`);
+      try {
+        dev._chargeMode = dev.getChargeMode(args.charge_mode_selector);
+        if (dev._chargeMode !== ZappiChargeMode.Off) {
+          dev._lastOnState = dev._chargeMode;
+        }
+        await dev.setChargeMode(dev._chargeMode);
+      } catch (error) {
+        dev.error(error);
+      }
+    });
+
+    const setBoostModeAction = this.homey.flow.getActionCard('set_boost_mode');
+    setBoostModeAction.registerRunListener(async (args, state) => {
+      const dev = args.device;
+      dev.log(`Boost Mode: ${args.boost_mode_txt}, Boost Mode: ${args.boost_mode_kwh}, Boost Mode: ${args.boost_mode_complete_time}`);
+      const kwh = args.boost_mode_kwh ? args.boost_mode_kwh as number : 0;
+      const completeTime = dev.getValidBoostTime(args.boost_mode_complete_time ? args.boost_mode_complete_time : '0000');
+      dev.log(`Complete time: ${completeTime}`);
+      try {
+        dev._boostMode = dev.getBoostMode(args.boost_mode_txt);
+        dev._lastBoostState = dev._boostMode;
+        await dev.setBoostMode(dev._boostMode, kwh, completeTime);
+      } catch (error) {
+        dev.error(error);
+      }
+    });
+
+    const setMinimumGreenLevelAction = this.homey.flow.getActionCard('set_minimum_green_level');
+    setMinimumGreenLevelAction.registerRunListener(async (args, state) => {
+      const dev = args.device;
+      dev.log(`Minimum Green Level: ${args.minimum_green_level}`);
+      dev._minimumGreenLevel = args.minimum_green_level;
+      try {
+        await dev.setMinimumGreenLevel(dev._minimumGreenLevel);
+      } catch (error) {
+        dev.error(error);
+      }
+    });
+
     this.log('ZappiDriver has been initialized');
   }
 

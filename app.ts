@@ -83,7 +83,7 @@ export class MyEnergiApp extends Homey.App {
     // Start debuger
     if (process.env.DEBUG === '1') {
       require('inspector').open(9229, '0.0.0.0', true);
-      debugger;
+      // debugger;
     }
 
     const myenergiHubs = this.homey.settings.get('myenergiHubs');
