@@ -1,6 +1,6 @@
 {
   "name": "net.biseth.myenergi",
-  "version": "1.0.1",
+  "version": "1.6.0",
   "main": "app.js",
   "repository": {
     "type": "git",
@@ -9,15 +9,16 @@
   "license": "GPL-3.0",
   "scripts": {
     "build": "tsc",
-    "lint": "tslint -c tslint.json '**/*.ts' -e 'node_modules/**/*.*' -e 'build/**/*.*'"
+    "lint": "tslint -c tslint.json '**/*.ts' -e 'node_modules/**/*.*' -e 'build/**/*.*'",
+    "test": "echo Not implemented!"
   },
   "devDependencies": {
-    "@tsconfig/node12": "^1.0.9",
-    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.2.2",
-    "@types/node": "^12.20.37",
+    "@tsconfig/node12": "^1.0.11",
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.1",
+    "@types/node": "^12",
     "@types/source-map-support": "^0.5.4",
     "tslint": "^6.1.3",
-    "typescript": "^4.5.4"
+    "typescript": "^4.7.4"
   },
   "dependencies": {
     "myenergi-api": "^1.1.0",

@@ -1,26 +1,36 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Attach by Process ID",
-            "processId": "${command:PickProcess}",
-            "request": "attach",
-            "skipFiles": [
-                "<node_internals>/**"
+            "name": "Launch app",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "homey",
+            "args": [
+                "app",
+                "run"
             ],
-            "type": "pwa-node"
+            "outputCapture": "std",
+            "serverReadyAction": {
+                "pattern": "Debugger listening on",
+                "action": "startDebugging",
+                "name": "Attach to Homey"
+            }
         },
         {
-			"type": "node",
-			"request": "attach",
-			"name": "Attach to Homey",
-			"address": "192.168.86.49",
-			"port": 9229,
-			"localRoot": "${workspaceFolder}",
-			"remoteRoot": "/"
-		}
+            "name": "Attach to Homey",
+            "type": "node",
+            "request": "attach",
+            "address": "192.168.86.49",
+            "port": 9229,
+            "sourceMaps": true,
+            "remoteRoot": "/",
+            "localRoot": "${workspaceFolder}/.homeybuild/",
+            "skipFiles": [
+                "<node_internals>/**",
+                "node_modules/**",
+            ],
+        }
     ]
 }
