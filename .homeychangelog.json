@@ -43,5 +43,8 @@
   },
   "1.6.0": {
     "en": "Added new EV connected capability and included it in flows"
+  },
+  "1.6.1": {
+    "en": "Fixed a bug that prevented control of multiple Zappi units from a flow."
   }
 }
