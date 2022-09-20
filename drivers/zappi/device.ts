@@ -12,32 +12,32 @@ export class ZappiDevice extends Device {
   private _app!: MyEnergiApp;
   private _driver!: ZappiDriver;
 
-  private _callbackId: number = -1;
+  private _callbackId = -1;
   private _chargeMode: ZappiChargeMode = ZappiChargeMode.Fast;
   private _lastOnState: ZappiChargeMode = ZappiChargeMode.Fast;
-  private _lastChargingStarted: boolean = false;
+  private _lastChargingStarted = false;
   private _lastChargeMode: ZappiChargeMode = ZappiChargeMode.Fast;
   private _lastBoostMode: ZappiBoostMode = ZappiBoostMode.Stop;
   private _chargerStatus: ZappiStatus = ZappiStatus.EvDisconnected;
   private _boostMode: ZappiBoostMode = ZappiBoostMode.Stop;
   private _lastBoostState: ZappiBoostMode = ZappiBoostMode.Stop;
-  private _lastEvConnected: boolean = false;
-  private _boostManualKwh: number = 0;
-  private _boostSmartKwh: number = 0;
-  private _boostManualKwhRemaining: number = 0;
-  private _boostSmartKwhRemaining: number = 0;
-  private _boostSmartTime: string = '';
-  private _chargingPower: number = 0;
-  private _chargingVoltage: number = 0;
-  private _chargingCurrent: number = 0;
-  private _chargeAdded: number = 0;
-  private _frequency: number = 0;
-  private _minimumGreenLevel: number = 0;
+  private _lastEvConnected = false;
+  private _boostManualKwh = 0;
+  private _boostSmartKwh = 0;
+  private _boostManualKwhRemaining = 0;
+  private _boostSmartKwhRemaining = 0;
+  private _boostSmartTime = '';
+  private _chargingPower = 0;
+  private _chargingVoltage = 0;
+  private _chargingCurrent = 0;
+  private _chargeAdded = 0;
+  private _frequency = 0;
+  private _minimumGreenLevel = 0;
   private _settings: any;
   private _powerCalculationModeSetToAuto!: boolean;
 
   private _lastEnergyCalculation: Date = new Date();
-  private _lastPowerMeasurement: number = 0;
+  private _lastPowerMeasurement = 0;
 
   public deviceId!: string;
   public myenergiClientId!: string;

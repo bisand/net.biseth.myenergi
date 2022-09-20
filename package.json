@@ -9,7 +9,7 @@
   "license": "GPL-3.0",
   "scripts": {
     "build": "tsc",
-    "lint": "tslint -c tslint.json '**/*.ts' -e 'node_modules/**/*.*' -e 'build/**/*.*'",
+    "lint": "npx eslint -c .eslintrc.json '**/*.ts'",
     "test": "echo Not implemented!"
   },
   "devDependencies": {
