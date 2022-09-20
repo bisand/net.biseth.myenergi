@@ -54,7 +54,7 @@ export class ZappiDevice extends Device {
 
     // Make sure capabilities are up to date.
     if (dev.detectCapabilityChanges()) {
-      await dev.InitializeCapabilities();
+      await dev.InitializeCapabilities().catch(this.error);
     }
 
     dev._settings = dev.getSettings();
@@ -630,7 +630,7 @@ export class ZappiDevice extends Device {
   private async onCapabilityGreenLevel(value: number, opts: any): Promise<void> {
     const dev: ZappiDevice = this;
     dev.log(`Minimum Green Level: ${value}`);
-    await dev.setMinimumGreenLevel(value);
+    await dev.setMinimumGreenLevel(value).catch(this.error);
   }
 
   private getChargeMode(value: ZappiChargeModeText): ZappiChargeMode {

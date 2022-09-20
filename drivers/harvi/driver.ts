@@ -55,7 +55,7 @@ export class HarviDriver extends Driver {
     for (const key in this._app.clients) {
       if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
         const client = this._app.clients[key];
-        const harvis: HarviData[] = await client.getStatusHarviAll();
+        const harvis: HarviData[] = await client.getStatusHarviAll().catch(this.error);
         for (const harvi of harvis) {
           if (this.harviDevices.findIndex((h: HarviData) => h.sno === harvi.sno) === -1) {
             harvi.myenergiClientId = key;
@@ -69,7 +69,7 @@ export class HarviDriver extends Driver {
   }
 
   private async getHarviDevices() {
-    const harviDevices = await this.loadHarviDevices();
+    const harviDevices = await this.loadHarviDevices().catch(this.error) as HarviData[];
     return harviDevices.map((v, i, a) => {
       return {
         name: `Harvi ${v.sno}`,

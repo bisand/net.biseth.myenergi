@@ -251,7 +251,7 @@ export class ZappiDriver extends Driver {
     for (const key in this._app.clients) {
       if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
         const client: MyEnergi = this._app.clients[key];
-        const zappis: ZappiData[] = await client.getStatusZappiAll() as ZappiData[];
+        const zappis: ZappiData[] = await client.getStatusZappiAll().catch(this.error) as ZappiData[];
         for (const zappi of zappis) {
           if (this.zappiDevices.findIndex((z: ZappiData) => z.sno === zappi.sno) === -1) {
             zappi.myenergiClientId = key;
@@ -265,7 +265,7 @@ export class ZappiDriver extends Driver {
   }
 
   private async getZappiDevices() {
-    const zappiDevices = await this.loadZappiDevices();
+    const zappiDevices = await this.loadZappiDevices().catch(this.error) as ZappiData[];
     const result = zappiDevices.map((v, i, a) => {
       return {
         name: `Zappi ${v.sno}`,
@@ -300,7 +300,7 @@ export class ZappiDriver extends Driver {
       throw new Error("Can not find any myenergi hubs. Please add the hub credentials under myenergi app settings.");
 
     try {
-      const devs = await this.getZappiDevices();
+      const devs = await this.getZappiDevices().catch(this.error);
       return devs ? devs : [];
     } catch (error) {
       throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`);

@@ -1,19 +1,21 @@
-import sourceMapSupport from 'source-map-support';
-sourceMapSupport.install();
+// import sourceMapSupport from 'source-map-support';
+// sourceMapSupport.install();
 
 import Homey from 'homey';
 import { MyEnergi } from 'myenergi-api';
 import { Credential } from './models/Credential';
 import { Response } from './models/Result';
+import { SchedulerService } from './services/SchedulerService';
 
 export class MyEnergiApp extends Homey.App {
 
   private _dataUpdateInterval: number = 60 * 1000;
   private _dataUpdateId!: NodeJS.Timeout;
   private _dataUpdateCallbacks: any[] = [];
-  private _apiBaseUrl: string = 'https://s18.myenergi.net';
+  private _apiBaseUrl = 'https://s18.myenergi.net';
 
   public clients: any;
+  private _schedulerService!: SchedulerService;
 
   private async initClients(hubs: any) {
     this.log(`Starting client init...`);
@@ -34,6 +36,36 @@ export class MyEnergiApp extends Homey.App {
         this.log(`Added hub ${hub.hubname} with url ${this._apiBaseUrl}`);
       });
     }
+
+    const runDataUpdate = () => {
+      const updateInterval: number = this._dataUpdateInterval / 1000;
+      this.log(`Starting scheduled data update. Running every ${updateInterval} seconds.`);
+      if (this.clients) {
+        Object.keys(this.clients).forEach(async c => {
+          this.log(`Fetching data for ${c}`);
+          const client: MyEnergi = this.clients[c] as MyEnergi;
+          const data = await client.getStatusAll().catch(this.error);
+          if (data)
+            this._dataUpdateCallbacks.forEach(callback => {
+              try {
+                callback(data);
+              } catch (error) {
+                this.error(error);
+              }
+            });
+        });
+      }
+    }
+
+    runDataUpdate();
+    if (!this._schedulerService) {
+      this._schedulerService = new SchedulerService(runDataUpdate, this._dataUpdateInterval);
+    } else {
+      this._schedulerService.stop();
+    }
+
+    this._schedulerService.start(this._dataUpdateInterval);
+
     this.log(`Client init complete.`);
   }
 
@@ -41,30 +73,10 @@ export class MyEnergiApp extends Homey.App {
     this._dataUpdateCallbacks.push(callback);
   }
 
-  private runDataUpdate() {
-    const updateInterval: number = this._dataUpdateInterval / 1000;
-    this.log(`Starting scheduled data update. Running every ${updateInterval} seconds.`);
-    clearTimeout(this._dataUpdateId);
-    if (this.clients) {
-      Object.keys(this.clients).forEach(async c => {
-        this.log(`Fetching data for ${c}`);
-        const client: MyEnergi = this.clients[c] as MyEnergi;
-        const data = await client.getStatusAll().catch(this.error);
-        if (data)
-          this._dataUpdateCallbacks.forEach(callback => {
-            callback(data);
-          });
-      });
-    }
-    this._dataUpdateId = setTimeout(() => {
-      this.runDataUpdate();
-    }, this._dataUpdateInterval);
-  }
-
   private async checkCredential(apiBaseUrl: string, username: string, password: string): Promise<boolean> {
     try {
       const client = new MyEnergi(username, password, apiBaseUrl);
-      const data = await client.getStatusAll();
+      const data = await client.getStatusAll().catch(this.error);
       this.log(`Credential check: ${JSON.stringify(data)}`);
       if (data && Array.isArray(data)) {
         return true;
@@ -82,7 +94,7 @@ export class MyEnergiApp extends Homey.App {
 
     // Start debuger
     if (process.env.DEBUG === '1') {
-      require('inspector').open(9229, '0.0.0.0', true);
+      // require('inspector').open(9229, '0.0.0.0', false);
       // debugger;
     }
 
@@ -108,7 +120,6 @@ export class MyEnergiApp extends Homey.App {
       this.initClients(hubs);
     });
 
-    this.runDataUpdate();
     this.log('myenergi app has been initialized');
   }
 
@@ -121,7 +132,7 @@ export class MyEnergiApp extends Homey.App {
    * @param body Credentials
    */
   public async validateCredentials(body: Credential): Promise<Response> {
-    const res = await this.checkCredential(this._apiBaseUrl, body.username, body.password);
+    const res = await this.checkCredential(this._apiBaseUrl, body.username, body.password).catch(this.error);
     return res ? { result: 'ok' } : { result: 'error' } as Response;
   }
 }

@@ -5,7 +5,7 @@ module.exports = {
 
     async postLogin(data: { homey: Homey, body: any }) {
         const app = data.homey.app as MyEnergiApp;
-        const response = await app.validateCredentials(data.body);
+        const response = await app.validateCredentials(data.body).catch(this.error);
         console.log(response);
         return (response);
     },

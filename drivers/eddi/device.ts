@@ -143,15 +143,15 @@ export class EddiDevice extends Device {
       }
       dev.log(`Eddi was switched ${isOn ? 'on' : 'off'}`);
     } catch (error) {
+      dev.error(`Switching the Eddi ${isOn ? 'on' : 'off'} failed!`)
       dev.error(error);
-      throw new Error(`Switching the Eddi ${isOn ? 'on' : 'off'} failed!`);
     }
   }
 
   public async onCapabilityOnoff(value: boolean, opts: any) {
     const dev: EddiDevice = this;
     dev.log(`onoff: ${value}`);
-    await dev.setEddiMode(value);
+    await dev.setEddiMode(value).catch(dev.error);
     dev.setCapabilityValue('onoff', value ? EddiMode.On : EddiMode.Off).catch(dev.error);
     dev.setCapabilityValue('heater_status', value ? `${dev._lastHeaterStatus}` : EddiHeaterStatus.Stopped).catch(dev.error);
   }

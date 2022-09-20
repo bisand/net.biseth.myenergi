@@ -60,7 +60,7 @@ export class EddiDriver extends Driver {
     for (const key in this._app.clients) {
       if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
         const client = this._app.clients[key];
-        const eddis: EddiData[] = await client.getStatusEddiAll();
+        const eddis: EddiData[] = await client.getStatusEddiAll().catch(this.error);
         for (const eddi of eddis) {
           if (this.eddiDevices.findIndex((e: EddiData) => e.sno === eddi.sno) === -1) {
             eddi.myenergiClientId = key;
@@ -74,7 +74,7 @@ export class EddiDriver extends Driver {
   }
 
   private async getEddiDevices() {
-    const eddiDevices = await this.loadEddiDevices();
+    const eddiDevices = await this.loadEddiDevices().catch(this.error) as EddiData[];
     return eddiDevices.map((v, i, a) => {
       return {
         name: `Eddi ${v.sno}`,
