@@ -54,7 +54,6 @@ export class ZappiDriver extends Driver {
    * onInit is called when the driver is initialized.
    */
   public async onInit() {
-    const drv = this;
     this._app = this.homey.app as MyEnergiApp;
     this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this._chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
@@ -69,7 +68,7 @@ export class ZappiDriver extends Driver {
     chargingCondition.registerRunListener(async (args, state) => {
       const dev = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: is_charging');
+        this.error('Unable to detect device on flow: is_charging');
         return;
       }
       dev.log(`Is Charging: ${args} - ${state}`);
@@ -81,7 +80,7 @@ export class ZappiDriver extends Driver {
     startChargingAction.registerRunListener(async (args, state) => {
       const dev = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: start_charging');
+        this.error('Unable to detect device on flow: start_charging');
         return;
       }
       dev.log(`Start Charging: ${args} - ${state}`);
@@ -96,7 +95,7 @@ export class ZappiDriver extends Driver {
     stopChargingAction.registerRunListener(async (args, state) => {
       const dev = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: stop_charging');
+        this.error('Unable to detect device on flow: stop_charging');
         return;
       }
       dev.log(`Stop Charging: ${args} - ${state}`);
@@ -111,7 +110,7 @@ export class ZappiDriver extends Driver {
     setChargeModeAction.registerRunListener(async (args, state) => {
       const dev = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: set_charge_mode');
+        this.error('Unable to detect device on flow: set_charge_mode');
         return;
       }
       dev.log(`Charge Mode: ${args.charge_mode_txt}`);
@@ -130,7 +129,7 @@ export class ZappiDriver extends Driver {
     selectChargeModeAction.registerRunListener(async (args, state) => {
       const dev = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: select_charge_mode');
+        this.error('Unable to detect device on flow: select_charge_mode');
         return;
       }
       dev.log(`Charge Mode: ${args.charge_mode_selector}`);
@@ -149,7 +148,7 @@ export class ZappiDriver extends Driver {
     setBoostModeAction.registerRunListener(async (args, state) => {
       const dev = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: set_boost_mode');
+        this.error('Unable to detect device on flow: set_boost_mode');
         return;
       }
       dev.log(`Boost Mode: ${args.boost_mode_txt}, Boost Mode: ${args.boost_mode_kwh}, Boost Mode: ${args.boost_mode_complete_time}`);
@@ -169,7 +168,7 @@ export class ZappiDriver extends Driver {
     setMinimumGreenLevelAction.registerRunListener(async (args, state) => {
       const dev = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: set_minimum_green_level');
+        this.error('Unable to detect device on flow: set_minimum_green_level');
         return;
       }
       dev.log(`Minimum Green Level: ${args.minimum_green_level}`);
@@ -284,7 +283,7 @@ export class ZappiDriver extends Driver {
         const myenergiClientId = result[0]?.store.myenergiClientId;
         result.push(this.getFakeZappi(myenergiClientId, '99999999', 'Zappi Test 123'));
       } catch (error) {
-
+        this.error(error);
       }
     }
     return result;

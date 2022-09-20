@@ -47,52 +47,51 @@ export class ZappiDevice extends Device {
    * onInit is called when the device is initialized.
    */
   public async onInit(): Promise<void> {
-    const dev = this as ZappiDevice;
 
-    dev._app = dev.homey.app as MyEnergiApp;
-    dev._driver = dev.driver as ZappiDriver;
+    this._app = this.homey.app as MyEnergiApp;
+    this._driver = this.driver as ZappiDriver;
 
     // Make sure capabilities are up to date.
-    if (dev.detectCapabilityChanges()) {
-      await dev.InitializeCapabilities().catch(this.error);
+    if (this.detectCapabilityChanges()) {
+      await this.InitializeCapabilities().catch(this.error);
     }
 
-    dev._settings = dev.getSettings();
-    dev._callbackId = dev._driver.registerDataUpdateCallback((data: any) => dev.dataUpdated(data)) - 1;
-    dev.deviceId = dev.getData().id;
-    dev.myenergiClientId = dev.getStoreValue('myenergiClientId');
+    this._settings = this.getSettings();
+    this._callbackId = this._driver.registerDataUpdateCallback((data: any) => this.dataUpdated(data)) - 1;
+    this.deviceId = this.getData().id;
+    this.myenergiClientId = this.getStoreValue('myenergiClientId');
 
     try {
       // Collect data.
-      dev.myenergiClient = dev._app.clients[dev.myenergiClientId];
-      const zappi = await dev.myenergiClient?.getStatusZappi(dev.deviceId).catch(dev.error);
+      this.myenergiClient = this._app.clients[this.myenergiClientId];
+      const zappi = await this.myenergiClient?.getStatusZappi(this.deviceId).catch(this.error);
       if (zappi) {
-        dev.calculateValues(zappi, true); // P=U*I -> I=P/U
-        if (dev._chargeMode !== ZappiChargeMode.Off) {
-          dev._lastOnState = dev._chargeMode;
-          dev._lastChargingStarted = true;
+        this.calculateValues(zappi, true); // P=U*I -> I=P/U
+        if (this._chargeMode !== ZappiChargeMode.Off) {
+          this._lastOnState = this._chargeMode;
+          this._lastChargingStarted = true;
         }
       }
     } catch (error) {
-      dev.error(error);
+      this.error(error);
     }
 
     // Set capabilities
-    dev.setCapabilityValues();
-    dev.log(`Status: ${dev._chargerStatus}`);
+    this.setCapabilityValues();
+    this.log(`Status: ${this._chargerStatus}`);
 
-    dev.registerCapabilityListener('onoff', dev.onCapabilityOnoff.bind(this));
-    dev.registerCapabilityListener('charge_mode_selector', dev.onCapabilityChargeMode.bind(this));
-    dev.registerCapabilityListener('set_minimum_green_level', dev.onCapabilityGreenLevel.bind(this));
+    this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
+    this.registerCapabilityListener('charge_mode_selector', this.onCapabilityChargeMode.bind(this));
+    this.registerCapabilityListener('set_minimum_green_level', this.onCapabilityGreenLevel.bind(this));
 
-    dev.registerCapabilityListener('button.reset_meter', async () => {
-      dev.setCapabilityValue('meter_power', 0);
+    this.registerCapabilityListener('button.reset_meter', async () => {
+      this.setCapabilityValue('meter_power', 0);
     });
-    dev.registerCapabilityListener('button.reload_capabilities', async () => {
-      dev.InitializeCapabilities();
+    this.registerCapabilityListener('button.reload_capabilities', async () => {
+      this.InitializeCapabilities();
     });
 
-    dev.log(`ZappiDevice ${dev.deviceId} has been initialized`);
+    this.log(`ZappiDevice ${this.deviceId} has been initialized`);
   }
 
   private isChargeModeValueText(value: ZappiChargeMode | ZappiChargeModeText): boolean {
@@ -141,60 +140,58 @@ export class ZappiDevice extends Device {
    * Validate capabilities. Add new and delete removed capabilities.
    */
   private async InitializeCapabilities(): Promise<void> {
-    const dev: ZappiDevice = this;
-    await this.setUnavailable('Zappi is currently doing some maintenance taks and will be back shortly.').catch(dev.error);
-    dev.log(`****** Initializing Zappi sensor capabilities ******`);
-    const caps = dev.getCapabilities();
+    await this.setUnavailable('Zappi is currently doing some maintenance taks and will be back shortly.').catch(this.error);
+    this.log(`****** Initializing Zappi sensor capabilities ******`);
+    const caps = this.getCapabilities();
     const tmpCaps: any = {};
     // Remove all capabilities in case the order has changed
     for (const cap of caps) {
       try {
         tmpCaps[cap] = this.getCapabilityValue(cap);
-        await dev.removeCapability(cap).catch(dev.error);
-        dev.log(`*** ${cap} - Removed`);
+        await this.removeCapability(cap).catch(this.error);
+        this.log(`*** ${cap} - Removed`);
       } catch (error) {
-        dev.error(error);
+        this.error(error);
       }
     }
     // Re-apply all capabilities.
-    for (const cap of dev._driver.capabilities) {
+    for (const cap of this._driver.capabilities) {
       try {
-        if (dev.hasCapability(cap))
+        if (this.hasCapability(cap))
           continue;
-        await dev.addCapability(cap).catch(dev.error);
+        await this.addCapability(cap).catch(this.error);
         if (tmpCaps[cap])
           this.setCapabilityValue(cap, tmpCaps[cap]);
-        dev.log(`*** ${cap} - Added`);
+        this.log(`*** ${cap} - Added`);
       } catch (error) {
-        dev.error(error);
+        this.error(error);
       }
     }
-    dev.log(`****** Sensor capability initialization complete ******`);
-    dev.setAvailable().catch(dev.error);
+    this.log(`****** Sensor capability initialization complete ******`);
+    this.setAvailable().catch(this.error);
   }
 
   /**
    * Validate capabilities. Add new and delete removed capabilities.
    */
   private detectCapabilityChanges(): boolean {
-    const dev: ZappiDevice = this;
     let result = false;
-    dev.log(`Detecting Zappi capability changes...`);
-    const caps = dev.getCapabilities();
+    this.log(`Detecting Zappi capability changes...`);
+    const caps = this.getCapabilities();
     for (const cap of caps) {
-      if (!dev._driver.capabilities.includes(cap)) {
-        dev.log(`Zappi capability ${cap} was removed.`);
+      if (!this._driver.capabilities.includes(cap)) {
+        this.log(`Zappi capability ${cap} was removed.`);
         result = true;
       }
     }
-    for (const cap of dev._driver.capabilities) {
-      if (!dev.hasCapability(cap)) {
-        dev.log(`Zappi capability ${cap} was added.`);
+    for (const cap of this._driver.capabilities) {
+      if (!this.hasCapability(cap)) {
+        this.log(`Zappi capability ${cap} was added.`);
         result = true;
       }
     }
     if (!result)
-      dev.log('No changes in capabilities.');
+      this.log('No changes in capabilities.');
     return result;
   }
 
@@ -206,26 +203,25 @@ export class ZappiDevice extends Device {
    * Set capability values from collected values.
    */
   private setCapabilityValues(): void {
-    const dev: ZappiDevice = this;
-    dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
-    dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
-    dev.setCapabilityValue('charge_mode_txt', `${dev.getChargeModeText(dev._chargeMode)}`).catch(dev.error);
-    dev.setCapabilityValue('charge_mode_selector', `${dev._chargeMode}`).catch(dev.error);
-    dev.setCapabilityValue('charger_status', `${dev._chargerStatus}`).catch(dev.error);
-    dev.setCapabilityValue('charger_status_txt', `${dev.getChargerStatusText(dev._chargerStatus)}`).catch(dev.error);
-    dev.setCapabilityValue('measure_power', dev._chargingPower ? dev._chargingPower : 0).catch(dev.error);
-    dev.setCapabilityValue('measure_voltage', dev._chargingVoltage ? dev._chargingVoltage : 0).catch(dev.error);
-    dev.setCapabilityValue('measure_current', dev._chargingCurrent ? dev._chargingCurrent : 0).catch(dev.error);
-    dev.setCapabilityValue('charge_session_consumption', dev._chargeAdded ? dev._chargeAdded : 0).catch(dev.error);
-    dev.setCapabilityValue('measure_frequency', dev._frequency ? dev._frequency : 0).catch(dev.error);
-    dev.setCapabilityValue('meter_power', dev.calculateEnergy()).catch(dev.error);
-    dev.setCapabilityValue('minimum_green_level', dev._minimumGreenLevel).catch(dev.error);
-    dev.setCapabilityValue('set_minimum_green_level', dev._minimumGreenLevel).catch(dev.error);
-    dev.setCapabilityValue('zappi_boost_mode', `${dev.getBoostModeText(dev._boostMode)}`).catch(dev.error);
-    dev.setCapabilityValue('zappi_boost_kwh', (dev._boostMode === ZappiBoostMode.Manual ? dev._boostManualKwh : (dev._boostMode === ZappiBoostMode.Smart ? dev._boostSmartKwh : 0))).catch(dev.error);
-    dev.setCapabilityValue('zappi_boost_kwh_remaining', (dev._boostMode === ZappiBoostMode.Manual ? dev._boostManualKwhRemaining : (dev._boostMode === ZappiBoostMode.Smart ? dev._boostSmartKwhRemaining : 0))).catch(dev.error);
-    dev.setCapabilityValue('zappi_boost_time', `${dev._boostSmartTime}`).catch(dev.error);
-    dev.setCapabilityValue('ev_connected', dev._chargerStatus !== ZappiStatus.EvDisconnected).catch(dev.error);
+    this.setCapabilityValue('onoff', this._chargeMode !== ZappiChargeMode.Off).catch(this.error);
+    this.setCapabilityValue('charge_mode', `${this._chargeMode}`).catch(this.error);
+    this.setCapabilityValue('charge_mode_txt', `${this.getChargeModeText(this._chargeMode)}`).catch(this.error);
+    this.setCapabilityValue('charge_mode_selector', `${this._chargeMode}`).catch(this.error);
+    this.setCapabilityValue('charger_status', `${this._chargerStatus}`).catch(this.error);
+    this.setCapabilityValue('charger_status_txt', `${this.getChargerStatusText(this._chargerStatus)}`).catch(this.error);
+    this.setCapabilityValue('measure_power', this._chargingPower ? this._chargingPower : 0).catch(this.error);
+    this.setCapabilityValue('measure_voltage', this._chargingVoltage ? this._chargingVoltage : 0).catch(this.error);
+    this.setCapabilityValue('measure_current', this._chargingCurrent ? this._chargingCurrent : 0).catch(this.error);
+    this.setCapabilityValue('charge_session_consumption', this._chargeAdded ? this._chargeAdded : 0).catch(this.error);
+    this.setCapabilityValue('measure_frequency', this._frequency ? this._frequency : 0).catch(this.error);
+    this.setCapabilityValue('meter_power', this.calculateEnergy()).catch(this.error);
+    this.setCapabilityValue('minimum_green_level', this._minimumGreenLevel).catch(this.error);
+    this.setCapabilityValue('set_minimum_green_level', this._minimumGreenLevel).catch(this.error);
+    this.setCapabilityValue('zappi_boost_mode', `${this.getBoostModeText(this._boostMode)}`).catch(this.error);
+    this.setCapabilityValue('zappi_boost_kwh', (this._boostMode === ZappiBoostMode.Manual ? this._boostManualKwh : (this._boostMode === ZappiBoostMode.Smart ? this._boostSmartKwh : 0))).catch(this.error);
+    this.setCapabilityValue('zappi_boost_kwh_remaining', (this._boostMode === ZappiBoostMode.Manual ? this._boostManualKwhRemaining : (this._boostMode === ZappiBoostMode.Smart ? this._boostSmartKwhRemaining : 0))).catch(this.error);
+    this.setCapabilityValue('zappi_boost_time', `${this._boostSmartTime}`).catch(this.error);
+    this.setCapabilityValue('ev_connected', this._chargerStatus !== ZappiStatus.EvDisconnected).catch(this.error);
   }
 
   /**
@@ -233,13 +229,12 @@ export class ZappiDevice extends Device {
    * @returns Accumulated kWh 
    */
   private calculateEnergy(): number {
-    const dev: ZappiDevice = this;
     const dateNow = new Date();
-    var seconds = Math.abs((dateNow.getTime() - this._lastEnergyCalculation.getTime()) / 1000);
-    let prevEnergy: number = dev.getCapabilityValue('meter_power');
-    let newEnergy: number = prevEnergy + ((((this._lastPowerMeasurement + dev._chargingPower) / 2) * seconds) / 3600000);
-    dev.log(`Energy algo: ${prevEnergy} + ((((${this._lastPowerMeasurement} + ${dev._chargingPower}) / 2) * ${seconds}) / 3600000)`);
-    this._lastPowerMeasurement = dev._chargingPower;
+    const seconds = Math.abs((dateNow.getTime() - this._lastEnergyCalculation.getTime()) / 1000);
+    const prevEnergy: number = this.getCapabilityValue('meter_power');
+    const newEnergy: number = prevEnergy + ((((this._lastPowerMeasurement + this._chargingPower) / 2) * seconds) / 3600000);
+    this.log(`Energy algo: ${prevEnergy} + ((((${this._lastPowerMeasurement} + ${this._chargingPower}) / 2) * ${seconds}) / 3600000)`);
+    this._lastPowerMeasurement = this._chargingPower;
     this._lastEnergyCalculation = dateNow;
     return newEnergy;
   }
@@ -268,26 +263,25 @@ export class ZappiDevice extends Device {
    * @returns Valid boost time string
    */
   private getValidBoostTime(timeString: string): string {
-    const dev: ZappiDevice = this;
     try {
-      var timeString = timeString.replace(/\D+/g, '');
+      timeString = timeString.replace(/\D+/g, '');
       while (timeString.length < 4) {
         timeString = '0' + timeString;
       }
       timeString = timeString.substring(timeString.length - 4);
-      let d = new Date();
+      const d = new Date();
       d.setHours(Number(timeString.substring(0, 2)), Number(timeString.substring(2, 4)), 0)
       d.setMilliseconds(Math.round(d.getMilliseconds() / 1000) * 1000);
       d.setSeconds(Math.round(d.getSeconds() / 60) * 60);
       d.setMinutes(Math.round(d.getMinutes() / 15) * 15);
 
-      let hours = this.format_two_digits(d.getHours());
-      let minutes = this.format_two_digits(d.getMinutes());
+      const hours = this.format_two_digits(d.getHours());
+      const minutes = this.format_two_digits(d.getMinutes());
 
       return `${hours}${minutes}`;
 
     } catch (error) {
-      dev.error(error);
+      this.error(error);
     }
     return '0000';
   }
@@ -295,55 +289,54 @@ export class ZappiDevice extends Device {
   /**
    * Assign and calculate values from Zappi.
    */
-  private async calculateValues(zappi: Zappi, initializing: boolean = false): Promise<void> {
-    const dev: ZappiDevice = this;
-    dev._chargeMode = zappi.zmo;
-    dev._chargerStatus = zappi.pst as ZappiStatus;
-    dev._chargingPower = 0;
-    if ((dev._settings.powerCalculationMode === 'automatic' && zappi.ectt1 === 'Internal Load')
-      || (dev._settings.powerCalculationMode === 'manual' && dev._settings.includeCT1)) {
-      dev._chargingPower += zappi.ectp1 ? zappi.ectp1 : 0;
+  private async calculateValues(zappi: Zappi, initializing = false): Promise<void> {
+    this._chargeMode = zappi.zmo;
+    this._chargerStatus = zappi.pst as ZappiStatus;
+    this._chargingPower = 0;
+    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt1 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT1)) {
+      this._chargingPower += zappi.ectp1 ? zappi.ectp1 : 0;
     }
-    if ((dev._settings.powerCalculationMode === 'automatic' && zappi.ectt2 === 'Internal Load')
-      || (dev._settings.powerCalculationMode === 'manual' && dev._settings.includeCT2)) {
-      dev._chargingPower += zappi.ectp2 ? zappi.ectp2 : 0;
+    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt2 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT2)) {
+      this._chargingPower += zappi.ectp2 ? zappi.ectp2 : 0;
     }
-    if ((dev._settings.powerCalculationMode === 'automatic' && zappi.ectt3 === 'Internal Load')
-      || (dev._settings.powerCalculationMode === 'manual' && dev._settings.includeCT3)) {
-      dev._chargingPower += zappi.ectp3 ? zappi.ectp3 : 0;
+    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt3 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT3)) {
+      this._chargingPower += zappi.ectp3 ? zappi.ectp3 : 0;
     }
-    if ((dev._settings.powerCalculationMode === 'automatic' && zappi.ectt4 === 'Internal Load')
-      || (dev._settings.powerCalculationMode === 'manual' && dev._settings.includeCT4)) {
-      dev._chargingPower += zappi.ectp4 ? zappi.ectp4 : 0;
+    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt4 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT4)) {
+      this._chargingPower += zappi.ectp4 ? zappi.ectp4 : 0;
     }
-    if ((dev._settings.powerCalculationMode === 'automatic' && zappi.ectt5 === 'Internal Load')
-      || (dev._settings.powerCalculationMode === 'manual' && dev._settings.includeCT5)) {
-      dev._chargingPower += zappi.ectp5 ? zappi.ectp5 : 0;
+    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt5 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT5)) {
+      this._chargingPower += zappi.ectp5 ? zappi.ectp5 : 0;
     }
-    if ((dev._settings.powerCalculationMode === 'automatic' && zappi.ectt6 === 'Internal Load')
-      || (dev._settings.powerCalculationMode === 'manual' && dev._settings.includeCT6)) {
-      dev._chargingPower += zappi.ectp6 ? zappi.ectp6 : 0;
-    }
-
-    if (dev._settings.showNegativeValues === false) {
-      dev._chargingPower = dev._chargingPower > 0 ? dev._chargingPower : 0;
+    if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt6 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT6)) {
+      this._chargingPower += zappi.ectp6 ? zappi.ectp6 : 0;
     }
 
-    dev._chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
-    dev._chargeAdded = zappi.che ? zappi.che : 0;
-    dev._frequency = zappi.frq ? zappi.frq : 0;
-    dev._minimumGreenLevel = zappi.mgl ? zappi.mgl : 0;
-    dev._chargingCurrent = (dev._chargingVoltage > 0) ? (dev._chargingPower / dev._chargingVoltage) : 0; // P=U*I -> I=P/U
+    if (this._settings.showNegativeValues === false) {
+      this._chargingPower = this._chargingPower > 0 ? this._chargingPower : 0;
+    }
 
-    dev._boostMode = (zappi.bsm === 1 && zappi.tbk ? ZappiBoostMode.Manual : (zappi.bss === 1 ? ZappiBoostMode.Smart : ZappiBoostMode.Stop));
-    dev._boostManualKwh = zappi.tbk ? zappi.tbk : 0;
-    dev._boostSmartKwh = zappi.sbk ? zappi.sbk : 0;
-    dev._boostManualKwhRemaining = (zappi.bsm === 1) ? zappi.tbk - zappi.che : 0;
-    dev._boostSmartKwhRemaining = (zappi.bss === 1) ? zappi.sbk - zappi.che : 0;
-    dev._boostSmartTime = (zappi.sbh ? dev.format_two_digits(zappi.sbh) : '00') + ':' + (zappi.sbm ? dev.format_two_digits(zappi.sbm) : '00');
+    this._chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
+    this._chargeAdded = zappi.che ? zappi.che : 0;
+    this._frequency = zappi.frq ? zappi.frq : 0;
+    this._minimumGreenLevel = zappi.mgl ? zappi.mgl : 0;
+    this._chargingCurrent = (this._chargingVoltage > 0) ? (this._chargingPower / this._chargingVoltage) : 0; // P=U*I -> I=P/U
 
-    if (dev._powerCalculationModeSetToAuto) {
-      dev._powerCalculationModeSetToAuto = false;
+    this._boostMode = (zappi.bsm === 1 && zappi.tbk ? ZappiBoostMode.Manual : (zappi.bss === 1 ? ZappiBoostMode.Smart : ZappiBoostMode.Stop));
+    this._boostManualKwh = zappi.tbk ? zappi.tbk : 0;
+    this._boostSmartKwh = zappi.sbk ? zappi.sbk : 0;
+    this._boostManualKwhRemaining = (zappi.bsm === 1) ? zappi.tbk - zappi.che : 0;
+    this._boostSmartKwhRemaining = (zappi.bss === 1) ? zappi.sbk - zappi.che : 0;
+    this._boostSmartTime = (zappi.sbh ? this.format_two_digits(zappi.sbh) : '00') + ':' + (zappi.sbm ? this.format_two_digits(zappi.sbm) : '00');
+
+    if (this._powerCalculationModeSetToAuto) {
+      this._powerCalculationModeSetToAuto = false;
       const tmpSettings: any =
       {
         includeCT1: zappi.ectt1 === 'Internal Load',
@@ -354,10 +347,10 @@ export class ZappiDevice extends Device {
         includeCT6: zappi.ectt6 === 'Internal Load',
       };
 
-      dev.setSettings(tmpSettings);
+      this.setSettings(tmpSettings);
     }
 
-    let evConnected = dev._chargerStatus !== ZappiStatus.EvDisconnected;
+    const evConnected = this._chargerStatus !== ZappiStatus.EvDisconnected;
     if (!initializing && evConnected !== this._lastEvConnected) {
       evConnected ? this.triggerEvConnectedFlow(evConnected) : this.triggerEvDisconnectedFlow(evConnected)
     }
@@ -370,19 +363,18 @@ export class ZappiDevice extends Device {
    * @returns void
    */
   private async triggerChargingFlow(chargingStarted: boolean): Promise<void> {
-    const dev: ZappiDevice = this;
     const tokens = {}; //TODO Add tokens
     const state = {};
-    if (chargingStarted === dev._lastChargingStarted) {
+    if (chargingStarted === this._lastChargingStarted) {
       return;
     }
-    dev._lastChargingStarted = chargingStarted;
+    this._lastChargingStarted = chargingStarted;
 
-    dev.driver.ready().then(() => {
+    this.driver.ready().then(() => {
       if (chargingStarted) {
-        (dev.driver as ZappiDriver).triggerChargingStartedFlow(dev, tokens, state);
+        (this.driver as ZappiDriver).triggerChargingStartedFlow(this, tokens, state);
       } else {
-        (dev.driver as ZappiDriver).triggerChargingStoppedFlow(dev, tokens, state);
+        (this.driver as ZappiDriver).triggerChargingStoppedFlow(this, tokens, state);
       }
     });
   }
@@ -393,21 +385,20 @@ export class ZappiDevice extends Device {
    * @returns void
    */
   private async triggerChargeModeFlow(chargeMode: ZappiChargeMode): Promise<void> {
-    const dev: ZappiDevice = this;
     const tokens = {}; //TODO Add tokens
     const state = {};
-    if (chargeMode === dev._lastChargeMode) {
+    if (chargeMode === this._lastChargeMode) {
       return;
     }
-    const isTurnedOn = dev._lastChargeMode === ZappiChargeMode.Off;
-    dev._lastChargeMode = chargeMode;
+    const isTurnedOn = this._lastChargeMode === ZappiChargeMode.Off;
+    this._lastChargeMode = chargeMode;
 
-    dev.driver.ready().then(() => {
-      (dev.driver as ZappiDriver).triggerChargeModeFlow(dev, tokens, state);
+    this.driver.ready().then(() => {
+      (this.driver as ZappiDriver).triggerChargeModeFlow(this, tokens, state);
       if (chargeMode === ZappiChargeMode.Off) {
-        (dev.driver as ZappiDriver).triggerChargingStoppedFlow(dev, tokens, state);
+        (this.driver as ZappiDriver).triggerChargingStoppedFlow(this, tokens, state);
       } else if (isTurnedOn) {
-        (dev.driver as ZappiDriver).triggerChargingStartedFlow(dev, tokens, state);
+        (this.driver as ZappiDriver).triggerChargingStartedFlow(this, tokens, state);
       }
     });
   }
@@ -418,17 +409,16 @@ export class ZappiDevice extends Device {
    * @returns void
    */
   private async triggerBoostModeFlow(boostMode: ZappiBoostMode): Promise<void> {
-    const dev: ZappiDevice = this;
     const tokens = {}; //TODO Add tokens
     const state = {};
-    if (boostMode === dev._lastBoostMode) {
+    if (boostMode === this._lastBoostMode) {
       return;
     }
-    const isTurnedOn = dev._lastChargeMode === ZappiChargeMode.Off;
-    dev._lastBoostMode = boostMode;
+    const isTurnedOn = this._lastChargeMode === ZappiChargeMode.Off;
+    this._lastBoostMode = boostMode;
 
-    dev.driver.ready().then(() => {
-      (dev.driver as ZappiDriver).triggerBoostModeFlow(dev, tokens, state);
+    this.driver.ready().then(() => {
+      (this.driver as ZappiDriver).triggerBoostModeFlow(this, tokens, state);
     });
   }
 
@@ -438,16 +428,15 @@ export class ZappiDevice extends Device {
   * @returns void
   */
   private async triggerEvConnectedFlow(evConnected: boolean): Promise<void> {
-    const dev: ZappiDevice = this;
     const tokens = {}; //TODO Add tokens
     const state = {};
-    if (evConnected === dev._lastEvConnected) {
+    if (evConnected === this._lastEvConnected) {
       return;
     }
-    dev._lastEvConnected = evConnected;
+    this._lastEvConnected = evConnected;
 
-    dev.driver.ready().then(() => {
-      (dev.driver as ZappiDriver).triggerEvConnectedFlow(dev, tokens, state);
+    this.driver.ready().then(() => {
+      (this.driver as ZappiDriver).triggerEvConnectedFlow(this, tokens, state);
     });
   }
 
@@ -457,16 +446,15 @@ export class ZappiDevice extends Device {
   * @returns void
   */
   private async triggerEvDisconnectedFlow(evConnected: boolean): Promise<void> {
-    const dev: ZappiDevice = this;
     const tokens = {}; //TODO Add tokens
     const state = {};
-    if (evConnected === dev._lastEvConnected) {
+    if (evConnected === this._lastEvConnected) {
       return;
     }
-    dev._lastEvConnected = evConnected;
+    this._lastEvConnected = evConnected;
 
-    dev.driver.ready().then(() => {
-      (dev.driver as ZappiDriver).triggerEvDisconnectedFlow(dev, tokens, state);
+    this.driver.ready().then(() => {
+      (this.driver as ZappiDriver).triggerEvDisconnectedFlow(this, tokens, state);
     });
   }
 
@@ -475,21 +463,20 @@ export class ZappiDevice extends Device {
    * @param data Zappi data
    */
   private async dataUpdated(data: ZappiData[]): Promise<void> {
-    const dev: ZappiDevice = this;
-    dev.log('Received data from driver.');
-    if (!dev.getAvailable())
+    this.log('Received data from driver.');
+    if (!this.getAvailable())
       return;
     if (data) {
       data.forEach((zappi: ZappiData) => {
-        if (zappi && zappi.sno === dev.deviceId) {
+        if (zappi && zappi.sno === this.deviceId) {
           try {
             if (zappi.zmo !== ZappiChargeMode.Off) {
-              dev._lastOnState = zappi.zmo;
+              this._lastOnState = zappi.zmo;
             }
-            dev.calculateValues(zappi);
-            dev.setCapabilityValues();
+            this.calculateValues(zappi);
+            this.setCapabilityValues();
           } catch (error) {
-            dev.error(error);
+            this.error(error);
           }
         }
       });
@@ -501,16 +488,15 @@ export class ZappiDevice extends Device {
    * @param isOn true if charger is on
    */
   private async setChargerState(isOn: boolean): Promise<void> {
-    const dev: ZappiDevice = this;
     try {
-      const result = await dev.myenergiClient?.setZappiChargeMode(dev.deviceId, isOn ? dev._lastOnState : ZappiChargeMode.Off);
+      const result = await this.myenergiClient?.setZappiChargeMode(this.deviceId, isOn ? this._lastOnState : ZappiChargeMode.Off);
       if (result.status !== 0) {
         throw new Error(result);
       }
-      dev.triggerChargingFlow(isOn);
-      dev.log(`Zappi was switched ${isOn ? 'on' : 'off'}`);
+      this.triggerChargingFlow(isOn);
+      this.log(`Zappi was switched ${isOn ? 'on' : 'off'}`);
     } catch (error) {
-      dev.error(`Switching the Zappi ${isOn ? 'on' : 'off'} failed:\n${error}`);
+      this.error(`Switching the Zappi ${isOn ? 'on' : 'off'} failed:\n${error}`);
     }
   }
 
@@ -519,16 +505,15 @@ export class ZappiDevice extends Device {
    * @param value Percentage generated power
    */
   private async setMinimumGreenLevel(value: number): Promise<void> {
-    const dev: ZappiDevice = this;
     try {
-      const result = await dev.myenergiClient?.setZappiGreenLevel(dev.deviceId, value);
+      const result = await this.myenergiClient?.setZappiGreenLevel(this.deviceId, value);
       if (result.mgl !== value) {
         throw new Error(JSON.stringify(result));
       }
-      dev.setCapabilityValue('minimum_green_level', value).catch(dev.error);
-      dev.setCapabilityValue('set_minimum_green_level', value).catch(dev.error);
+      this.setCapabilityValue('minimum_green_level', value).catch(this.error);
+      this.setCapabilityValue('set_minimum_green_level', value).catch(this.error);
     } catch (error) {
-      dev.error(`Setting minimum greenn level to ${value} failed:\n${error}`);
+      this.error(`Setting minimum greenn level to ${value} failed:\n${error}`);
     }
   }
 
@@ -537,23 +522,21 @@ export class ZappiDevice extends Device {
    * @param isOn true if charger is on
    */
   private async setChargeMode(chargeMode: ZappiChargeMode): Promise<void> {
-    const dev: ZappiDevice = this;
-
     try {
-      dev.setCapabilityValue('onoff', chargeMode !== ZappiChargeMode.Off).catch(dev.error);
-      dev.setCapabilityValue('charge_mode', `${chargeMode}`).catch(dev.error);
-      dev.setCapabilityValue('charge_mode_selector', `${chargeMode}`).catch(dev.error);
-      dev.setCapabilityValue('charge_mode_txt', `${dev.getChargeModeText(chargeMode)}`).catch(dev.error);
+      this.setCapabilityValue('onoff', chargeMode !== ZappiChargeMode.Off).catch(this.error);
+      this.setCapabilityValue('charge_mode', `${chargeMode}`).catch(this.error);
+      this.setCapabilityValue('charge_mode_selector', `${chargeMode}`).catch(this.error);
+      this.setCapabilityValue('charge_mode_txt', `${this.getChargeModeText(chargeMode)}`).catch(this.error);
 
-      const result = await dev.myenergiClient?.setZappiChargeMode(dev.deviceId, chargeMode);
+      const result = await this.myenergiClient?.setZappiChargeMode(this.deviceId, chargeMode);
       if (result.status !== 0) {
         throw new Error(result);
       }
 
-      dev.triggerChargeModeFlow(chargeMode);
-      dev.log(`Zappi changed charge mode ${dev.getChargeModeText(chargeMode)}`);
+      this.triggerChargeModeFlow(chargeMode);
+      this.log(`Zappi changed charge mode ${this.getChargeModeText(chargeMode)}`);
     } catch (error) {
-      dev.error(`Switching the Zappi charge mode ${dev.getChargeModeText(chargeMode)} failed:\n${error}`);
+      this.error(`Switching the Zappi charge mode ${this.getChargeModeText(chargeMode)} failed:\n${error}`);
     }
   }
 
@@ -562,22 +545,20 @@ export class ZappiDevice extends Device {
    * @param isOn true if charger is on
    */
   private async setBoostMode(boostMode: ZappiBoostMode, kWh?: number, completeTime?: string): Promise<void> {
-    const dev: ZappiDevice = this;
-
     try {
-      dev.setCapabilityValue('zappi_boost_mode', `${dev.getBoostModeText(boostMode)}`).catch(dev.error);
-      dev.setCapabilityValue('zappi_boost_kwh', kWh ? kWh : 0).catch(dev.error);
-      dev.setCapabilityValue('zappi_boost_time', `${dev.getBoostModeTime(completeTime ? completeTime : '0000')}`).catch(dev.error);
+      this.setCapabilityValue('zappi_boost_mode', `${this.getBoostModeText(boostMode)}`).catch(this.error);
+      this.setCapabilityValue('zappi_boost_kwh', kWh ? kWh : 0).catch(this.error);
+      this.setCapabilityValue('zappi_boost_time', `${this.getBoostModeTime(completeTime ? completeTime : '0000')}`).catch(this.error);
 
-      const result = await dev.myenergiClient?.setZappiBoostMode(dev.deviceId, boostMode, kWh, completeTime);
+      const result = await this.myenergiClient?.setZappiBoostMode(this.deviceId, boostMode, kWh, completeTime);
       if (result.status !== 0) {
         throw new Error(JSON.stringify(result));
       }
 
-      dev.triggerBoostModeFlow(boostMode);
-      dev.log(`Zappi changed boost mode ${dev.getBoostModeText(boostMode)}`);
+      this.triggerBoostModeFlow(boostMode);
+      this.log(`Zappi changed boost mode ${this.getBoostModeText(boostMode)}`);
     } catch (error) {
-      dev.error(`Switching the Zappi boost mode ${(dev.getBoostModeText(boostMode))} failed:\n${error}`);
+      this.error(`Switching the Zappi boost mode ${(this.getBoostModeText(boostMode))} failed:\n${error}`);
     }
   }
 
@@ -587,20 +568,19 @@ export class ZappiDevice extends Device {
    * @param opts Options
    */
   private async onCapabilityChargeMode(value: any, opts: any): Promise<void> {
-    const dev: ZappiDevice = this;
-    dev.log(`Charge Mode: ${value}`);
-    dev._chargeMode = value;
-    if (dev._chargeMode !== ZappiChargeMode.Off) {
-      dev._lastOnState = dev._chargeMode;
+    this.log(`Charge Mode: ${value}`);
+    this._chargeMode = value;
+    if (this._chargeMode !== ZappiChargeMode.Off) {
+      this._lastOnState = this._chargeMode;
     }
     try {
-      await dev.setChargerState(dev._chargeMode !== ZappiChargeMode.Off);
-      dev.setCapabilityValue('onoff', dev._chargeMode !== ZappiChargeMode.Off).catch(dev.error);
-      dev.setCapabilityValue('charge_mode', `${dev._chargeMode}`).catch(dev.error);
-      dev.setCapabilityValue('charge_mode_txt', `${dev.getChargeModeText(dev._chargeMode as ZappiChargeMode)}`).catch(dev.error);
+      await this.setChargerState(this._chargeMode !== ZappiChargeMode.Off);
+      this.setCapabilityValue('onoff', this._chargeMode !== ZappiChargeMode.Off).catch(this.error);
+      this.setCapabilityValue('charge_mode', `${this._chargeMode}`).catch(this.error);
+      this.setCapabilityValue('charge_mode_txt', `${this.getChargeModeText(this._chargeMode as ZappiChargeMode)}`).catch(this.error);
 
     } catch (error) {
-      dev.error(error);
+      this.error(error);
     }
   }
 
@@ -610,15 +590,14 @@ export class ZappiDevice extends Device {
    * @param opts Options
    */
   private async onCapabilityOnoff(value: boolean, opts: any): Promise<void> {
-    const dev: ZappiDevice = this;
-    dev.log(`onoff: ${value}`);
+    this.log(`onoff: ${value}`);
     try {
-      await dev.setChargerState(value);
-      dev.setCapabilityValue('charge_mode', value ? `${dev._chargeMode}` : `${ZappiChargeMode.Off}`).catch(dev.error);
-      dev.setCapabilityValue('charge_mode_txt', value ? `${dev.getChargeModeText(dev._chargeMode)}` : `${ZappiChargeModeText.Off}`).catch(dev.error);
-      dev.setCapabilityValue('charge_mode_selector', value ? `${dev._chargeMode}` : `${ZappiChargeMode.Off}`).catch(dev.error);
+      await this.setChargerState(value);
+      this.setCapabilityValue('charge_mode', value ? `${this._chargeMode}` : `${ZappiChargeMode.Off}`).catch(this.error);
+      this.setCapabilityValue('charge_mode_txt', value ? `${this.getChargeModeText(this._chargeMode)}` : `${ZappiChargeModeText.Off}`).catch(this.error);
+      this.setCapabilityValue('charge_mode_selector', value ? `${this._chargeMode}` : `${ZappiChargeMode.Off}`).catch(this.error);
     } catch (error) {
-      dev.error(error);
+      this.error(error);
     }
   }
 
@@ -628,9 +607,8 @@ export class ZappiDevice extends Device {
    * @param opts Options
    */
   private async onCapabilityGreenLevel(value: number, opts: any): Promise<void> {
-    const dev: ZappiDevice = this;
-    dev.log(`Minimum Green Level: ${value}`);
-    await dev.setMinimumGreenLevel(value).catch(this.error);
+    this.log(`Minimum Green Level: ${value}`);
+    await this.setMinimumGreenLevel(value).catch(this.error);
   }
 
   private getChargeMode(value: ZappiChargeModeText): ZappiChargeMode {
@@ -718,18 +696,17 @@ export class ZappiDevice extends Device {
     newSettings: any;
     changedKeys: string[];
   }): Promise<string | void> {
-    const dev: ZappiDevice = this;
-    dev.log(`ZappiDevice settings where changed: ${changedKeys}`);
+    this.log(`ZappiDevice settings where changed: ${changedKeys}`);
     if (changedKeys.includes('showNegativeValues')) {
-      dev._settings.showNegativeValues = newSettings.showNegativeValues;
+      this._settings.showNegativeValues = newSettings.showNegativeValues;
     }
     if (changedKeys.includes('powerCalculationMode')) {
-      dev._settings.powerCalculationMode = newSettings.powerCalculationMode;
+      this._settings.powerCalculationMode = newSettings.powerCalculationMode;
       if (newSettings.powerCalculationMode === "automatic") {
-        dev._powerCalculationModeSetToAuto = true;
-        const zappi = await dev.myenergiClient?.getStatusZappi(dev.deviceId).catch(dev.error);
+        this._powerCalculationModeSetToAuto = true;
+        const zappi = await this.myenergiClient?.getStatusZappi(this.deviceId).catch(this.error);
         if (zappi) {
-          dev.log(zappi);
+          this.log(zappi);
           const tmpSettings: any =
           {
             includeCT1: zappi.ectt1 === 'Internal Load',
@@ -740,23 +717,23 @@ export class ZappiDevice extends Device {
             includeCT6: zappi.ectt6 === 'Internal Load',
           };
 
-          Object.keys(tmpSettings).forEach(key => dev._settings[key] = tmpSettings[key]);
+          Object.keys(tmpSettings).forEach(key => this._settings[key] = tmpSettings[key]);
         }
       } else if (newSettings.powerCalculationMode === "manual") {
-        dev._settings.includeCT1 = newSettings.includeCT1;
-        dev._settings.includeCT2 = newSettings.includeCT2;
-        dev._settings.includeCT3 = newSettings.includeCT3;
-        dev._settings.includeCT4 = newSettings.includeCT4;
-        dev._settings.includeCT5 = newSettings.includeCT5;
-        dev._settings.includeCT6 = newSettings.includeCT6;
+        this._settings.includeCT1 = newSettings.includeCT1;
+        this._settings.includeCT2 = newSettings.includeCT2;
+        this._settings.includeCT3 = newSettings.includeCT3;
+        this._settings.includeCT4 = newSettings.includeCT4;
+        this._settings.includeCT5 = newSettings.includeCT5;
+        this._settings.includeCT6 = newSettings.includeCT6;
       }
     }
     if (changedKeys.includes('totalEnergyOffset')) {
-      let prevEnergy: number = dev.getCapabilityValue('meter_power');
-      dev.setCapabilityValue('meter_power', prevEnergy + newSettings.totalEnergyOffset);
-      dev._settings.totalEnergyOffset = 0;
+      const prevEnergy: number = this.getCapabilityValue('meter_power');
+      this.setCapabilityValue('meter_power', prevEnergy + newSettings.totalEnergyOffset);
+      this._settings.totalEnergyOffset = 0;
       setTimeout(() => {
-        dev.setSettings({ totalEnergyOffset: 0 })
+        this.setSettings({ totalEnergyOffset: 0 })
       }, 100);
     }
   }
