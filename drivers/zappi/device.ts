@@ -14,11 +14,29 @@ export class ZappiDevice extends Device {
 
   private _callbackId = -1;
   private _chargeMode: ZappiChargeMode = ZappiChargeMode.Fast;
+  public get chargeMode(): ZappiChargeMode {
+    return this._chargeMode;
+  }
+  public set chargeMode(value: ZappiChargeMode) {
+    this._chargeMode = value;
+  }
   private _lastOnState: ZappiChargeMode = ZappiChargeMode.Fast;
+  public get lastOnState(): ZappiChargeMode {
+    return this._lastOnState;
+  }
+  public set lastOnState(value: ZappiChargeMode) {
+    this._lastOnState = value;
+  }
   private _lastChargingStarted = false;
   private _lastChargeMode: ZappiChargeMode = ZappiChargeMode.Fast;
   private _lastBoostMode: ZappiBoostMode = ZappiBoostMode.Stop;
   private _chargerStatus: ZappiStatus = ZappiStatus.EvDisconnected;
+  public get chargerStatus(): ZappiStatus {
+    return this._chargerStatus;
+  }
+  public set chargerStatus(value: ZappiStatus) {
+    this._chargerStatus = value;
+  }
   private _boostMode: ZappiBoostMode = ZappiBoostMode.Stop;
   private _lastBoostState: ZappiBoostMode = ZappiBoostMode.Stop;
   private _lastEvConnected = false;
@@ -143,6 +161,7 @@ export class ZappiDevice extends Device {
     await this.setUnavailable('Zappi is currently doing some maintenance taks and will be back shortly.').catch(this.error);
     this.log(`****** Initializing Zappi sensor capabilities ******`);
     const caps = this.getCapabilities();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tmpCaps: any = {};
     // Remove all capabilities in case the order has changed
     for (const cap of caps) {
@@ -337,7 +356,7 @@ export class ZappiDevice extends Device {
 
     if (this._powerCalculationModeSetToAuto) {
       this._powerCalculationModeSetToAuto = false;
-      const tmpSettings: any =
+      const tmpSettings =
       {
         includeCT1: zappi.ectt1 === 'Internal Load',
         includeCT2: zappi.ectt2 === 'Internal Load',
@@ -415,6 +434,7 @@ export class ZappiDevice extends Device {
       return;
     }
     const isTurnedOn = this._lastChargeMode === ZappiChargeMode.Off;
+    this.log(`Zappi boost is on -> ${isTurnedOn}`)
     this._lastBoostMode = boostMode;
 
     this.driver.ready().then(() => {
@@ -487,7 +507,7 @@ export class ZappiDevice extends Device {
    * Turn Zappi on or off. On is last charge mode.
    * @param isOn true if charger is on
    */
-  private async setChargerState(isOn: boolean): Promise<void> {
+  public async setChargerState(isOn: boolean): Promise<void> {
     try {
       const result = await this.myenergiClient?.setZappiChargeMode(this.deviceId, isOn ? this._lastOnState : ZappiChargeMode.Off);
       if (result.status !== 0) {
@@ -518,10 +538,10 @@ export class ZappiDevice extends Device {
   }
 
   /**
-   * Turn Zappi on or off. On is last charge mode.
-   * @param isOn true if charger is on
+   * Set Zappi charge mode.
+   * @param chargeMode @type ZappiChargeMode
    */
-  private async setChargeMode(chargeMode: ZappiChargeMode): Promise<void> {
+  public async setChargeMode(chargeMode: ZappiChargeMode): Promise<void> {
     try {
       this.setCapabilityValue('onoff', chargeMode !== ZappiChargeMode.Off).catch(this.error);
       this.setCapabilityValue('charge_mode', `${chargeMode}`).catch(this.error);
@@ -541,8 +561,10 @@ export class ZappiDevice extends Device {
   }
 
   /**
-   * Turn Zappi on or off. On is last charge mode.
-   * @param isOn true if charger is on
+   * Set Zappi Boost mode.
+   * @param boostMode @type ZappiBoostMode
+   * @param kWh Number of kWh to boost
+   * @param completeTime Time to complete
    */
   private async setBoostMode(boostMode: ZappiBoostMode, kWh?: number, completeTime?: string): Promise<void> {
     try {
@@ -568,7 +590,7 @@ export class ZappiDevice extends Device {
    * @param opts Options
    */
   private async onCapabilityChargeMode(value: any, opts: any): Promise<void> {
-    this.log(`Charge Mode: ${value}`);
+    this.log(`Charge Mode: ${value} - ${opts}`);
     this._chargeMode = value;
     if (this._chargeMode !== ZappiChargeMode.Off) {
       this._lastOnState = this._chargeMode;
@@ -590,7 +612,7 @@ export class ZappiDevice extends Device {
    * @param opts Options
    */
   private async onCapabilityOnoff(value: boolean, opts: any): Promise<void> {
-    this.log(`onoff: ${value}`);
+    this.log(`onoff: ${value} - ${opts}`);
     try {
       await this.setChargerState(value);
       this.setCapabilityValue('charge_mode', value ? `${this._chargeMode}` : `${ZappiChargeMode.Off}`).catch(this.error);
@@ -607,11 +629,11 @@ export class ZappiDevice extends Device {
    * @param opts Options
    */
   private async onCapabilityGreenLevel(value: number, opts: any): Promise<void> {
-    this.log(`Minimum Green Level: ${value}`);
+    this.log(`Minimum Green Level: ${value} - ${opts}`);
     await this.setMinimumGreenLevel(value).catch(this.error);
   }
 
-  private getChargeMode(value: ZappiChargeModeText): ZappiChargeMode {
+  public getChargeMode(value: ZappiChargeModeText): ZappiChargeMode {
     if (value == ZappiChargeModeText.Fast)
       return ZappiChargeMode.Fast;
     else if (value == ZappiChargeModeText.Eco)
@@ -696,6 +718,7 @@ export class ZappiDevice extends Device {
     newSettings: any;
     changedKeys: string[];
   }): Promise<string | void> {
+    this.log(`ZappiDevice old settings: ${oldSettings}`);
     this.log(`ZappiDevice settings where changed: ${changedKeys}`);
     if (changedKeys.includes('showNegativeValues')) {
       this._settings.showNegativeValues = newSettings.showNegativeValues;
@@ -744,7 +767,7 @@ export class ZappiDevice extends Device {
    * @param {string} name The new name
    */
   public async onRenamed(name: any): Promise<void> {
-    this.log('ZappiDevice was renamed');
+    this.log(`ZappiDevice was renamed to ${name}`);
   }
 
   /**
