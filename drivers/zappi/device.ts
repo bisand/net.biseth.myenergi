@@ -1,6 +1,7 @@
 import { Device } from 'homey';
 import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
+import { Settings } from '../../models/Settings';
 import { ZappiDriver } from './driver';
 import { ZappiBoostModeText } from './ZappiBoostModeText';
 import { ZappiChargeModeText } from './ZappiChargeModeText';
@@ -51,7 +52,7 @@ export class ZappiDevice extends Device {
   private _chargeAdded = 0;
   private _frequency = 0;
   private _minimumGreenLevel = 0;
-  private _settings: any;
+  private _settings!: Settings;
   private _powerCalculationModeSetToAuto!: boolean;
 
   private _lastEnergyCalculation: Date = new Date();
@@ -75,7 +76,7 @@ export class ZappiDevice extends Device {
     }
 
     this._settings = this.getSettings();
-    this._callbackId = this._driver.registerDataUpdateCallback((data: any) => this.dataUpdated(data)) - 1;
+    this._callbackId = this._driver.registerDataUpdateCallback((data: ZappiData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
 
@@ -589,7 +590,7 @@ export class ZappiDevice extends Device {
    * @param value Charge mode
    * @param opts Options
    */
-  private async onCapabilityChargeMode(value: any, opts: any): Promise<void> {
+  private async onCapabilityChargeMode(value: ZappiChargeMode, opts: unknown): Promise<void> {
     this.log(`Charge Mode: ${value} - ${opts}`);
     this._chargeMode = value;
     if (this._chargeMode !== ZappiChargeMode.Off) {
@@ -611,7 +612,7 @@ export class ZappiDevice extends Device {
    * @param value On or off
    * @param opts Options
    */
-  private async onCapabilityOnoff(value: boolean, opts: any): Promise<void> {
+  private async onCapabilityOnoff(value: boolean, opts: unknown): Promise<void> {
     this.log(`onoff: ${value} - ${opts}`);
     try {
       await this.setChargerState(value);
@@ -628,7 +629,7 @@ export class ZappiDevice extends Device {
    * @param value On or off
    * @param opts Options
    */
-  private async onCapabilityGreenLevel(value: number, opts: any): Promise<void> {
+  private async onCapabilityGreenLevel(value: number, opts: unknown): Promise<void> {
     this.log(`Minimum Green Level: ${value} - ${opts}`);
     await this.setMinimumGreenLevel(value).catch(this.error);
   }
@@ -714,8 +715,8 @@ export class ZappiDevice extends Device {
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
   public async onSettings({ oldSettings, newSettings, changedKeys }: {
-    oldSettings: any;
-    newSettings: any;
+    oldSettings: Settings;
+    newSettings: Settings;
     changedKeys: string[];
   }): Promise<string | void> {
     this.log(`ZappiDevice old settings: ${oldSettings}`);
@@ -730,17 +731,12 @@ export class ZappiDevice extends Device {
         const zappi = await this.myenergiClient?.getStatusZappi(this.deviceId).catch(this.error);
         if (zappi) {
           this.log(zappi);
-          const tmpSettings: any =
-          {
-            includeCT1: zappi.ectt1 === 'Internal Load',
-            includeCT2: zappi.ectt2 === 'Internal Load',
-            includeCT3: zappi.ectt3 === 'Internal Load',
-            includeCT4: zappi.ectt4 === 'Internal Load',
-            includeCT5: zappi.ectt5 === 'Internal Load',
-            includeCT6: zappi.ectt6 === 'Internal Load',
-          };
-
-          Object.keys(tmpSettings).forEach(key => this._settings[key] = tmpSettings[key]);
+          this._settings.includeCT1 = zappi.ectt1 === 'Internal Load';
+          this._settings.includeCT2 = zappi.ectt2 === 'Internal Load';
+          this._settings.includeCT3 = zappi.ectt3 === 'Internal Load';
+          this._settings.includeCT4 = zappi.ectt4 === 'Internal Load';
+          this._settings.includeCT5 = zappi.ectt5 === 'Internal Load';
+          this._settings.includeCT6 = zappi.ectt6 === 'Internal Load';
         }
       } else if (newSettings.powerCalculationMode === "manual") {
         this._settings.includeCT1 = newSettings.includeCT1;
@@ -753,7 +749,7 @@ export class ZappiDevice extends Device {
     }
     if (changedKeys.includes('totalEnergyOffset')) {
       const prevEnergy: number = this.getCapabilityValue('meter_power');
-      this.setCapabilityValue('meter_power', prevEnergy + newSettings.totalEnergyOffset);
+      this.setCapabilityValue('meter_power', prevEnergy + (newSettings.totalEnergyOffset ? newSettings.totalEnergyOffset : 0));
       this._settings.totalEnergyOffset = 0;
       setTimeout(() => {
         this.setSettings({ totalEnergyOffset: 0 })
@@ -766,7 +762,7 @@ export class ZappiDevice extends Device {
    * This method can be used this to synchronise the name to the device.
    * @param {string} name The new name
    */
-  public async onRenamed(name: any): Promise<void> {
+  public async onRenamed(name: string): Promise<void> {
     this.log(`ZappiDevice was renamed to ${name}`);
   }
 

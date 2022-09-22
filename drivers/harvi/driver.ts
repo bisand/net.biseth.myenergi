@@ -6,6 +6,7 @@ export class HarviDriver extends Driver {
 
   private _app!: MyEnergiApp;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _dataUpdateCallbacks: any[] = [];
   private readonly _capabilities = [
     'ct1_type',
@@ -26,10 +27,12 @@ export class HarviDriver extends Driver {
    */
   public async onInit() {
     this._app = this.homey.app as MyEnergiApp;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this.log('HarviDriver has been initialized');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public registerDataUpdateCallback(callback: any) {
     return this._dataUpdateCallbacks.push(callback);
   }
@@ -38,6 +41,7 @@ export class HarviDriver extends Driver {
     this._dataUpdateCallbacks.splice(callbackId, 1);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private dataUpdated(data: any[]) {
     this.log('Received data from app. Relaying to devices.');
     if (data) {
@@ -70,7 +74,7 @@ export class HarviDriver extends Driver {
 
   private async getHarviDevices() {
     const harviDevices = await this.loadHarviDevices().catch(this.error) as HarviData[];
-    return harviDevices.map((v, i, a) => {
+    return harviDevices.map((v) => {
       return {
         name: `Harvi ${v.sno}`,
         data: { id: v.sno },

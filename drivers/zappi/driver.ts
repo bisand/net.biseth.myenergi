@@ -58,6 +58,7 @@ export class ZappiDriver extends Driver {
    */
   public async onInit() {
     this._app = this.homey.app as MyEnergiApp;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this._chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
     this._chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
@@ -244,7 +245,7 @@ export class ZappiDriver extends Driver {
   private dataUpdated(data: any[]) {
     this.log('Received data from app. Relaying to devices.');
     if (data) {
-      data.forEach(d => {
+      data.forEach((d) => {
         if (d.zappi) {
           this._dataUpdateCallbacks.forEach(callback => {
             callback(d.zappi);
