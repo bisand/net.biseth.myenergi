@@ -25,10 +25,9 @@ class HarviDevice extends Device {
    * onInit is called when the device is initialized.
    */
   public async onInit() {
-    const dev = this as HarviDevice;
     this._app = this.homey.app as MyEnergiApp;
     this._driver = this.driver as HarviDriver;
-    this._callbackId = this._driver.registerDataUpdateCallback((data: any) => this.dataUpdated(data)) - 1;
+    this._callbackId = this._driver.registerDataUpdateCallback((data: HarviData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
@@ -50,7 +49,6 @@ class HarviDevice extends Device {
   }
 
   private calculateValues(harvi: Harvi) {
-    const dev = this as HarviDevice;
     this._ectp1 = harvi.ectp1;
     this._ectp2 = harvi.ectp2;
     this._ectp3 = harvi.ectp3;
@@ -60,7 +58,6 @@ class HarviDevice extends Device {
   }
 
   private setCapabilityValues() {
-    const dev = this as HarviDevice;
     this.setCapabilityValue('measure_power_ct1', this._ectp1 ? this._ectp1 : 0).catch(this.error);
     this.setCapabilityValue('measure_power_ct2', this._ectp2 ? this._ectp2 : 0).catch(this.error);
     this.setCapabilityValue('measure_power_ct3', this._ectp3 ? this._ectp3 : 0).catch(this.error);
@@ -132,7 +129,7 @@ class HarviDevice extends Device {
     newSettings: object;
     changedKeys: string[];
   }): Promise<string | void> {
-    this.log(`HarviDevice settings where changed: ${changedKeys}`);
+    this.log(`HarviDevice settings where changed: ${changedKeys} - ${oldSettings} - ${newSettings}`);
   }
 
   /**
@@ -140,8 +137,8 @@ class HarviDevice extends Device {
    * This method can be used this to synchronise the name to the device.
    * @param {string} name The new name
    */
-  public async onRenamed(name: any) {
-    this.log('HarviDevice was renamed');
+  public async onRenamed(name: string) {
+    this.log(`HarviDevice was renamed to ${name}`);
   }
 
   /**

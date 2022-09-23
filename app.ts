@@ -4,6 +4,7 @@
 import Homey from 'homey';
 import { MyEnergi } from 'myenergi-api';
 import { Credential } from './models/Credential';
+import { MyEnergiHub } from './models/MyEnergiHub';
 import { Response } from './models/Result';
 import { SchedulerService } from './services/SchedulerService';
 
@@ -11,23 +12,24 @@ export class MyEnergiApp extends Homey.App {
 
   private _dataUpdateInterval: number = 60 * 1000;
   private _dataUpdateId!: NodeJS.Timeout;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _dataUpdateCallbacks: any[] = [];
   private _apiBaseUrl = 'https://s18.myenergi.net';
 
-  public clients: any;
+  public clients: { [name: string]: MyEnergi } = {};
   private _schedulerService!: SchedulerService;
 
-  private async initClients(hubs: any) {
+  private async initClients(hubs: MyEnergiHub[]) {
     this.log(`Starting client init...`);
     if (this.clients) {
-      Object.keys(this.clients).forEach((key, i, arr) => {
+      Object.keys(this.clients).forEach((key: string) => {
         this.log(key);
         delete this.clients[key];
       });
     }
     if (hubs) {
       this.clients = {};
-      hubs.forEach((hub: any, index: number) => {
+      hubs.forEach((hub: MyEnergiHub, index: number) => {
         this.log(hub);
         this.clients[`${hub.hubname}_${hub.username}`] = new MyEnergi(hub.username, hub.password, this._apiBaseUrl);
         if (index === 0) {
@@ -69,6 +71,7 @@ export class MyEnergiApp extends Homey.App {
     this.log(`Client init complete.`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public registerDataUpdateCallback(callback: any) {
     this._dataUpdateCallbacks.push(callback);
   }

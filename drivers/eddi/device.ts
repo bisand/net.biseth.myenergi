@@ -31,10 +31,9 @@ export class EddiDevice extends Device {
    * onInit is called when the device is initialized.
    */
   public async onInit() {
-    const dev = this as EddiDevice;
     this._app = this.homey.app as MyEnergiApp;
     this._driver = this.driver as EddiDriver;
-    this._callbackId = this._driver.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data)) - 1;
+    this._callbackId = this._driver.registerDataUpdateCallback((data: EddiData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
@@ -143,8 +142,8 @@ export class EddiDevice extends Device {
     }
   }
 
-  public async onCapabilityOnoff(value: boolean, opts: any) {
-    this.log(`onoff: ${value}`);
+  public async onCapabilityOnoff(value: boolean, opts: unknown) {
+    this.log(`onoff: ${value} - ${opts}`);
     await this.setEddiMode(value).catch(this.error);
     this.setCapabilityValue('onoff', value ? EddiMode.On : EddiMode.Off).catch(this.error);
     this.setCapabilityValue('heater_status', value ? `${this._lastHeaterStatus}` : EddiHeaterStatus.Stopped).catch(this.error);
@@ -170,15 +169,15 @@ export class EddiDevice extends Device {
     newSettings: object;
     changedKeys: string[];
   }): Promise<string | void> {
-    this.log(`EddiDevice settings where changed: ${changedKeys}`);
+    this.log(`EddiDevice settings where changed: ${changedKeys} - ${oldSettings} - ${newSettings}`);
   }
   /**
    * onRenamed is called when the user updates the device's name.
    * This method can be used this to synchronise the name to the device.
    * @param {string} name The new name
    */
-  public async onRenamed(name: any) {
-    this.log('EddiDevice was renamed');
+  public async onRenamed(name: string) {
+    this.log(`EddiDevice was renamed to ${name}`);
   }
 
   /**

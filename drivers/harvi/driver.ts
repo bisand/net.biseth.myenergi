@@ -57,16 +57,20 @@ export class HarviDriver extends Driver {
 
   private async loadHarviDevices(): Promise<HarviData[]> {
     for (const key in this._app.clients) {
-      if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
-        const client = this._app.clients[key];
-        const harvis: HarviData[] = await client.getStatusHarviAll().catch(this.error);
-        for (const harvi of harvis) {
-          if (this.harviDevices.findIndex((h: HarviData) => h.sno === harvi.sno) === -1) {
-            harvi.myenergiClientId = key;
-            this.harviDevices.push(harvi);
+      try {
+        if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
+          const client = this._app.clients[key];
+          const harvis: HarviData[] = await client.getStatusHarviAll();
+          for (const harvi of harvis) {
+            if (this.harviDevices.findIndex((h: HarviData) => h.sno === harvi.sno) === -1) {
+              harvi.myenergiClientId = key;
+              this.harviDevices.push(harvi);
+            }
           }
+          return this.harviDevices;
         }
-        return this.harviDevices;
+      } catch (error) {
+        this.error(error);
       }
     }
     return [];
@@ -95,7 +99,7 @@ export class HarviDriver extends Driver {
    * This should return an array with the data of devices that are available for pairing.
    */
   public async onPairListDevices() {
-    if (!this._app.clients || this._app.clients.length < 1)
+    if (!this._app.clients || Object.keys(this._app.clients).length < 1)
       throw new Error("Can not find any myenergi hubs. Please add the hub credentials under myenergi app settings.");
 
     try {
