@@ -9,8 +9,6 @@ import { ZappiData } from './ZappiData';
 
 export class ZappiDriver extends Driver {
 
-  private _app!: MyEnergiApp;
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _dataUpdateCallbacks: any[] = [];
   private _chargingStarted!: FlowCardTriggerDevice;
@@ -57,9 +55,8 @@ export class ZappiDriver extends Driver {
    * onInit is called when the driver is initialized.
    */
   public async onInit() {
-    this._app = this.homey.app as MyEnergiApp;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
+    (this.homey.app as MyEnergiApp).registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this._chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
     this._chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
     this._chargeModeChanged = this.homey.flow.getDeviceTriggerCard('charge_mode_changed');
@@ -256,9 +253,9 @@ export class ZappiDriver extends Driver {
   }
 
   private async loadZappiDevices(): Promise<ZappiData[]> {
-    for (const key in this._app.clients) {
-      if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
-        const client: MyEnergi = this._app.clients[key];
+    for (const key in (this.homey.app as MyEnergiApp).clients) {
+      if (Object.prototype.hasOwnProperty.call((this.homey.app as MyEnergiApp).clients, key)) {
+        const client: MyEnergi = (this.homey.app as MyEnergiApp).clients[key];
         const zappis: ZappiData[] = await client.getStatusZappiAll().catch(this.error) as ZappiData[];
         for (const zappi of zappis) {
           if (this.zappiDevices.findIndex((z: ZappiData) => z.sno === zappi.sno) === -1) {
@@ -304,7 +301,7 @@ export class ZappiDriver extends Driver {
    * This should return an array with the data of devices that are available for pairing.
    */
   public async onPairListDevices() {
-    if (!this._app.clients || Object.keys(this._app.clients).length < 1)
+    if (!(this.homey.app as MyEnergiApp).clients || Object.keys((this.homey.app as MyEnergiApp).clients).length < 1)
       throw new Error("Can not find any myenergi hubs. Please add the hub credentials under myenergi app settings.");
 
     try {

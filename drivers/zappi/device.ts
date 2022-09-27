@@ -10,9 +10,6 @@ import { ZappiStatusText } from './ZappiStatusText';
 
 export class ZappiDevice extends Device {
 
-  private _app!: MyEnergiApp;
-  private _driver!: ZappiDriver;
-
   private _callbackId = -1;
   private _chargeMode: ZappiChargeMode = ZappiChargeMode.Fast;
   public get chargeMode(): ZappiChargeMode {
@@ -67,22 +64,19 @@ export class ZappiDevice extends Device {
    */
   public async onInit(): Promise<void> {
 
-    this._app = this.homey.app as MyEnergiApp;
-    this._driver = this.driver as ZappiDriver;
-
     // Make sure capabilities are up to date.
     if (this.detectCapabilityChanges()) {
       await this.InitializeCapabilities().catch(this.error);
     }
 
     this._settings = this.getSettings();
-    this._callbackId = this._driver.registerDataUpdateCallback((data: ZappiData[]) => this.dataUpdated(data)) - 1;
+    this._callbackId = (this.driver as ZappiDriver).registerDataUpdateCallback((data: ZappiData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
 
     try {
       // Collect data.
-      this.myenergiClient = this._app.clients[this.myenergiClientId];
+      this.myenergiClient = (this.homey.app as MyEnergiApp).clients[this.myenergiClientId];
       const zappi = await this.myenergiClient?.getStatusZappi(this.deviceId).catch(this.error);
       if (zappi) {
         this.calculateValues(zappi, true); // P=U*I -> I=P/U
@@ -175,7 +169,7 @@ export class ZappiDevice extends Device {
       }
     }
     // Re-apply all capabilities.
-    for (const cap of this._driver.capabilities) {
+    for (const cap of (this.driver as ZappiDriver).capabilities) {
       try {
         if (this.hasCapability(cap))
           continue;
@@ -199,12 +193,12 @@ export class ZappiDevice extends Device {
     this.log(`Detecting Zappi capability changes...`);
     const caps = this.getCapabilities();
     for (const cap of caps) {
-      if (!this._driver.capabilities.includes(cap)) {
+      if (!(this.driver as ZappiDriver).capabilities.includes(cap)) {
         this.log(`Zappi capability ${cap} was removed.`);
         result = true;
       }
     }
-    for (const cap of this._driver.capabilities) {
+    for (const cap of (this.driver as ZappiDriver).capabilities) {
       if (!this.hasCapability(cap)) {
         this.log(`Zappi capability ${cap} was added.`);
         result = true;

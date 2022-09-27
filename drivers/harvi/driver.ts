@@ -4,8 +4,6 @@ import { HarviData } from './HarviData';
 
 export class HarviDriver extends Driver {
 
-  private _app!: MyEnergiApp;
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _dataUpdateCallbacks: any[] = [];
   private readonly _capabilities = [
@@ -26,9 +24,8 @@ export class HarviDriver extends Driver {
    * onInit is called when the driver is initialized.
    */
   public async onInit() {
-    this._app = this.homey.app as MyEnergiApp;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
+    (this.homey.app as MyEnergiApp).registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this.log('HarviDriver has been initialized');
   }
 
@@ -56,10 +53,10 @@ export class HarviDriver extends Driver {
   }
 
   private async loadHarviDevices(): Promise<HarviData[]> {
-    for (const key in this._app.clients) {
+    for (const key in (this.homey.app as MyEnergiApp).clients) {
       try {
-        if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
-          const client = this._app.clients[key];
+        if (Object.prototype.hasOwnProperty.call((this.homey.app as MyEnergiApp).clients, key)) {
+          const client = (this.homey.app as MyEnergiApp).clients[key];
           const harvis: HarviData[] = await client.getStatusHarviAll();
           for (const harvi of harvis) {
             if (this.harviDevices.findIndex((h: HarviData) => h.sno === harvi.sno) === -1) {
@@ -99,7 +96,7 @@ export class HarviDriver extends Driver {
    * This should return an array with the data of devices that are available for pairing.
    */
   public async onPairListDevices() {
-    if (!this._app.clients || Object.keys(this._app.clients).length < 1)
+    if (!(this.homey.app as MyEnergiApp).clients || Object.keys((this.homey.app as MyEnergiApp).clients).length < 1)
       throw new Error("Can not find any myenergi hubs. Please add the hub credentials under myenergi app settings.");
 
     try {

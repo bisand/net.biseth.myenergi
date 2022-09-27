@@ -6,9 +6,6 @@ import { HarviData } from "./HarviData";
 
 class HarviDevice extends Device {
 
-  private _app!: MyEnergiApp;
-  private _driver!: HarviDriver;
-
   private _callbackId = -1;
   private _ectp1 = 0;
   private _ectp2 = 0;
@@ -25,15 +22,13 @@ class HarviDevice extends Device {
    * onInit is called when the device is initialized.
    */
   public async onInit() {
-    this._app = this.homey.app as MyEnergiApp;
-    this._driver = this.driver as HarviDriver;
-    this._callbackId = this._driver.registerDataUpdateCallback((data: HarviData[]) => this.dataUpdated(data)) - 1;
+    this._callbackId = (this.driver as HarviDriver).registerDataUpdateCallback((data: HarviData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
 
     try {
-      this.myenergiClient = this._app.clients[this.myenergiClientId];
+      this.myenergiClient = (this.homey.app as MyEnergiApp).clients[this.myenergiClientId];
       const harvi = await this.myenergiClient.getStatusHarvi(this.deviceId);
       if (harvi) {
         this.calculateValues(harvi);
@@ -70,7 +65,7 @@ class HarviDevice extends Device {
     this.log(`Validating Harvi capabilities...`);
     const caps = this.getCapabilities();
     caps.forEach(async cap => {
-      if (!this._driver.capabilities.includes(cap)) {
+      if (!(this.driver as HarviDriver).capabilities.includes(cap)) {
         try {
           await this.removeCapability(cap);
           this.log(`${cap} - Removed`);
@@ -79,7 +74,7 @@ class HarviDevice extends Device {
         }
       }
     });
-    this._driver.capabilities.forEach(async cap => {
+    (this.driver as HarviDriver).capabilities.forEach(async cap => {
       try {
         if (!this.hasCapability(cap)) {
           await this.addCapability(cap);
@@ -145,7 +140,7 @@ class HarviDevice extends Device {
    * onDeleted is called when the user deleted the device.
    */
   public async onDeleted() {
-    this._driver.removeDataUpdateCallback(this._callbackId);
+    (this.driver as HarviDriver).removeDataUpdateCallback(this._callbackId);
     this.log('HarviDevice has been deleted');
   }
 

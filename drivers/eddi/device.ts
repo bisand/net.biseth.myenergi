@@ -6,9 +6,6 @@ import { EddiData } from "./EddiData";
 
 export class EddiDevice extends Device {
 
-  private _app!: MyEnergiApp;
-  private _driver!: EddiDriver;
-
   private _callbackId = -1;
   private _onOff: EddiMode = EddiMode.Off;
   private _heaterStatus: EddiHeaterStatus = EddiHeaterStatus.Boost;
@@ -31,15 +28,13 @@ export class EddiDevice extends Device {
    * onInit is called when the device is initialized.
    */
   public async onInit() {
-    this._app = this.homey.app as MyEnergiApp;
-    this._driver = this.driver as EddiDriver;
-    this._callbackId = this._driver.registerDataUpdateCallback((data: EddiData[]) => this.dataUpdated(data)) - 1;
+    this._callbackId = (this.driver as EddiDriver).registerDataUpdateCallback((data: EddiData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
 
     try {
-      this.myenergiClient = this._app.clients[this.myenergiClientId];
+      this.myenergiClient = (this.homey.app as MyEnergiApp).clients[this.myenergiClientId];
       const eddi: Eddi | null = await this.myenergiClient.getStatusEddi(this.deviceId);
       if (eddi) {
         this.calculateValues(eddi); // P=U*I -> I=P/U
@@ -89,7 +84,7 @@ export class EddiDevice extends Device {
     this.log(`Validating Eddi capabilities...`);
     const caps = this.getCapabilities();
     caps.forEach(async cap => {
-      if (!this._driver.capabilities.includes(cap)) {
+      if (!(this.driver as EddiDriver).capabilities.includes(cap)) {
         try {
           await this.removeCapability(cap);
           this.log(`${cap} - Removed`);
@@ -98,7 +93,7 @@ export class EddiDevice extends Device {
         }
       }
     });
-    this._driver.capabilities.forEach(async cap => {
+    (this.driver as EddiDriver).capabilities.forEach(async cap => {
       try {
         if (!this.hasCapability(cap)) {
           await this.addCapability(cap);
@@ -184,7 +179,7 @@ export class EddiDevice extends Device {
    * onDeleted is called when the user deleted the device.
    */
   public async onDeleted() {
-    this._driver.removeDataUpdateCallback(this._callbackId);
+    (this.driver as EddiDriver).removeDataUpdateCallback(this._callbackId);
     this.log('EddiDevice has been deleted');
   }
 
