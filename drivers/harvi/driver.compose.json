@@ -4,6 +4,8 @@
   },
   "class": "sensor",
   "capabilities": [
+    "meter_power",
+    "measure_power",
     "ct1_type",
     "measure_power_ct1",
     "ct2_type",

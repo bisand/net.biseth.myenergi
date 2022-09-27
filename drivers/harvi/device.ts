@@ -13,6 +13,11 @@ class HarviDevice extends Device {
   private _ectt1 = '';
   private _ectt2 = '';
   private _ectt3 = '';
+  private _power = 0;
+
+  private _lastPowerMeasurement = 0;
+  private _lastEnergyCalculation: Date = new Date();
+
 
   public deviceId!: string;
   public myenergiClientId!: string;
@@ -22,6 +27,12 @@ class HarviDevice extends Device {
    * onInit is called when the device is initialized.
    */
   public async onInit() {
+
+    // Make sure capabilities are up to date.
+    if (this.detectCapabilityChanges()) {
+      await this.InitializeCapabilities().catch(this.error);
+    }
+
     this._callbackId = (this.driver as HarviDriver).registerDataUpdateCallback((data: HarviData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
@@ -37,10 +48,70 @@ class HarviDevice extends Device {
       this.error(error);
     }
 
-    this.validateCapabilities();
+    // this.validateCapabilities();
     this.setCapabilityValues();
 
     this.log('HarviDevice has been initialized');
+  }
+
+  /**
+   * Validate capabilities. Add new and delete removed capabilities.
+   */
+  private async InitializeCapabilities(): Promise<void> {
+    await this.setUnavailable('Harvi is currently doing some maintenance taks and will be back shortly.').catch(this.error);
+    this.log(`****** Initializing Harvi sensor capabilities ******`);
+    const caps = this.getCapabilities();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const tmpCaps: any = {};
+    // Remove all capabilities in case the order has changed
+    for (const cap of caps) {
+      try {
+        tmpCaps[cap] = this.getCapabilityValue(cap);
+        await this.removeCapability(cap).catch(this.error);
+        this.log(`*** ${cap} - Removed`);
+      } catch (error) {
+        this.error(error);
+      }
+    }
+    // Re-apply all capabilities.
+    for (const cap of (this.driver as HarviDriver).capabilities) {
+      try {
+        if (this.hasCapability(cap))
+          continue;
+        await this.addCapability(cap).catch(this.error);
+        if (tmpCaps[cap])
+          this.setCapabilityValue(cap, tmpCaps[cap]);
+        this.log(`*** ${cap} - Added`);
+      } catch (error) {
+        this.error(error);
+      }
+    }
+    this.log(`****** Sensor capability initialization complete ******`);
+    this.setAvailable().catch(this.error);
+  }
+
+  /**
+   * Validate capabilities. Add new and delete removed capabilities.
+   */
+  private detectCapabilityChanges(): boolean {
+    let result = false;
+    this.log(`Detecting Harvi capability changes...`);
+    const caps = this.getCapabilities();
+    for (const cap of caps) {
+      if (!(this.driver as HarviDriver).capabilities.includes(cap)) {
+        this.log(`Harvi capability ${cap} was removed.`);
+        result = true;
+      }
+    }
+    for (const cap of (this.driver as HarviDriver).capabilities) {
+      if (!this.hasCapability(cap)) {
+        this.log(`Harvi capability ${cap} was added.`);
+        result = true;
+      }
+    }
+    if (!result)
+      this.log('No changes in capabilities.');
+    return result;
   }
 
   private calculateValues(harvi: Harvi) {
@@ -50,6 +121,7 @@ class HarviDevice extends Device {
     this._ectt1 = harvi.ectt1;
     this._ectt2 = harvi.ectt2;
     this._ectt3 = harvi.ectt3;
+    this._power = (harvi.ectp1 ? harvi.ectp1 : 0) + (harvi.ectp2 ? harvi.ectp2 : 0) + (harvi.ectp3 ? harvi.ectp3 : 0)
   }
 
   private setCapabilityValues() {
@@ -59,6 +131,23 @@ class HarviDevice extends Device {
     this.setCapabilityValue('ct1_type', this._ectt1).catch(this.error);
     this.setCapabilityValue('ct2_type', this._ectt2).catch(this.error);
     this.setCapabilityValue('ct3_type', this._ectt3).catch(this.error);
+    this.setCapabilityValue('measure_power', this._power ? this._power : 0).catch(this.error);
+    this.setCapabilityValue('meter_power', this.calculateEnergy()).catch(this.error);
+  }
+
+  /**
+   * Calculate accumulated kWh since last power measurement
+   * @returns Accumulated kWh 
+   */
+  private calculateEnergy(): number {
+    const dateNow = new Date();
+    const seconds = Math.abs((dateNow.getTime() - this._lastEnergyCalculation.getTime()) / 1000);
+    const prevEnergy: number = this.getCapabilityValue('meter_power');
+    const newEnergy: number = prevEnergy + ((((this._lastPowerMeasurement + this._power) / 2) * seconds) / 3600000);
+    this.log(`Energy algo: ${prevEnergy} + ((((${this._lastPowerMeasurement} + ${this._power}) / 2) * ${seconds}) / 3600000)`);
+    this._lastPowerMeasurement = this._power;
+    this._lastEnergyCalculation = dateNow;
+    return newEnergy;
   }
 
   private validateCapabilities() {

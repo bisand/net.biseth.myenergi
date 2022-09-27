@@ -1,23 +1,31 @@
 import { Driver } from 'homey';
 import { MyEnergiApp } from '../../app';
+import { Capability } from '../../models/Capability';
+import { CapabilityType } from '../../models/CapabilityType';
 import { HarviData } from './HarviData';
 
 export class HarviDriver extends Driver {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _dataUpdateCallbacks: any[] = [];
-  private readonly _capabilities = [
-    'ct1_type',
-    'measure_power_ct1',
-    'ct2_type',
-    'measure_power_ct2',
-    'ct3_type',
-    'measure_power_ct3',
+  private readonly _capabilities: Capability[] = [
+    new Capability('meter_power', CapabilityType.Sensor, 1),
+    new Capability('measure_power', CapabilityType.Sensor, 2),
+    new Capability('ct1_type', CapabilityType.Sensor, 3),
+    new Capability('measure_power_ct1', CapabilityType.Sensor, 4),
+    new Capability('ct2_type', CapabilityType.Sensor, 5),
+    new Capability('measure_power_ct2', CapabilityType.Sensor, 6),
+    new Capability('ct3_type', CapabilityType.Sensor, 7),
+    new Capability('measure_power_ct3', CapabilityType.Sensor, 8),
   ];
 
   public harviDevices: HarviData[] = [];
-  public get capabilities() {
-    return this._capabilities;
+  public get capabilities(): string[] {
+    return this._capabilities.sort((x, y) => x.order - y.order).map(value => value.name);
+  }
+
+  public get capabilityObjects(): Capability[] {
+    return this._capabilities.sort((x, y) => x.order - y.order);
   }
 
   /**
