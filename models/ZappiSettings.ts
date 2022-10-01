@@ -1,4 +1,4 @@
-export interface Settings {
+export interface ZappiSettings {
   powerCalculationMode?: string;
   includeCT1?: boolean;
   includeCT2?: boolean;

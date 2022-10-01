@@ -1,6 +1,7 @@
 import { Device } from 'homey';
 import { Harvi, MyEnergi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
+import { HarviSettings } from '../../models/HarviSettings';
 import { HarviDriver } from './driver';
 import { HarviData } from "./HarviData";
 
@@ -17,6 +18,8 @@ class HarviDevice extends Device {
 
   private _lastPowerMeasurement = 0;
   private _lastEnergyCalculation: Date = new Date();
+  private _settings!: HarviSettings;
+  private _powerCalculationModeSetToAuto!: boolean;
 
 
   public deviceId!: string;
@@ -33,6 +36,7 @@ class HarviDevice extends Device {
       await this.InitializeCapabilities().catch(this.error);
     }
 
+    this._settings = this.getSettings();
     this._callbackId = (this.driver as HarviDriver).registerDataUpdateCallback((data: HarviData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
@@ -121,7 +125,36 @@ class HarviDevice extends Device {
     this._ectt1 = harvi.ectt1;
     this._ectt2 = harvi.ectt2;
     this._ectt3 = harvi.ectt3;
-    this._power = (harvi.ectp1 ? harvi.ectp1 : 0) + (harvi.ectp2 ? harvi.ectp2 : 0) + (harvi.ectp3 ? harvi.ectp3 : 0)
+
+    if ((this._settings.powerCalculationMode === 'automatic')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT1)) {
+      this._power += harvi.ectp1 ? harvi.ectp1 : 0;
+    }
+    if ((this._settings.powerCalculationMode === 'automatic')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT2)) {
+      this._power += harvi.ectp2 ? harvi.ectp2 : 0;
+    }
+    if ((this._settings.powerCalculationMode === 'automatic')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT3)) {
+      this._power += harvi.ectp3 ? harvi.ectp3 : 0;
+    }
+
+    if (this._settings.showNegativeValues === false) {
+      this._power = this._power > 0 ? this._power : 0;
+    }
+
+    if (this._powerCalculationModeSetToAuto) {
+      this._powerCalculationModeSetToAuto = false;
+      const tmpSettings =
+      {
+        includeCT1: true,
+        includeCT2: true,
+        includeCT3: true,
+      };
+
+      this.setSettings(tmpSettings);
+    }
+
   }
 
   private setCapabilityValues() {
@@ -209,11 +242,39 @@ class HarviDevice extends Device {
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
   public async onSettings({ oldSettings, newSettings, changedKeys }: {
-    oldSettings: object;
-    newSettings: object;
+    oldSettings: HarviSettings;
+    newSettings: HarviSettings;
     changedKeys: string[];
   }): Promise<string | void> {
     this.log(`HarviDevice settings where changed: ${changedKeys} - ${oldSettings} - ${newSettings}`);
+    if (changedKeys.includes('showNegativeValues')) {
+      this._settings.showNegativeValues = newSettings.showNegativeValues;
+    }
+    if (changedKeys.includes('powerCalculationMode')) {
+      this._settings.powerCalculationMode = newSettings.powerCalculationMode;
+      if (newSettings.powerCalculationMode === "automatic") {
+        this._powerCalculationModeSetToAuto = true;
+        const harvi = await this.myenergiClient?.getStatusHarvi(this.deviceId).catch(this.error);
+        if (harvi) {
+          this.log(harvi);
+          this._settings.includeCT1 = harvi.ectt1 === 'Internal Load';
+          this._settings.includeCT2 = harvi.ectt2 === 'Internal Load';
+          this._settings.includeCT3 = harvi.ectt3 === 'Internal Load';
+        }
+      } else if (newSettings.powerCalculationMode === "manual") {
+        this._settings.includeCT1 = newSettings.includeCT1;
+        this._settings.includeCT2 = newSettings.includeCT2;
+        this._settings.includeCT3 = newSettings.includeCT3;
+      }
+    }
+    if (changedKeys.includes('totalEnergyOffset')) {
+      const prevEnergy: number = this.getCapabilityValue('meter_power');
+      this.setCapabilityValue('meter_power', prevEnergy + (newSettings.totalEnergyOffset ? newSettings.totalEnergyOffset : 0));
+      this._settings.totalEnergyOffset = 0;
+      setTimeout(() => {
+        this.setSettings({ totalEnergyOffset: 0 })
+      }, 100);
+    }
   }
 
   /**

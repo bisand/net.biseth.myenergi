@@ -1,0 +1,125 @@
+[
+    {
+        "id": "totalEnergyOffset",
+        "type": "number",
+        "value": 0,
+        "label": {
+            "en": "Total energy consumption offset",
+            "no": "Totalt energiforbruk offset",
+            "nl": "Totaal energieverbruik offset",
+            "sv": "Total energiförbrukning offset",
+            "de": "Gesamtenergieverbrauch offset"
+        },
+        "units": {
+            "en": "kWh"
+        },
+        "hint": {
+            "en": "If you want, you can add an offset to the total energi consumption. This setting will add the value to the current energy consumtion and reset itself back to zero."
+        }
+    },
+    {
+        "type": "group",
+        "label": {
+            "en": "Power calculations",
+            "nl": "Vermogen berekenen",
+            "de": "Leistungsberechnungen",
+            "sv": "Effektberäkningar"
+        },
+        "children": [
+            {
+                "id": "powerCalculationMode",
+                "type": "dropdown",
+                "value": "automatic",
+                "label": {
+                    "en": "Default mode",
+                    "nl": "Standaard modus",
+                    "de": "Standardmodus",
+                    "sv": "Standardläge"
+                },
+                "values": [
+                    {
+                        "id": "automatic",
+                        "label": {
+                            "en": "Automatically select CTs",
+                            "nl": "Selecteer CT's automatisch",
+                            "de": "CTs automatisch auswählen",
+                            "sv": "Välj CT automatiskt"
+                        }
+                    },
+                    {
+                        "id": "manual",
+                        "label": {
+                            "en": "Manual override CTs",
+                            "nl": "Handmatige instelling CT's",
+                            "de": "CTs manuell Überbrücken",
+                            "sv": "Manuell CT konfiguration"
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "includeCT1",
+                "type": "checkbox",
+                "label": {
+                    "en": "Include CT 1",
+                    "nl": "CT 1 meenemen",
+                    "de": "Inklusive CT 1",
+                    "sv": "Inkludera CT 1"
+                },
+                "value": true,
+                "hint": {
+                    "en": "Include CT 1 in the power calculation.",
+                    "nl": "CT 1 meenemen in berekening.",
+                    "de": "Beziehen Sie CT 1 in die Leistungsberechnung ein.",
+                    "sv": "Inkludera CT 1 i effektberäkningen."
+                }
+            },
+            {
+                "id": "includeCT2",
+                "type": "checkbox",
+                "label": {
+                    "en": "Include CT 2",
+                    "nl": "CT 2 meenemen",
+                    "de": "Inklusive CT 2",
+                    "sv": "Inkludera CT 2"
+                },
+                "value": true,
+                "hint": {
+                    "en": "Include CT 2 in the power calculation.",
+                    "nl": "CT 2 meenemen in berekening.",
+                    "de": "Beziehen Sie CT 2 in die Leistungsberechnung ein.",
+                    "sv": "Inkludera CT 2 i effektberäkningen."
+                }
+            },
+            {
+                "id": "includeCT3",
+                "type": "checkbox",
+                "label": {
+                    "en": "Include CT 3",
+                    "nl": "CT 3 meenemen",
+                    "de": "Inklusive CT 3",
+                    "sv": "Inkludera CT 3"
+                },
+                "value": true,
+                "hint": {
+                    "en": "Include CT 3 in the power calculation.",
+                    "nl": "CT 3 meenemen in berekening.",
+                    "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein.",
+                    "sv": "Inkludera CT 3 i effektberäkningen."
+                }
+            }
+        ]
+    },
+    {
+        "id": "showNegativeValues",
+        "type": "checkbox",
+        "value": true,
+        "label": {
+            "en": "Show negative values",
+            "no": "Vis negative verdier",
+            "nl": "Negatieve waarden weergeven",
+            "sv": "Visa negativa värden",
+            "de": "Negative Werte anzeigen"
+        }
+    }
+]

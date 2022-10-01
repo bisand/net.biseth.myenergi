@@ -1,7 +1,7 @@
 import { Device } from 'homey';
 import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
-import { Settings } from '../../models/Settings';
+import { ZappiSettings } from '../../models/ZappiSettings';
 import { ZappiDriver } from './driver';
 import { ZappiBoostModeText } from './ZappiBoostModeText';
 import { ZappiChargeModeText } from './ZappiChargeModeText';
@@ -49,7 +49,7 @@ export class ZappiDevice extends Device {
   private _chargeAdded = 0;
   private _frequency = 0;
   private _minimumGreenLevel = 0;
-  private _settings!: Settings;
+  private _settings!: ZappiSettings;
   private _powerCalculationModeSetToAuto!: boolean;
 
   private _lastEnergyCalculation: Date = new Date();
@@ -709,8 +709,8 @@ export class ZappiDevice extends Device {
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
   public async onSettings({ oldSettings, newSettings, changedKeys }: {
-    oldSettings: Settings;
-    newSettings: Settings;
+    oldSettings: ZappiSettings;
+    newSettings: ZappiSettings;
     changedKeys: string[];
   }): Promise<string | void> {
     this.log(`ZappiDevice old settings: ${oldSettings}`);
