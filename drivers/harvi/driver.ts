@@ -17,6 +17,8 @@ export class HarviDriver extends Driver {
     new Capability('measure_power_ct2', CapabilityType.Sensor, 6),
     new Capability('ct3_type', CapabilityType.Sensor, 7),
     new Capability('measure_power_ct3', CapabilityType.Sensor, 8),
+    new Capability('button.reset_meter', CapabilityType.Control, 9),
+    new Capability('button.reload_capabilities', CapabilityType.Control, 10),
   ];
 
   public harviDevices: HarviData[] = [];

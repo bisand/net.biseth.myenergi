@@ -52,8 +52,15 @@ class HarviDevice extends Device {
       this.error(error);
     }
 
-    // this.validateCapabilities();
+    // Set capabilities
     this.setCapabilityValues();
+
+    this.registerCapabilityListener('button.reset_meter', async () => {
+      this.setCapabilityValue('meter_power', 0);
+    });
+    this.registerCapabilityListener('button.reload_capabilities', async () => {
+      this.InitializeCapabilities();
+    });
 
     this.log('HarviDevice has been initialized');
   }
@@ -125,6 +132,7 @@ class HarviDevice extends Device {
     this._ectt1 = harvi.ectt1;
     this._ectt2 = harvi.ectt2;
     this._ectt3 = harvi.ectt3;
+    this._power = 0;
 
     if ((this._settings.powerCalculationMode === 'automatic')
       || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT1)) {
@@ -181,33 +189,6 @@ class HarviDevice extends Device {
     this._lastPowerMeasurement = this._power;
     this._lastEnergyCalculation = dateNow;
     return newEnergy;
-  }
-
-  private validateCapabilities() {
-    this.log(`Validating Harvi capabilities...`);
-    const caps = this.getCapabilities();
-    caps.forEach(async cap => {
-      if (!(this.driver as HarviDriver).capabilities.includes(cap)) {
-        try {
-          await this.removeCapability(cap);
-          this.log(`${cap} - Removed`);
-        } catch (error) {
-          this.error(error);
-        }
-      }
-    });
-    (this.driver as HarviDriver).capabilities.forEach(async cap => {
-      try {
-        if (!this.hasCapability(cap)) {
-          await this.addCapability(cap);
-          this.log(`${cap} - Added`);
-        } else {
-          this.log(`${cap} - OK`);
-        }
-      } catch (error) {
-        this.error(error);
-      }
-    });
   }
 
   private dataUpdated(data: HarviData[]) {
