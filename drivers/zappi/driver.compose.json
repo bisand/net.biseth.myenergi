@@ -38,14 +38,14 @@
     "button.reset_meter": {
       "maintenanceAction": true,
       "title": {
-        "en": "Reset power meter",
+        "en": "Reset energy meter",
         "no": "Tilbakestill strømmåler",
         "nl": "Reset energiemeter",
         "se": "Återställ energimätaren",
         "de": "Energiezähler zurücksetzen"
       },
       "desc": {
-        "en": "Reset the accumulated power usage (kWh), this can not be restored.",
+        "en": "Reset the accumulated energy usage (kWh), this can not be restored.",
         "no": "Tilbakestill akkumulert strømforbruk (kWh), dette kan ikke gjenopprettes.",
         "nl": "Reset het geaccumuleerde stroomverbruik (kWh), dit kan niet worden hersteld.",
         "de": "Setzen Sie den kumulierten Stromverbrauch zurück (kWh), dieser kann nicht wiederhergestellt werden.",

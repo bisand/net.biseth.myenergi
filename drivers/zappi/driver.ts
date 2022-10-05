@@ -1,14 +1,15 @@
 import { Driver, FlowCardTriggerDevice } from 'homey';
+import { Device } from 'homey/lib/FlowCardTriggerDevice';
 import { MyEnergi, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
 import { Capability } from '../../models/Capability';
 import { CapabilityType } from '../../models/CapabilityType';
+import { ZappiDevice } from './device';
 import { ZappiData } from './ZappiData';
 
 export class ZappiDriver extends Driver {
 
-  private _app!: MyEnergiApp;
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _dataUpdateCallbacks: any[] = [];
   private _chargingStarted!: FlowCardTriggerDevice;
   private _chargingStopped!: FlowCardTriggerDevice;
@@ -54,9 +55,8 @@ export class ZappiDriver extends Driver {
    * onInit is called when the driver is initialized.
    */
   public async onInit() {
-    const drv = this;
-    this._app = this.homey.app as MyEnergiApp;
-    this._app.registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (this.homey.app as MyEnergiApp).registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
     this._chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
     this._chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
     this._chargeModeChanged = this.homey.flow.getDeviceTriggerCard('charge_mode_changed');
@@ -67,21 +67,21 @@ export class ZappiDriver extends Driver {
     // Flow logic
     const chargingCondition = this.homey.flow.getConditionCard('is_charging');
     chargingCondition.registerRunListener(async (args, state) => {
-      const dev = args.device;
+      const dev: ZappiDevice = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: is_charging');
+        this.error('Unable to detect device on flow: is_charging');
         return;
       }
       dev.log(`Is Charging: ${args} - ${state}`);
-      const charging = dev._chargerStatus === ZappiStatus.Charging; // true or false
+      const charging = dev.chargerStatus === ZappiStatus.Charging; // true or false
       return charging;
     });
 
     const startChargingAction = this.homey.flow.getActionCard('start_charging');
     startChargingAction.registerRunListener(async (args, state) => {
-      const dev = args.device;
+      const dev: ZappiDevice = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: start_charging');
+        this.error('Unable to detect device on flow: start_charging');
         return;
       }
       dev.log(`Start Charging: ${args} - ${state}`);
@@ -94,9 +94,9 @@ export class ZappiDriver extends Driver {
 
     const stopChargingAction = this.homey.flow.getActionCard('stop_charging');
     stopChargingAction.registerRunListener(async (args, state) => {
-      const dev = args.device;
+      const dev: ZappiDevice = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: stop_charging');
+        this.error('Unable to detect device on flow: stop_charging');
         return;
       }
       dev.log(`Stop Charging: ${args} - ${state}`);
@@ -109,18 +109,19 @@ export class ZappiDriver extends Driver {
 
     const setChargeModeAction = this.homey.flow.getActionCard('set_charge_mode');
     setChargeModeAction.registerRunListener(async (args, state) => {
-      const dev = args.device;
+      const dev: ZappiDevice = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: set_charge_mode');
+        this.error('Unable to detect device on flow: set_charge_mode');
         return;
       }
       dev.log(`Charge Mode: ${args.charge_mode_txt}`);
+      dev.log(`State: ${state}`);
       try {
-        dev._chargeMode = dev.getChargeMode(args.charge_mode_txt);
-        if (dev._chargeMode !== ZappiChargeMode.Off) {
-          dev._lastOnState = dev._chargeMode;
+        dev.chargeMode = dev.getChargeMode(args.charge_mode_txt);
+        if (dev.chargeMode !== ZappiChargeMode.Off) {
+          dev.lastOnState = dev.chargeMode;
         }
-        await dev.setChargeMode(dev._chargeMode);
+        await dev.setChargeMode(dev.chargeMode);
       } catch (error) {
         dev.error(error);
       }
@@ -130,10 +131,11 @@ export class ZappiDriver extends Driver {
     selectChargeModeAction.registerRunListener(async (args, state) => {
       const dev = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: select_charge_mode');
+        this.error('Unable to detect device on flow: select_charge_mode');
         return;
       }
       dev.log(`Charge Mode: ${args.charge_mode_selector}`);
+      dev.debug(`State: ${state}`);
       try {
         dev._chargeMode = dev.getChargeMode(args.charge_mode_selector);
         if (dev._chargeMode !== ZappiChargeMode.Off) {
@@ -149,13 +151,14 @@ export class ZappiDriver extends Driver {
     setBoostModeAction.registerRunListener(async (args, state) => {
       const dev = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: set_boost_mode');
+        this.error('Unable to detect device on flow: set_boost_mode');
         return;
       }
       dev.log(`Boost Mode: ${args.boost_mode_txt}, Boost Mode: ${args.boost_mode_kwh}, Boost Mode: ${args.boost_mode_complete_time}`);
       const kwh = args.boost_mode_kwh ? args.boost_mode_kwh as number : 0;
       const completeTime = dev.getValidBoostTime(args.boost_mode_complete_time ? args.boost_mode_complete_time : '0000');
       dev.log(`Complete time: ${completeTime}`);
+      dev.debug(`State: ${state}`);
       try {
         dev._boostMode = dev.getBoostMode(args.boost_mode_txt);
         dev._lastBoostState = dev._boostMode;
@@ -169,10 +172,11 @@ export class ZappiDriver extends Driver {
     setMinimumGreenLevelAction.registerRunListener(async (args, state) => {
       const dev = args.device;
       if (!dev) {
-        drv.error('Unable to detect device on flow: set_minimum_green_level');
+        this.error('Unable to detect device on flow: set_minimum_green_level');
         return;
       }
       dev.log(`Minimum Green Level: ${args.minimum_green_level}`);
+      dev.debug(`State: ${state}`);
       dev._minimumGreenLevel = args.minimum_green_level;
       try {
         await dev.setMinimumGreenLevel(dev._minimumGreenLevel);
@@ -184,49 +188,49 @@ export class ZappiDriver extends Driver {
     this.log('ZappiDriver has been initialized');
   }
 
-  public triggerChargingStartedFlow(device: any, tokens: any, state: any) {
+  public triggerChargingStartedFlow(device: Device, tokens?: object | undefined, state?: object | undefined) {
     this._chargingStarted
       .trigger(device, tokens, state)
-      .then((x: any) => this.log(`triggerChargingStartedFlow: ${x}`))
+      .then((x: unknown) => this.log(`triggerChargingStartedFlow: ${x}`))
       .catch(this.error);
   }
 
-  public triggerChargingStoppedFlow(device: any, tokens: any, state: any) {
+  public triggerChargingStoppedFlow(device: Device, tokens?: object | undefined, state?: object | undefined) {
     this._chargingStopped
       .trigger(device, tokens, state)
-      .then((x: any) => this.log(`triggerChargingStoppedFlow: ${x}`))
+      .then((x: unknown) => this.log(`triggerChargingStoppedFlow: ${x}`))
       .catch(this.error);
   }
 
-  public triggerChargeModeFlow(device: any, tokens: any, state: any) {
+  public triggerChargeModeFlow(device: Device, tokens?: object | undefined, state?: object | undefined) {
     this._chargeModeChanged
       .trigger(device, tokens, state)
-      .then((x: any) => this.log(`triggerChargeModeFlow: ${x}`))
+      .then((x: unknown) => this.log(`triggerChargeModeFlow: ${x}`))
       .catch(this.error);
   }
 
-  public triggerBoostModeFlow(device: any, tokens: any, state: any) {
+  public triggerBoostModeFlow(device: Device, tokens?: object | undefined, state?: object | undefined) {
     this._boostModeChanged
       .trigger(device, tokens, state)
-      .then((x: any) => this.log(`triggerBoostModeFlow: ${x}`))
+      .then((x: unknown) => this.log(`triggerBoostModeFlow: ${x}`))
       .catch(this.error);
   }
 
-  public triggerEvConnectedFlow(device: any, tokens: any, state: any) {
+  public triggerEvConnectedFlow(device: Device, tokens?: object | undefined, state?: object | undefined) {
     this._evConnected
       .trigger(device, tokens, state)
-      .then((x: any) => this.log(`triggerEvConnectedFlow: ${x}`))
+      .then((x: unknown) => this.log(`triggerEvConnectedFlow: ${x}`))
       .catch(this.error);
   }
 
-  public triggerEvDisconnectedFlow(device: any, tokens: any, state: any) {
+  public triggerEvDisconnectedFlow(device: Device, tokens?: object | undefined, state?: object | undefined) {
     this._evDisconnected
       .trigger(device, tokens, state)
-      .then((x: any) => this.log(`triggerEvDisconnectedFlow: ${x}`))
+      .then((x: unknown) => this.log(`triggerEvDisconnectedFlow: ${x}`))
       .catch(this.error);
   }
 
-  public registerDataUpdateCallback(callback: any) {
+  public registerDataUpdateCallback(callback: unknown) {
     return this._dataUpdateCallbacks.push(callback);
   }
 
@@ -234,10 +238,11 @@ export class ZappiDriver extends Driver {
     this._dataUpdateCallbacks.splice(callbackId, 1);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private dataUpdated(data: any[]) {
     this.log('Received data from app. Relaying to devices.');
     if (data) {
-      data.forEach(d => {
+      data.forEach((d) => {
         if (d.zappi) {
           this._dataUpdateCallbacks.forEach(callback => {
             callback(d.zappi);
@@ -248,10 +253,10 @@ export class ZappiDriver extends Driver {
   }
 
   private async loadZappiDevices(): Promise<ZappiData[]> {
-    for (const key in this._app.clients) {
-      if (Object.prototype.hasOwnProperty.call(this._app.clients, key)) {
-        const client: MyEnergi = this._app.clients[key];
-        const zappis: ZappiData[] = await client.getStatusZappiAll() as ZappiData[];
+    for (const key in (this.homey.app as MyEnergiApp).clients) {
+      if (Object.prototype.hasOwnProperty.call((this.homey.app as MyEnergiApp).clients, key)) {
+        const client: MyEnergi = (this.homey.app as MyEnergiApp).clients[key];
+        const zappis: ZappiData[] = await client.getStatusZappiAll().catch(this.error) as ZappiData[];
         for (const zappi of zappis) {
           if (this.zappiDevices.findIndex((z: ZappiData) => z.sno === zappi.sno) === -1) {
             zappi.myenergiClientId = key;
@@ -265,8 +270,8 @@ export class ZappiDriver extends Driver {
   }
 
   private async getZappiDevices() {
-    const zappiDevices = await this.loadZappiDevices();
-    const result = zappiDevices.map((v, i, a) => {
+    const zappiDevices = await this.loadZappiDevices().catch(this.error) as ZappiData[];
+    const result = zappiDevices.map((v) => {
       return {
         name: `Zappi ${v.sno}`,
         data: { id: v.sno },
@@ -284,7 +289,7 @@ export class ZappiDriver extends Driver {
         const myenergiClientId = result[0]?.store.myenergiClientId;
         result.push(this.getFakeZappi(myenergiClientId, '99999999', 'Zappi Test 123'));
       } catch (error) {
-
+        this.error(error);
       }
     }
     return result;
@@ -296,11 +301,11 @@ export class ZappiDriver extends Driver {
    * This should return an array with the data of devices that are available for pairing.
    */
   public async onPairListDevices() {
-    if (!this._app.clients || this._app.clients.length < 1)
+    if (!(this.homey.app as MyEnergiApp).clients || Object.keys((this.homey.app as MyEnergiApp).clients).length < 1)
       throw new Error("Can not find any myenergi hubs. Please add the hub credentials under myenergi app settings.");
 
     try {
-      const devs = await this.getZappiDevices();
+      const devs = await this.getZappiDevices().catch(this.error);
       return devs ? devs : [];
     } catch (error) {
       throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`);
@@ -311,6 +316,7 @@ export class ZappiDriver extends Driver {
    * Generates a fake Zappi EV charger that can be used for testing/debug porposes.
    * @returns A fake Zappi object.
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private getFakeZappi(myenergiClientId: string, id: string, name: string): any {
     return {
       name: name,

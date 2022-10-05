@@ -4,13 +4,45 @@
   },
   "class": "sensor",
   "capabilities": [
+    "meter_power",
+    "measure_power",
     "ct1_type",
     "measure_power_ct1",
     "ct2_type",
     "measure_power_ct2",
     "ct3_type",
-    "measure_power_ct3"
+    "measure_power_ct3",
+    "button.reset_meter",
+    "button.reload_capabilities"
   ],
+  "capabilitiesOptions": {
+    "button.reset_meter": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reset energy meter",
+        "no": "Tilbakestill strømmåler",
+        "nl": "Reset energiemeter",
+        "se": "Återställ energimätaren",
+        "de": "Energiezähler zurücksetzen"
+      },
+      "desc": {
+        "en": "Reset the accumulated energy usage (kWh), this can not be restored.",
+        "no": "Tilbakestill akkumulert strømforbruk (kWh), dette kan ikke gjenopprettes.",
+        "nl": "Reset het geaccumuleerde stroomverbruik (kWh), dit kan niet worden hersteld.",
+        "de": "Setzen Sie den kumulierten Stromverbrauch zurück (kWh), dieser kann nicht wiederhergestellt werden.",
+        "se": "Återställ den ackumulerade strömförbrukningen (kWh), detta kan inte återställas"
+      }
+    },
+    "button.reload_capabilities": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reload capabilities"
+      },
+      "desc": {
+        "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
+      }
+    }
+  },
   "platforms": [
     "local"
   ],

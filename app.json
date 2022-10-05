@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "net.biseth.myenergi",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#2bcc64",
@@ -169,13 +169,45 @@
       },
       "class": "sensor",
       "capabilities": [
+        "meter_power",
+        "measure_power",
         "ct1_type",
         "measure_power_ct1",
         "ct2_type",
         "measure_power_ct2",
         "ct3_type",
-        "measure_power_ct3"
+        "measure_power_ct3",
+        "button.reset_meter",
+        "button.reload_capabilities"
       ],
+      "capabilitiesOptions": {
+        "button.reset_meter": {
+          "maintenanceAction": true,
+          "title": {
+            "en": "Reset energy meter",
+            "no": "Tilbakestill strømmåler",
+            "nl": "Reset energiemeter",
+            "se": "Återställ energimätaren",
+            "de": "Energiezähler zurücksetzen"
+          },
+          "desc": {
+            "en": "Reset the accumulated energy usage (kWh), this can not be restored.",
+            "no": "Tilbakestill akkumulert strømforbruk (kWh), dette kan ikke gjenopprettes.",
+            "nl": "Reset het geaccumuleerde stroomverbruik (kWh), dit kan niet worden hersteld.",
+            "de": "Setzen Sie den kumulierten Stromverbrauch zurück (kWh), dieser kann nicht wiederhergestellt werden.",
+            "se": "Återställ den ackumulerade strömförbrukningen (kWh), detta kan inte återställas"
+          }
+        },
+        "button.reload_capabilities": {
+          "maintenanceAction": true,
+          "title": {
+            "en": "Reload capabilities"
+          },
+          "desc": {
+            "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
+          }
+        }
+      },
       "platforms": [
         "local"
       ],
@@ -200,7 +232,132 @@
         "small": "/drivers/harvi/assets/images/small.png",
         "large": "/drivers/harvi/assets/images/large.png"
       },
-      "id": "harvi"
+      "id": "harvi",
+      "settings": [
+        {
+          "id": "totalEnergyOffset",
+          "type": "number",
+          "value": 0,
+          "label": {
+            "en": "Total energy consumption offset",
+            "no": "Totalt energiforbruk offset",
+            "nl": "Totaal energieverbruik offset",
+            "sv": "Total energiförbrukning offset",
+            "de": "Gesamtenergieverbrauch offset"
+          },
+          "units": {
+            "en": "kWh"
+          },
+          "hint": {
+            "en": "If you want, you can add an offset to the total energi consumption. This setting will add the value to the current energy consumtion and reset itself back to zero."
+          }
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Power calculations",
+            "nl": "Vermogen berekenen",
+            "de": "Leistungsberechnungen",
+            "sv": "Effektberäkningar"
+          },
+          "children": [
+            {
+              "id": "powerCalculationMode",
+              "type": "dropdown",
+              "value": "automatic",
+              "label": {
+                "en": "Default mode",
+                "nl": "Standaard modus",
+                "de": "Standardmodus",
+                "sv": "Standardläge"
+              },
+              "values": [
+                {
+                  "id": "automatic",
+                  "label": {
+                    "en": "Automatically select CTs",
+                    "nl": "Selecteer CT's automatisch",
+                    "de": "CTs automatisch auswählen",
+                    "sv": "Välj CT automatiskt"
+                  }
+                },
+                {
+                  "id": "manual",
+                  "label": {
+                    "en": "Manual override CTs",
+                    "nl": "Handmatige instelling CT's",
+                    "de": "CTs manuell Überbrücken",
+                    "sv": "Manuell CT konfiguration"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "includeCT1",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 1",
+                "nl": "CT 1 meenemen",
+                "de": "Inklusive CT 1",
+                "sv": "Inkludera CT 1"
+              },
+              "value": true,
+              "hint": {
+                "en": "Include CT 1 in the power calculation.",
+                "nl": "CT 1 meenemen in berekening.",
+                "de": "Beziehen Sie CT 1 in die Leistungsberechnung ein.",
+                "sv": "Inkludera CT 1 i effektberäkningen."
+              }
+            },
+            {
+              "id": "includeCT2",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 2",
+                "nl": "CT 2 meenemen",
+                "de": "Inklusive CT 2",
+                "sv": "Inkludera CT 2"
+              },
+              "value": true,
+              "hint": {
+                "en": "Include CT 2 in the power calculation.",
+                "nl": "CT 2 meenemen in berekening.",
+                "de": "Beziehen Sie CT 2 in die Leistungsberechnung ein.",
+                "sv": "Inkludera CT 2 i effektberäkningen."
+              }
+            },
+            {
+              "id": "includeCT3",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 3",
+                "nl": "CT 3 meenemen",
+                "de": "Inklusive CT 3",
+                "sv": "Inkludera CT 3"
+              },
+              "value": true,
+              "hint": {
+                "en": "Include CT 3 in the power calculation.",
+                "nl": "CT 3 meenemen in berekening.",
+                "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein.",
+                "sv": "Inkludera CT 3 i effektberäkningen."
+              }
+            }
+          ]
+        },
+        {
+          "id": "showNegativeValues",
+          "type": "checkbox",
+          "value": true,
+          "label": {
+            "en": "Show negative values",
+            "no": "Vis negative verdier",
+            "nl": "Negatieve waarden weergeven",
+            "sv": "Visa negativa värden",
+            "de": "Negative Werte anzeigen"
+          }
+        }
+      ]
     },
     {
       "name": {
@@ -242,14 +399,14 @@
         "button.reset_meter": {
           "maintenanceAction": true,
           "title": {
-            "en": "Reset power meter",
+            "en": "Reset energy meter",
             "no": "Tilbakestill strømmåler",
             "nl": "Reset energiemeter",
             "se": "Återställ energimätaren",
             "de": "Energiezähler zurücksetzen"
           },
           "desc": {
-            "en": "Reset the accumulated power usage (kWh), this can not be restored.",
+            "en": "Reset the accumulated energy usage (kWh), this can not be restored.",
             "no": "Tilbakestill akkumulert strømforbruk (kWh), dette kan ikke gjenopprettes.",
             "nl": "Reset het geaccumuleerde stroomverbruik (kWh), dit kan niet worden hersteld.",
             "de": "Setzen Sie den kumulierten Stromverbrauch zurück (kWh), dieser kann nicht wiederhergestellt werden.",
