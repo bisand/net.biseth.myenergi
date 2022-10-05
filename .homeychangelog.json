@@ -46,5 +46,8 @@
   },
   "1.6.1": {
     "en": "Fixed a bug that prevented control of multiple Zappi units from a flow."
+  },
+  "1.7.0": {
+    "en": "Added total power and energy to Harvi device, together with a few extra capabilities."
   }
 }

@@ -2,7 +2,6 @@ import { Device } from 'homey';
 import { Harvi, MyEnergi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
 import { HarviSettings } from '../../models/HarviSettings';
-import { DeviceHelper } from '../../tools/DeviceHelper';
 import { HarviDriver } from './driver';
 import { HarviData } from "./HarviData";
 
@@ -33,11 +32,9 @@ class HarviDevice extends Device {
   public async onInit() {
 
     // Make sure capabilities are up to date.
-    let deviceHelper: DeviceHelper | null = new DeviceHelper(this);
-    if (deviceHelper.detectCapabilityChanges((this.driver as HarviDriver).capabilities)) {
-      await deviceHelper.initializeCapabilities((this.driver as HarviDriver).capabilities).catch(this.error);
+    if ((this.homey.app as MyEnergiApp).detectCapabilityChanges(this, (this.driver as HarviDriver).capabilities)) {
+      await (this.homey.app as MyEnergiApp).initializeCapabilities(this, (this.driver as HarviDriver).capabilities).catch(this.error);
     }
-    deviceHelper = null;
 
     this._settings = this.getSettings();
     this._callbackId = (this.driver as HarviDriver).registerDataUpdateCallback((data: HarviData[]) => this.dataUpdated(data)) - 1;
@@ -62,9 +59,7 @@ class HarviDevice extends Device {
       this.setCapabilityValue('meter_power', 0);
     });
     this.registerCapabilityListener('button.reload_capabilities', async () => {
-      let devHelper: DeviceHelper | null = new DeviceHelper(this);
-      await devHelper.initializeCapabilities((this.driver as HarviDriver).capabilities).catch(this.error);
-      devHelper = null;
+      await (this.homey.app as MyEnergiApp).initializeCapabilities(this, (this.driver as HarviDriver).capabilities).catch(this.error);
     });
 
     this.log('HarviDevice has been initialized');

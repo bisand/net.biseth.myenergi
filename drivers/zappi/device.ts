@@ -2,7 +2,6 @@ import { Device } from 'homey';
 import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
 import { ZappiSettings } from '../../models/ZappiSettings';
-import { DeviceHelper } from '../../tools/DeviceHelper';
 import { ZappiDriver } from './driver';
 import { ZappiBoostModeText } from './ZappiBoostModeText';
 import { ZappiChargeModeText } from './ZappiChargeModeText';
@@ -66,11 +65,9 @@ export class ZappiDevice extends Device {
   public async onInit(): Promise<void> {
 
     // Make sure capabilities are up to date.
-    let deviceHelper: DeviceHelper | null = new DeviceHelper(this);
-    if (deviceHelper.detectCapabilityChanges((this.driver as ZappiDriver).capabilities)) {
-      await deviceHelper.initializeCapabilities((this.driver as ZappiDriver).capabilities).catch(this.error);
+    if ((this.homey.app as MyEnergiApp).detectCapabilityChanges(this, (this.driver as ZappiDriver).capabilities)) {
+      await (this.homey.app as MyEnergiApp).initializeCapabilities(this, (this.driver as ZappiDriver).capabilities).catch(this.error);
     }
-    deviceHelper = null;
 
 
     this._settings = this.getSettings();
@@ -105,9 +102,7 @@ export class ZappiDevice extends Device {
       this.setCapabilityValue('meter_power', 0);
     });
     this.registerCapabilityListener('button.reload_capabilities', async () => {
-      let devHelper: DeviceHelper | null = new DeviceHelper(this);
-      await devHelper.initializeCapabilities((this.driver as ZappiDriver).capabilities).catch(this.error);
-      devHelper = null;
+      await (this.homey.app as MyEnergiApp).initializeCapabilities(this, (this.driver as ZappiDriver).capabilities).catch(this.error);
     });
 
     this.log(`ZappiDevice ${this.deviceId} has been initialized`);
