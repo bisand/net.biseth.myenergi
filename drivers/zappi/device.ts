@@ -2,6 +2,7 @@ import { Device } from 'homey';
 import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
 import { ZappiSettings } from '../../models/ZappiSettings';
+import { DeviceHelper } from '../../tools/DeviceHelper';
 import { ZappiDriver } from './driver';
 import { ZappiBoostModeText } from './ZappiBoostModeText';
 import { ZappiChargeModeText } from './ZappiChargeModeText';
@@ -65,9 +66,12 @@ export class ZappiDevice extends Device {
   public async onInit(): Promise<void> {
 
     // Make sure capabilities are up to date.
-    if (this.detectCapabilityChanges()) {
-      await this.InitializeCapabilities().catch(this.error);
+    let deviceHelper: DeviceHelper | null = new DeviceHelper(this);
+    if (deviceHelper.detectCapabilityChanges((this.driver as ZappiDriver).capabilities)) {
+      await deviceHelper.initializeCapabilities((this.driver as ZappiDriver).capabilities).catch(this.error);
     }
+    deviceHelper = null;
+
 
     this._settings = this.getSettings();
     this._callbackId = (this.driver as ZappiDriver).registerDataUpdateCallback((data: ZappiData[]) => this.dataUpdated(data)) - 1;
@@ -101,116 +105,12 @@ export class ZappiDevice extends Device {
       this.setCapabilityValue('meter_power', 0);
     });
     this.registerCapabilityListener('button.reload_capabilities', async () => {
-      this.InitializeCapabilities();
+      let devHelper: DeviceHelper | null = new DeviceHelper(this);
+      await devHelper.initializeCapabilities((this.driver as ZappiDriver).capabilities).catch(this.error);
+      devHelper = null;
     });
 
     this.log(`ZappiDevice ${this.deviceId} has been initialized`);
-  }
-
-  private isChargeModeValueText(value: ZappiChargeMode | ZappiChargeModeText): boolean {
-    switch (value) {
-      case ZappiChargeMode.Eco:
-      case ZappiChargeMode.EcoPlus:
-      case ZappiChargeMode.Fast:
-      case ZappiChargeMode.Off:
-        return false
-
-      case ZappiChargeModeText.Eco:
-      case ZappiChargeModeText.EcoPlus:
-      case ZappiChargeModeText.Fast:
-      case ZappiChargeModeText.Off:
-        return true
-
-      default:
-        return false;
-    }
-  }
-
-  private isZappiStatusValueText(value: ZappiStatus | ZappiStatusText): boolean {
-    switch (value) {
-      case ZappiStatus.Charging:
-      case ZappiStatus.EvConnected:
-      case ZappiStatus.EvDisconnected:
-      case ZappiStatus.EvReadyToCharge:
-      case ZappiStatus.Fault:
-      case ZappiStatus.WaitingForEv:
-        return false
-
-      case ZappiStatusText.Charging:
-      case ZappiStatusText.EvConnected:
-      case ZappiStatusText.EvDisconnected:
-      case ZappiStatusText.EvReadyToCharge:
-      case ZappiStatusText.Fault:
-      case ZappiStatusText.WaitingForEv:
-        return true
-
-      default:
-        return false;
-    }
-  }
-
-  /**
-   * Validate capabilities. Add new and delete removed capabilities.
-   */
-  private async InitializeCapabilities(): Promise<void> {
-    await this.setUnavailable('Zappi is currently doing some maintenance taks and will be back shortly.').catch(this.error);
-    this.log(`****** Initializing Zappi sensor capabilities ******`);
-    const caps = this.getCapabilities();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const tmpCaps: any = {};
-    // Remove all capabilities in case the order has changed
-    for (const cap of caps) {
-      try {
-        tmpCaps[cap] = this.getCapabilityValue(cap);
-        await this.removeCapability(cap).catch(this.error);
-        this.log(`*** ${cap} - Removed`);
-      } catch (error) {
-        this.error(error);
-      }
-    }
-    // Re-apply all capabilities.
-    for (const cap of (this.driver as ZappiDriver).capabilities) {
-      try {
-        if (this.hasCapability(cap))
-          continue;
-        await this.addCapability(cap).catch(this.error);
-        if (tmpCaps[cap])
-          this.setCapabilityValue(cap, tmpCaps[cap]);
-        this.log(`*** ${cap} - Added`);
-      } catch (error) {
-        this.error(error);
-      }
-    }
-    this.log(`****** Sensor capability initialization complete ******`);
-    this.setAvailable().catch(this.error);
-  }
-
-  /**
-   * Validate capabilities. Add new and delete removed capabilities.
-   */
-  private detectCapabilityChanges(): boolean {
-    let result = false;
-    this.log(`Detecting Zappi capability changes...`);
-    const caps = this.getCapabilities();
-    for (const cap of caps) {
-      if (!(this.driver as ZappiDriver).capabilities.includes(cap)) {
-        this.log(`Zappi capability ${cap} was removed.`);
-        result = true;
-      }
-    }
-    for (const cap of (this.driver as ZappiDriver).capabilities) {
-      if (!this.hasCapability(cap)) {
-        this.log(`Zappi capability ${cap} was added.`);
-        result = true;
-      }
-    }
-    if (!result)
-      this.log('No changes in capabilities.');
-    return result;
-  }
-
-  private getRndInteger(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
   /**

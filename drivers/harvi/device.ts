@@ -2,6 +2,7 @@ import { Device } from 'homey';
 import { Harvi, MyEnergi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
 import { HarviSettings } from '../../models/HarviSettings';
+import { DeviceHelper } from '../../tools/DeviceHelper';
 import { HarviDriver } from './driver';
 import { HarviData } from "./HarviData";
 
@@ -32,9 +33,11 @@ class HarviDevice extends Device {
   public async onInit() {
 
     // Make sure capabilities are up to date.
-    if (this.detectCapabilityChanges()) {
-      await this.InitializeCapabilities().catch(this.error);
+    let deviceHelper: DeviceHelper | null = new DeviceHelper(this);
+    if (deviceHelper.detectCapabilityChanges((this.driver as HarviDriver).capabilities)) {
+      await deviceHelper.initializeCapabilities((this.driver as HarviDriver).capabilities).catch(this.error);
     }
+    deviceHelper = null;
 
     this._settings = this.getSettings();
     this._callbackId = (this.driver as HarviDriver).registerDataUpdateCallback((data: HarviData[]) => this.dataUpdated(data)) - 1;
@@ -59,70 +62,12 @@ class HarviDevice extends Device {
       this.setCapabilityValue('meter_power', 0);
     });
     this.registerCapabilityListener('button.reload_capabilities', async () => {
-      this.InitializeCapabilities();
+      let devHelper: DeviceHelper | null = new DeviceHelper(this);
+      await devHelper.initializeCapabilities((this.driver as HarviDriver).capabilities).catch(this.error);
+      devHelper = null;
     });
 
     this.log('HarviDevice has been initialized');
-  }
-
-  /**
-   * Validate capabilities. Add new and delete removed capabilities.
-   */
-  private async InitializeCapabilities(): Promise<void> {
-    await this.setUnavailable('Harvi is currently doing some maintenance taks and will be back shortly.').catch(this.error);
-    this.log(`****** Initializing Harvi sensor capabilities ******`);
-    const caps = this.getCapabilities();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const tmpCaps: any = {};
-    // Remove all capabilities in case the order has changed
-    for (const cap of caps) {
-      try {
-        tmpCaps[cap] = this.getCapabilityValue(cap);
-        await this.removeCapability(cap).catch(this.error);
-        this.log(`*** ${cap} - Removed`);
-      } catch (error) {
-        this.error(error);
-      }
-    }
-    // Re-apply all capabilities.
-    for (const cap of (this.driver as HarviDriver).capabilities) {
-      try {
-        if (this.hasCapability(cap))
-          continue;
-        await this.addCapability(cap).catch(this.error);
-        if (tmpCaps[cap])
-          this.setCapabilityValue(cap, tmpCaps[cap]);
-        this.log(`*** ${cap} - Added`);
-      } catch (error) {
-        this.error(error);
-      }
-    }
-    this.log(`****** Sensor capability initialization complete ******`);
-    this.setAvailable().catch(this.error);
-  }
-
-  /**
-   * Validate capabilities. Add new and delete removed capabilities.
-   */
-  private detectCapabilityChanges(): boolean {
-    let result = false;
-    this.log(`Detecting Harvi capability changes...`);
-    const caps = this.getCapabilities();
-    for (const cap of caps) {
-      if (!(this.driver as HarviDriver).capabilities.includes(cap)) {
-        this.log(`Harvi capability ${cap} was removed.`);
-        result = true;
-      }
-    }
-    for (const cap of (this.driver as HarviDriver).capabilities) {
-      if (!this.hasCapability(cap)) {
-        this.log(`Harvi capability ${cap} was added.`);
-        result = true;
-      }
-    }
-    if (!result)
-      this.log('No changes in capabilities.');
-    return result;
   }
 
   private calculateValues(harvi: Harvi) {
