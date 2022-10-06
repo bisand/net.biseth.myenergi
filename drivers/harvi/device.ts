@@ -68,7 +68,7 @@ class HarviDevice extends Device {
   /**
    * Validate capabilities. Add new and delete removed capabilities.
    */
-   private async InitializeCapabilities(): Promise<void> {
+  private async InitializeCapabilities(): Promise<void> {
     await this.setUnavailable('Harvi is currently doing some maintenance taks and will be back shortly.').catch(this.error);
     this.log(`****** Initializing Harvi sensor capabilities ******`);
     const caps = this.getCapabilities();
