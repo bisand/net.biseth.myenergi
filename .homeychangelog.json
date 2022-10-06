@@ -49,5 +49,8 @@
   },
   "1.7.0": {
     "en": "Added total power and energy to Harvi device, together with a few extra capabilities."
+  },
+  "1.7.1": {
+    "en": "Fixed a bug that prevented new Harvi devices from being added."
   }
 }
