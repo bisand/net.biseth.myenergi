@@ -114,8 +114,7 @@ export class ZappiDevice extends Device {
     await this.setUnavailable('Zappi is currently doing some maintenance taks and will be back shortly.').catch(this.error);
     this.log(`****** Initializing Zappi sensor capabilities ******`);
     const caps = this.getCapabilities();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const tmpCaps: any = {};
+    const tmpCaps: { [name: string]: unknown } = {};
     // Remove all capabilities in case the order has changed
     for (const cap of caps) {
       try {

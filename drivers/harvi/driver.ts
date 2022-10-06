@@ -1,13 +1,13 @@
 import { Driver } from 'homey';
 import { MyEnergiApp } from '../../app';
+import { DataCallbackFunction } from '../../dataCallbackFunction';
 import { Capability } from '../../models/Capability';
 import { CapabilityType } from '../../models/CapabilityType';
 import { HarviData } from './HarviData';
 
 export class HarviDriver extends Driver {
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _dataUpdateCallbacks: any[] = [];
+  private _dataUpdateCallbacks: DataCallbackFunction[] = [];
   private readonly _capabilities: Capability[] = [
     new Capability('meter_power', CapabilityType.Sensor, 1),
     new Capability('measure_power', CapabilityType.Sensor, 2),
@@ -35,7 +35,7 @@ export class HarviDriver extends Driver {
    */
   public async onInit() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this.homey.app as MyEnergiApp).registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
+    (this.homey.app as MyEnergiApp).registerDataUpdateCallback((data: any) => this.dataUpdated(data));
     this.log('HarviDriver has been initialized');
   }
 

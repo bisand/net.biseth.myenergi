@@ -3,19 +3,16 @@
 
 import Homey from 'homey';
 import { MyEnergi } from 'myenergi-api';
+import { DataCallbackFunction } from './dataCallbackFunction';
 import { Credential } from './models/Credential';
 import { MyEnergiHub } from './models/MyEnergiHub';
 import { Response } from './models/Result';
 import { SchedulerService } from './services/SchedulerService';
 
-interface fn {
-  (data: unknown): void;
-}
-
 export class MyEnergiApp extends Homey.App {
 
   private _dataUpdateInterval: number = 60 * 1000;
-  private _dataUpdateCallbacks: fn[] = [];
+  private _dataUpdateCallbacks: DataCallbackFunction[] = [];
   private _apiBaseUrl = 'https://s18.myenergi.net';
 
   public clients: { [name: string]: MyEnergi } = {};
@@ -73,8 +70,7 @@ export class MyEnergiApp extends Homey.App {
     this.log(`Client init complete.`);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public registerDataUpdateCallback(callback: any) {
+  public registerDataUpdateCallback(callback: DataCallbackFunction) {
     this._dataUpdateCallbacks.push(callback);
   }
 

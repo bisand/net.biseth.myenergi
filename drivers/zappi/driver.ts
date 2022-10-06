@@ -2,6 +2,7 @@ import { Driver, FlowCardTriggerDevice } from 'homey';
 import { Device } from 'homey/lib/FlowCardTriggerDevice';
 import { MyEnergi, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
+import { DataCallbackFunction } from '../../dataCallbackFunction';
 import { Capability } from '../../models/Capability';
 import { CapabilityType } from '../../models/CapabilityType';
 import { ZappiDevice } from './device';
@@ -9,8 +10,7 @@ import { ZappiData } from './ZappiData';
 
 export class ZappiDriver extends Driver {
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _dataUpdateCallbacks: any[] = [];
+  private _dataUpdateCallbacks: DataCallbackFunction[] = [];
   private _chargingStarted!: FlowCardTriggerDevice;
   private _chargingStopped!: FlowCardTriggerDevice;
   private _chargeModeChanged!: FlowCardTriggerDevice;
@@ -56,7 +56,7 @@ export class ZappiDriver extends Driver {
    */
   public async onInit() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this.homey.app as MyEnergiApp).registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
+    (this.homey.app as MyEnergiApp).registerDataUpdateCallback((data: any) => this.dataUpdated(data));
     this._chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
     this._chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
     this._chargeModeChanged = this.homey.flow.getDeviceTriggerCard('charge_mode_changed');
@@ -230,7 +230,7 @@ export class ZappiDriver extends Driver {
       .catch(this.error);
   }
 
-  public registerDataUpdateCallback(callback: unknown) {
+  public registerDataUpdateCallback(callback: DataCallbackFunction) {
     return this._dataUpdateCallbacks.push(callback);
   }
 

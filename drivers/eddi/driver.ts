@@ -1,11 +1,11 @@
 import { Driver } from 'homey';
 import { MyEnergiApp } from '../../app';
+import { DataCallbackFunction } from '../../dataCallbackFunction';
 import { EddiData } from './EddiData';
 
 export class EddiDriver extends Driver {
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _dataUpdateCallbacks: any[] = [];
+  private _dataUpdateCallbacks: DataCallbackFunction[] = [];
   private readonly _capabilities: string[] = [
     'onoff',
     'heater_status',
@@ -30,12 +30,11 @@ export class EddiDriver extends Driver {
    */
   public async onInit() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this.homey.app as MyEnergiApp).registerDataUpdateCallback((data: any[]) => this.dataUpdated(data));
+    (this.homey.app as MyEnergiApp).registerDataUpdateCallback((data: any) => this.dataUpdated(data));
     this.log('EddiDriver has been initialized');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public registerDataUpdateCallback(callback: any) {
+  public registerDataUpdateCallback(callback: DataCallbackFunction) {
     return this._dataUpdateCallbacks.push(callback);
   }
 
