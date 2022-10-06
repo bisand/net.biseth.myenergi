@@ -305,7 +305,7 @@ export class ZappiDriver extends Driver {
       throw new Error("Can not find any myenergi hubs. Please add the hub credentials under myenergi app settings.");
 
     try {
-      const devs = await this.getZappiDevices().catch(this.error);
+      const devs = await this.getZappiDevices();
       return devs ? devs : [];
     } catch (error) {
       throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`);

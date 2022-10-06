@@ -93,7 +93,7 @@ export class HarviDriver extends Driver {
         store: {
           myenergiClientId: v.myenergiClientId,
         },
-        capabilities: this._capabilities,
+        capabilities: this.capabilities,
         capabilitiesOptions: {
         },
       };
