@@ -22,6 +22,6 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "myenergi-api": "^2.1.1"
+    "myenergi-api": "^2.1.2"
   }
 }
