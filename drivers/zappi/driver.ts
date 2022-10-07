@@ -135,7 +135,7 @@ export class ZappiDriver extends Driver {
         return;
       }
       dev.log(`Charge Mode: ${args.charge_mode_selector}`);
-      dev.debug(`State: ${state}`);
+      dev.log(`State: ${state}`);
       try {
         dev._chargeMode = dev.getChargeMode(args.charge_mode_selector);
         if (dev._chargeMode !== ZappiChargeMode.Off) {
@@ -158,7 +158,7 @@ export class ZappiDriver extends Driver {
       const kwh = args.boost_mode_kwh ? args.boost_mode_kwh as number : 0;
       const completeTime = dev.getValidBoostTime(args.boost_mode_complete_time ? args.boost_mode_complete_time : '0000');
       dev.log(`Complete time: ${completeTime}`);
-      dev.debug(`State: ${state}`);
+      dev.log(`State: ${state}`);
       try {
         dev._boostMode = dev.getBoostMode(args.boost_mode_txt);
         dev._lastBoostState = dev._boostMode;
@@ -176,7 +176,7 @@ export class ZappiDriver extends Driver {
         return;
       }
       dev.log(`Minimum Green Level: ${args.minimum_green_level}`);
-      dev.debug(`State: ${state}`);
+      dev.log(`State: ${state}`);
       dev._minimumGreenLevel = args.minimum_green_level;
       try {
         await dev.setMinimumGreenLevel(dev._minimumGreenLevel);
