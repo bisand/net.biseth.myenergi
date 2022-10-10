@@ -180,6 +180,9 @@
         "button.reset_meter",
         "button.reload_capabilities"
       ],
+      "energy": {
+        "cumulative": true
+      },
       "capabilitiesOptions": {
         "button.reset_meter": {
           "maintenanceAction": true,
