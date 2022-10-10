@@ -1,6 +1,6 @@
 {
   "name": "net.biseth.myenergi",
-  "version": "1.7.0",
+  "version": "1.7.3",
   "main": "app.js",
   "repository": {
     "type": "git",
@@ -22,6 +22,6 @@
     "typescript": "^4.8.4"
   },
   "dependencies": {
-    "myenergi-api": "^2.1.2"
+    "myenergi-api": "^2.1.3"
   }
 }
