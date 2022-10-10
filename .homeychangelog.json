@@ -58,5 +58,8 @@
   },
   "1.7.3": {
     "en": "Added cumulative energy flag to Harvi to be able to exclude it from total power calculation."
+  },
+  "1.7.4": {
+    "en": "Updated dependencies (myenergi-api)"
   }
 }
