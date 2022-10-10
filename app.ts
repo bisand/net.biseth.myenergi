@@ -95,8 +95,12 @@ export class MyEnergiApp extends Homey.App {
 
     // Start debuger
     if (process.env.DEBUG === '1') {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       // require('inspector').open(9229, '0.0.0.0', false);
       // debugger;
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const memwatch = require('memwatch');
+      memwatch.on('leak', (info: unknown) => { this.log("LEAK: ", info) });
     }
 
     const myenergiHubs = this.homey.settings.get('myenergiHubs');
