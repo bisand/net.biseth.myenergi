@@ -55,5 +55,8 @@
   },
   "1.7.2": {
     "en": "Bugfix for failing charge mode settings via flows"
+  },
+  "1.7.3": {
+    "en": "Added cumulative energy flag to Harvi to be able to exclude it from total power calculation."
   }
 }
