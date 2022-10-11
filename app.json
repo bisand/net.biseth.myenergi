@@ -6,7 +6,8 @@
   "sdk": 3,
   "brandColor": "#2bcc64",
   "platforms": [
-    "local"
+    "local",
+    "cloud"
   ],
   "name": {
     "en": "myenergi"
