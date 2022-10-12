@@ -13,9 +13,10 @@ RUN npm install --global --no-optional homey
 
 
 USER vscode
-RUN alias ll='ls -halF'
+RUN alias ll='ls -halF --color=auto'
 
 # Use this as a base for opening container in external terminal
 # alias docker-devcontainer='docker exec -it -w /workspace --env-file="$(pwd)/.devcontainer/container.env" $(docker ps --filter "name=$(basename $(pwd))_devcontainer_app" --format "{{.ID}}") zsh'
 # See https://github.com/microsoft/vscode/issues/110050
+
 CMD [ "sleep", "infinity" ]
