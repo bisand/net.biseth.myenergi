@@ -6,3 +6,5 @@ build/
 
 # Added by Homey CLI
 /.homeybuild/
+*.env
+.env
