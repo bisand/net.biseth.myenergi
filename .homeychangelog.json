@@ -61,5 +61,11 @@
   },
   "1.7.4": {
     "en": "Updated dependencies (myenergi-api)"
+  },
+  "1.7.5": {
+    "en": "Fixed a bug that crashed the app when setting total energy offset on Zappi and Harvi"
+  },
+  "1.7.6": {
+    "en": "Fixed a bug that crashed the app when setting total energy offset on Zappi and Harvi"
   }
 }

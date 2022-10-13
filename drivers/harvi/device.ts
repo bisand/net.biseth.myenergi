@@ -20,7 +20,7 @@ class HarviDevice extends Device {
   private _lastEnergyCalculation: Date = new Date();
   private _settings!: HarviSettings;
   private _powerCalculationModeSetToAuto!: boolean;
-
+  private _settingsTimeoutHandle!: NodeJS.Timeout;
 
   public deviceId!: string;
   public myenergiClientId!: string;
@@ -251,7 +251,11 @@ class HarviDevice extends Device {
       const prevEnergy: number = this.getCapabilityValue('meter_power');
       this.setCapabilityValue('meter_power', prevEnergy + (newSettings.totalEnergyOffset ? newSettings.totalEnergyOffset : 0));
       this._settings.totalEnergyOffset = 0;
-      // this.setSettings({ totalEnergyOffset: 0 })
+      // Reset the total energy offset after one second
+      this._settingsTimeoutHandle = setTimeout(() => {
+        this.setSettings({ totalEnergyOffset: 0 });
+        clearTimeout(this._settingsTimeoutHandle);
+      }, 1000);
     }
   }
 

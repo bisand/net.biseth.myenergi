@@ -1,6 +1,6 @@
 {
   "id": "net.biseth.myenergi",
-  "version": "1.7.4",
+  "version": "1.7.6",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#2bcc64",
