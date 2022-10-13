@@ -1,5 +1,6 @@
 import { Device } from 'homey';
 import { EddiMode, EddiHeaterStatus, MyEnergi, Eddi } from 'myenergi-api';
+import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { EddiDriver } from './driver';
 import { EddiData } from "./EddiData";
@@ -172,7 +173,11 @@ export class EddiDevice extends Device {
    * @param {string} name The new name
    */
   public async onRenamed(name: string) {
-    this.log(`EddiDevice was renamed to ${name}`);
+    const result = await this.myenergiClient.setAppKey(`E${this.deviceId}`, name).catch(this.error) as KeyValue[];
+    if (result && result.length && result[0].val === name)
+      this.log(`EddiDevice was renamed to ${name}`);
+    else
+      this.error(`Failed to rename EddiDevice to ${name} at myenergi`);
   }
 
   /**

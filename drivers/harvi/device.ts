@@ -1,5 +1,6 @@
 import { Device } from 'homey';
 import { Harvi, MyEnergi } from 'myenergi-api';
+import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { HarviSettings } from '../../models/HarviSettings';
 import { HarviDriver } from './driver';
@@ -265,7 +266,11 @@ class HarviDevice extends Device {
    * @param {string} name The new name
    */
   public async onRenamed(name: string) {
-    this.log(`HarviDevice was renamed to ${name}`);
+    const result = await this.myenergiClient.setAppKey(`H${this.deviceId}`, name).catch(this.error) as KeyValue[];
+    if (result && result.length && result[0].val === name)
+      this.log(`HarviDevice was renamed to ${name}`);
+    else
+      this.error(`Failed to rename HarviDevice to ${name} at myenergi`);
   }
 
   /**

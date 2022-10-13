@@ -1,5 +1,6 @@
 import { Device } from 'homey';
 import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
+import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { ZappiSettings } from '../../models/ZappiSettings';
 import { ZappiDriver } from './driver';
@@ -717,7 +718,11 @@ export class ZappiDevice extends Device {
    * @param {string} name The new name
    */
   public async onRenamed(name: string): Promise<void> {
-    this.log(`ZappiDevice was renamed to ${name}`);
+    const result = await this.myenergiClient.setAppKey(`Z${this.deviceId}`, name).catch(this.error) as KeyValue[];
+    if (result && result.length && result[0].val === name)
+      this.log(`ZappiDevice was renamed to ${name}`);
+    else
+      this.error(`Failed to rename ZappiDevice to ${name} at myenergi`);
   }
 
   /**
