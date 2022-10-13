@@ -80,9 +80,17 @@ export class EddiDriver extends Driver {
 
   private async getEddiDevices() {
     const eddiDevices = await this.loadEddiDevices().catch(this.error) as EddiData[];
-    return eddiDevices.map((v) => {
+    return await Promise.all(eddiDevices.map(async (v: EddiData): Promise<unknown> => {
+      let deviceName = `Eddi ${v.sno}`;
+      try {
+        const client = (this.homey.app as MyEnergiApp).clients[v.myenergiClientId as string];
+        const keyValue = await client.getAppKey(`E${v.sno}`);
+        deviceName = keyValue ? keyValue[0].val : deviceName;
+      } catch (error) {
+        this.error(error);
+      }
       return {
-        name: `Eddi ${v.sno}`,
+        name: deviceName,
         data: { id: v.sno },
         icon: 'icon.svg', // relative to: /drivers/<driver_id>/assets/
         store: {
@@ -92,7 +100,7 @@ export class EddiDriver extends Driver {
         capabilitiesOptions: {
         },
       };
-    });
+    }));
   }
 
   /**

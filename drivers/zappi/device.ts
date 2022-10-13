@@ -37,7 +37,19 @@ export class ZappiDevice extends Device {
     this._chargerStatus = value;
   }
   private _boostMode: ZappiBoostMode = ZappiBoostMode.Stop;
+  public get boostMode(): ZappiBoostMode {
+    return this._boostMode;
+  }
+  public set boostMode(value: ZappiBoostMode) {
+    this._boostMode = value;
+  }
   private _lastBoostState: ZappiBoostMode = ZappiBoostMode.Stop;
+  public get lastBoostState(): ZappiBoostMode {
+    return this._lastBoostState;
+  }
+  public set lastBoostState(value: ZappiBoostMode) {
+    this._lastBoostState = value;
+  }
   private _lastEvConnected = false;
   private _boostManualKwh = 0;
   private _boostSmartKwh = 0;
@@ -50,6 +62,12 @@ export class ZappiDevice extends Device {
   private _chargeAdded = 0;
   private _frequency = 0;
   private _minimumGreenLevel = 0;
+  public get minimumGreenLevel() {
+    return this._minimumGreenLevel;
+  }
+  public set minimumGreenLevel(value) {
+    this._minimumGreenLevel = value;
+  }
   private _settings!: ZappiSettings;
   private _powerCalculationModeSetToAuto!: boolean;
 
@@ -235,7 +253,7 @@ export class ZappiDevice extends Device {
    * @param timeString Must be a string in the time format HHMM
    * @returns Valid boost time string
    */
-  private getValidBoostTime(timeString: string): string {
+  public getValidBoostTime(timeString: string): string {
     try {
       timeString = timeString.replace(/\D+/g, '');
       while (timeString.length < 4) {
@@ -478,7 +496,7 @@ export class ZappiDevice extends Device {
    * Set Zappi minimum green level.
    * @param value Percentage generated power
    */
-  private async setMinimumGreenLevel(value: number): Promise<void> {
+  public async setMinimumGreenLevel(value: number): Promise<void> {
     try {
       const result = await this.myenergiClient?.setZappiGreenLevel(this.deviceId, value);
       if (result.mgl !== value) {
@@ -520,7 +538,7 @@ export class ZappiDevice extends Device {
    * @param kWh Number of kWh to boost
    * @param completeTime Time to complete
    */
-  private async setBoostMode(boostMode: ZappiBoostMode, kWh?: number, completeTime?: string): Promise<void> {
+  public async setBoostMode(boostMode: ZappiBoostMode, kWh?: number, completeTime?: string): Promise<void> {
     try {
       this.setCapabilityValue('zappi_boost_mode', `${this.getBoostModeText(boostMode)}`).catch(this.error);
       this.setCapabilityValue('zappi_boost_kwh', kWh ? kWh : 0).catch(this.error);
@@ -613,7 +631,7 @@ export class ZappiDevice extends Device {
       throw new Error(`Invalid charge mode ${value}`);
   }
 
-  private getBoostMode(value: ZappiBoostModeText): ZappiBoostMode {
+  public getBoostMode(value: ZappiBoostModeText): ZappiBoostMode {
     if (value == ZappiBoostModeText.Manual)
       return ZappiBoostMode.Manual;
     else if (value == ZappiBoostModeText.Smart)
@@ -624,7 +642,7 @@ export class ZappiDevice extends Device {
       throw new Error(`Invalid boost mode text ${value}`);
   }
 
-  private getBoostModeText(value: ZappiBoostMode): ZappiBoostModeText {
+  public getBoostModeText(value: ZappiBoostMode): ZappiBoostModeText {
     if (value == ZappiBoostMode.Manual)
       return ZappiBoostModeText.Manual;
     else if (value == ZappiBoostMode.Smart)
@@ -635,7 +653,7 @@ export class ZappiDevice extends Device {
       throw new Error(`Invalid boost mode ${value}`);
   }
 
-  private getChargerStatusText(value: ZappiStatus): ZappiStatusText {
+  public getChargerStatusText(value: ZappiStatus): ZappiStatusText {
     if (value == ZappiStatus.Charging)
       return ZappiStatusText.Charging;
     else if (value == ZappiStatus.EvConnected)

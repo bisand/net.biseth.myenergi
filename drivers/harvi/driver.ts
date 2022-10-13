@@ -1,4 +1,5 @@
 import { Driver } from 'homey';
+import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { DataCallbackFunction } from '../../dataCallbackFunction';
 import { Capability } from '../../models/Capability';
@@ -67,7 +68,7 @@ export class HarviDriver extends Driver {
       try {
         if (Object.prototype.hasOwnProperty.call((this.homey.app as MyEnergiApp).clients, key)) {
           const client = (this.homey.app as MyEnergiApp).clients[key];
-          const harvis: HarviData[] = await client.getStatusHarviAll();
+          const harvis: HarviData[] = await client.getStatusHarviAll().catch(this.error) as HarviData[];
           for (const harvi of harvis) {
             if (this.harviDevices.findIndex((h: HarviData) => h.sno === harvi.sno) === -1) {
               harvi.myenergiClientId = key;
@@ -85,9 +86,18 @@ export class HarviDriver extends Driver {
 
   private async getHarviDevices() {
     const harviDevices = await this.loadHarviDevices().catch(this.error) as HarviData[];
-    return harviDevices.map((v) => {
+    return await Promise.all(harviDevices.map(async (v: HarviData): Promise<unknown> => {
+      let deviceName = `Harvi ${v.sno}`;
+      try {
+        const client = (this.homey.app as MyEnergiApp).clients[v.myenergiClientId as string];
+        const keyValue = await client.getAppKey(`H${v.sno}`);
+        deviceName = keyValue ? keyValue[0].val : deviceName;
+      } catch (error) {
+        this.error(error);
+      }
+      this.log(`Found: ${deviceName}`)
       return {
-        name: `Harvi ${v.sno}`,
+        name: deviceName,
         data: { id: v.sno },
         icon: 'icon.svg', // relative to: /drivers/<driver_id>/assets/
         store: {
@@ -97,7 +107,7 @@ export class HarviDriver extends Driver {
         capabilitiesOptions: {
         },
       };
-    });
+    }));
   }
 
   /**
