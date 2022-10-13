@@ -4,6 +4,7 @@ import { MyEnergiApp } from '../../app';
 import { DataCallbackFunction } from '../../dataCallbackFunction';
 import { Capability } from '../../models/Capability';
 import { CapabilityType } from '../../models/CapabilityType';
+import { PairDevice } from '../../models/PairDevice';
 import { HarviData } from './HarviData';
 
 export class HarviDriver extends Driver {
@@ -84,9 +85,9 @@ export class HarviDriver extends Driver {
     return [];
   }
 
-  private async getHarviDevices() {
+  private async getHarviDevices(): Promise<PairDevice[]> {
     const harviDevices = await this.loadHarviDevices().catch(this.error) as HarviData[];
-    return await Promise.all(harviDevices.map(async (v: HarviData): Promise<unknown> => {
+    return await Promise.all(harviDevices.map(async (v: HarviData): Promise<PairDevice> => {
       let deviceName = `Harvi ${v.sno}`;
       try {
         const client = (this.homey.app as MyEnergiApp).clients[v.myenergiClientId as string];
@@ -106,8 +107,8 @@ export class HarviDriver extends Driver {
         capabilities: this.capabilities,
         capabilitiesOptions: {
         },
-      };
-    }));
+      } as PairDevice;
+    })).catch(this.error) as PairDevice[];
   }
 
   /**

@@ -5,6 +5,7 @@ import { MyEnergiApp } from '../../app';
 import { DataCallbackFunction } from '../../dataCallbackFunction';
 import { Capability } from '../../models/Capability';
 import { CapabilityType } from '../../models/CapabilityType';
+import { PairDevice } from '../../models/PairDevice';
 import { ZappiDevice } from './device';
 import { ZappiData } from './ZappiData';
 
@@ -269,10 +270,10 @@ export class ZappiDriver extends Driver {
     return [];
   }
 
-  private async getZappiDevices() {
+  private async getZappiDevices(): Promise<PairDevice[]> {
     const zappiDevices = await this.loadZappiDevices().catch(this.error) as ZappiData[];
     const myenergiClientId: string[] = [];
-    const result = await Promise.all(zappiDevices.map(async (v: ZappiData): Promise<unknown> => {
+    const result = await Promise.all(zappiDevices.map(async (v: ZappiData): Promise<PairDevice> => {
       let deviceName = `Zappi ${v.sno}`;
       myenergiClientId.push(v.myenergiClientId);
       try {
@@ -292,11 +293,12 @@ export class ZappiDriver extends Driver {
         capabilities: this.capabilities,
         capabilitiesOptions: {
         },
-      };
-    }));
+      } as PairDevice;
+    })).catch(this.error) as PairDevice[];
     if (process.env.DEBUG === '1') {
       try {
-        result.push(this.getFakeZappi(myenergiClientId[0], '99999999', 'Zappi Test 123'));
+        if (result && myenergiClientId && myenergiClientId.length > 0)
+          result.push(this.getFakeZappi(myenergiClientId[0], '99999999', 'Zappi Test 123'));
       } catch (error) {
         this.error(error);
       }

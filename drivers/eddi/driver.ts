@@ -1,6 +1,7 @@
 import { Driver } from 'homey';
 import { MyEnergiApp } from '../../app';
 import { DataCallbackFunction } from '../../dataCallbackFunction';
+import { PairDevice } from '../../models/PairDevice';
 import { EddiData } from './EddiData';
 
 export class EddiDriver extends Driver {
@@ -78,9 +79,9 @@ export class EddiDriver extends Driver {
     return [];
   }
 
-  private async getEddiDevices() {
+  private async getEddiDevices(): Promise<PairDevice[]> {
     const eddiDevices = await this.loadEddiDevices().catch(this.error) as EddiData[];
-    return await Promise.all(eddiDevices.map(async (v: EddiData): Promise<unknown> => {
+    return await Promise.all(eddiDevices.map(async (v: EddiData): Promise<PairDevice> => {
       let deviceName = `Eddi ${v.sno}`;
       try {
         const client = (this.homey.app as MyEnergiApp).clients[v.myenergiClientId as string];
@@ -96,11 +97,11 @@ export class EddiDriver extends Driver {
         store: {
           myenergiClientId: v.myenergiClientId,
         },
-        capabilities: this._capabilities,
+        capabilities: this.capabilities,
         capabilitiesOptions: {
         },
-      };
-    }));
+      } as PairDevice;
+    })).catch(this.error) as PairDevice[];
   }
 
   /**
