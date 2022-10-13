@@ -702,7 +702,7 @@ export class ZappiDevice extends Device {
       const prevEnergy: number = this.getCapabilityValue('meter_power');
       this.setCapabilityValue('meter_power', prevEnergy + (newSettings.totalEnergyOffset ? newSettings.totalEnergyOffset : 0));
       this._settings.totalEnergyOffset = 0;
-      this.setSettings({ totalEnergyOffset: 0 })
+      // this.setSettings({ totalEnergyOffset: 0 })
     }
   }
 
