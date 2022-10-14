@@ -2,6 +2,7 @@ import { Device } from 'homey';
 import { EddiMode, EddiHeaterStatus, MyEnergi, Eddi } from 'myenergi-api';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
+import { EddiSettings } from '../../models/EddiSettings';
 import { EddiDriver } from './driver';
 import { EddiData } from "./EddiData";
 
@@ -24,6 +25,7 @@ export class EddiDevice extends Device {
   public deviceId!: string;
   public myenergiClientId!: string;
   public myenergiClient!: MyEnergi;
+  private _settings!: EddiSettings;
 
   /**
    * onInit is called when the device is initialized.
@@ -43,6 +45,23 @@ export class EddiDevice extends Device {
       }
     } catch (error) {
       this.error(error);
+    }
+
+    if (this._settings && (!this._settings.siteName || !this._settings.hubSerial || !this._settings.eddiSerial)) {
+      try {
+        const { siteNameResult, eddiNameResult: eddiNameResult } = await (this.driver as EddiDriver).getDeviceAndSiteName(this.myenergiClient, this.deviceId);
+        const hubSerial = Object.keys(siteNameResult)[0];
+        const siteName = Object.values(siteNameResult)[0][0].val;
+        const eddiSerial = eddiNameResult[0]?.key;
+        await this.setSettings({
+          siteName: siteName,
+          hubSerial: hubSerial,
+          eddiSerial: eddiSerial,
+        } as EddiSettings).catch(this.error);
+
+      } catch (error) {
+        this.error(error);
+      }
     }
 
     this.validateCapabilities();

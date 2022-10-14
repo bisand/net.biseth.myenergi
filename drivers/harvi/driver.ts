@@ -1,4 +1,6 @@
 import { Driver } from 'homey';
+import { MyEnergi } from 'myenergi-api';
+import { AppKeyValues } from 'myenergi-api/dist/src/models/AppKeyValues';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { DataCallbackFunction } from '../../dataCallbackFunction';
@@ -50,6 +52,14 @@ export class HarviDriver extends Driver {
     this._dataUpdateCallbacks.splice(callbackId, 1);
   }
 
+  public async getDeviceAndSiteName(myenergiClient: MyEnergi, deviceId: string): Promise<{ siteNameResult: AppKeyValues; harviNameResult: KeyValue[]; }> {
+    const [siteNameResult, harviNameResult] = await Promise.all([
+      myenergiClient.getAppKeyFull("siteName"),
+      myenergiClient.getAppKey(`H${deviceId}`),
+    ]).catch(this.error) as [AppKeyValues, KeyValue[]];
+    return { siteNameResult, harviNameResult };
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private dataUpdated(data: any[]) {
     this.log('Received data from app. Relaying to devices.');
@@ -89,10 +99,16 @@ export class HarviDriver extends Driver {
     const harviDevices = await this.loadHarviDevices().catch(this.error) as HarviData[];
     return await Promise.all(harviDevices.map(async (v: HarviData): Promise<PairDevice> => {
       let deviceName = `Harvi ${v.sno}`;
+      let hubSerial = "";
+      let siteName = "";
+      let harviSerial = `H${v.sno}`;
       try {
         const client = (this.homey.app as MyEnergiApp).clients[v.myenergiClientId as string];
-        const keyValue = await client.getAppKey(`H${v.sno}`);
-        deviceName = keyValue ? keyValue[0].val : deviceName;
+        const { siteNameResult, harviNameResult } = await this.getDeviceAndSiteName(client, v.sno);
+        hubSerial = Object.keys(siteNameResult)[0];
+        siteName = Object.values(siteNameResult)[0][0].val;
+        harviSerial = harviNameResult ? harviNameResult[0]?.key : v.sno;
+        deviceName = harviNameResult ? harviNameResult[0].val : deviceName;
       } catch (error) {
         this.error(error);
       }
@@ -106,6 +122,11 @@ export class HarviDriver extends Driver {
         },
         capabilities: this.capabilities,
         capabilitiesOptions: {
+        },
+        settings: {
+          hubSerial: hubSerial,
+          siteName: siteName,
+          harviSerial: harviSerial,
         },
       } as PairDevice;
     })).catch(this.error) as PairDevice[];

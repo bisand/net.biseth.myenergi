@@ -109,6 +109,23 @@ export class ZappiDevice extends Device {
       this.error(error);
     }
 
+    if (this._settings && (!this._settings.siteName || !this._settings.hubSerial || !this._settings.zappiSerial)) {
+      try {
+        const { siteNameResult, zappiNameResult } = await (this.driver as ZappiDriver).getDeviceAndSiteName(this.myenergiClient, this.deviceId);
+        const hubSerial = Object.keys(siteNameResult)[0];
+        const siteName = Object.values(siteNameResult)[0][0].val;
+        const zappiSerial = zappiNameResult[0]?.key;
+        await this.setSettings({
+          siteName: siteName,
+          hubSerial: hubSerial,
+          zappiSerial: zappiSerial,
+        } as ZappiSettings).catch(this.error);
+
+      } catch (error) {
+        this.error(error);
+      }
+    }
+
     // Set capabilities
     this.setCapabilityValues();
     this.log(`Status: ${this._chargerStatus}`);

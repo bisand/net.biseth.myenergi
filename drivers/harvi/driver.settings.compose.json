@@ -11,7 +11,7 @@
         "children": [
             {
                 "id": "siteName",
-                "type": "string",
+                "type": "text",
                 "value": "",
                 "label": {
                     "en": "Site name",

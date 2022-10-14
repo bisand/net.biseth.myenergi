@@ -1,6 +1,8 @@
 import { Driver, FlowCardTriggerDevice } from 'homey';
 import { Device } from 'homey/lib/FlowCardTriggerDevice';
 import { MyEnergi, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
+import { AppKeyValues } from 'myenergi-api/dist/src/models/AppKeyValues';
+import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { DataCallbackFunction } from '../../dataCallbackFunction';
 import { Capability } from '../../models/Capability';
@@ -239,6 +241,14 @@ export class ZappiDriver extends Driver {
     this._dataUpdateCallbacks.splice(callbackId, 1);
   }
 
+  public async getDeviceAndSiteName(myenergiClient: MyEnergi, deviceId: string): Promise<{ siteNameResult: AppKeyValues; zappiNameResult: KeyValue[]; }> {
+    const [siteNameResult, zappiNameResult] = await Promise.all([
+      myenergiClient.getAppKeyFull("siteName"),
+      myenergiClient.getAppKey(`Z${deviceId}`),
+    ]).catch(this.error) as [AppKeyValues, KeyValue[]];
+    return { siteNameResult, zappiNameResult };
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private dataUpdated(data: any[]) {
     this.log('Received data from app. Relaying to devices.');
@@ -275,11 +285,16 @@ export class ZappiDriver extends Driver {
     const myenergiClientId: string[] = [];
     const result = await Promise.all(zappiDevices.map(async (v: ZappiData): Promise<PairDevice> => {
       let deviceName = `Zappi ${v.sno}`;
-      myenergiClientId.push(v.myenergiClientId);
+      let hubSerial = "";
+      let siteName = "";
+      let zappiSerial = `Z${v.sno}`;
       try {
         const client = (this.homey.app as MyEnergiApp).clients[v.myenergiClientId as string];
-        const keyValue = await client.getAppKey(`Z${v.sno}`);
-        deviceName = keyValue ? keyValue[0].val : deviceName;
+        const { siteNameResult, zappiNameResult } = await this.getDeviceAndSiteName(client, v.sno);
+        hubSerial = Object.keys(siteNameResult)[0];
+        siteName = Object.values(siteNameResult)[0][0].val;
+        zappiSerial = zappiNameResult ? zappiNameResult[0]?.key : v.sno;
+        deviceName = zappiNameResult ? zappiNameResult[0].val : deviceName;
       } catch (error) {
         this.error(error);
       }
@@ -292,6 +307,11 @@ export class ZappiDriver extends Driver {
         },
         capabilities: this.capabilities,
         capabilitiesOptions: {
+        },
+        settings: {
+          hubSerial: hubSerial,
+          siteName: siteName,
+          zappiSerial: zappiSerial,
         },
       } as PairDevice;
     })).catch(this.error) as PairDevice[];
