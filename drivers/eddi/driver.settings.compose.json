@@ -40,18 +40,18 @@
                 }
             },
             {
-                "id": "zappiSerial",
+                "id": "eddiSerial",
                 "type": "label",
                 "value": "",
                 "label": {
-                    "en": "Zappi serial no",
-                    "no": "Zappi serienummer",
-                    "nl": "Zappi serienummer",
-                    "sv": "Zappis serienummer",
-                    "de": "Zappi-Seriennummer"
+                    "en": "Eddi serial no",
+                    "no": "Eddi serienummer",
+                    "nl": "Eddi serienummer",
+                    "sv": "Eddis serienummer",
+                    "de": "Eddi-Seriennummer"
                 },
                 "hint": {
-                    "en": "Zappi serial number."
+                    "en": "Eddi serial number."
                 }
             }
         ]
@@ -128,7 +128,7 @@
                     "de": "Inklusive CT 1",
                     "sv": "Inkludera CT 1"
                 },
-                "value": false,
+                "value": true,
                 "hint": {
                     "en": "Include CT 1 in the power calculation.",
                     "no": "Inkludere CT 1 i effektberegningen.",
@@ -147,7 +147,7 @@
                     "de": "Inklusive CT 2",
                     "sv": "Inkludera CT 2"
                 },
-                "value": false,
+                "value": true,
                 "hint": {
                     "en": "Include CT 2 in the power calculation.",
                     "no": "Inkludere CT 2 i effektberegningen.",
@@ -166,70 +166,13 @@
                     "de": "Inklusive CT 3",
                     "sv": "Inkludera CT 3"
                 },
-                "value": false,
+                "value": true,
                 "hint": {
                     "en": "Include CT 3 in the power calculation.",
                     "no": "Inkludere CT 3 i effektberegningen.",
                     "nl": "CT 3 meenemen in berekening.",
                     "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein.",
                     "sv": "Inkludera CT 3 i effektberäkningen."
-                }
-            },
-            {
-                "id": "includeCT4",
-                "type": "checkbox",
-                "label": {
-                    "en": "Include CT 4",
-                    "no": "Inkludere CT 4",
-                    "nl": "CT 4 meenemen",
-                    "de": "Inklusive CT 4",
-                    "sv": "Inkludera CT 4"
-                },
-                "value": false,
-                "hint": {
-                    "en": "Include CT 4 in the power calculation.",
-                    "no": "Inkludere CT 4 i effektberegningen.",
-                    "nl": "CT 4 meenemen in berekening.",
-                    "de": "Beziehen Sie CT 4 in die Leistungsberechnung ein.",
-                    "sv": "Inkludera CT 4 i effektberäkningen."
-                }
-            },
-            {
-                "id": "includeCT5",
-                "type": "checkbox",
-                "label": {
-                    "en": "Include CT 5",
-                    "no": "Inkludere CT 5",
-                    "nl": "CT 5 meenemen",
-                    "de": "Inklusive CT 5",
-                    "sv": "Inkludera CT 5"
-                },
-                "value": false,
-                "hint": {
-                    "en": "Include CT 5 in the power calculation.",
-                    "no": "Inkludere CT 5 i effektberegningen.",
-                    "nl": "CT 5 meenemen in berekening.",
-                    "de": "Beziehen Sie CT 5 in die Leistungsberechnung ein.",
-                    "sv": "Inkludera CT 5 i effektberäkningen."
-                }
-            },
-            {
-                "id": "includeCT6",
-                "type": "checkbox",
-                "label": {
-                    "en": "Include CT 6",
-                    "no": "Inkludere CT 6",
-                    "nl": "CT 6 meenemen",
-                    "de": "Inklusive CT 6",
-                    "sv": "Inkludera CT 6"
-                },
-                "value": false,
-                "hint": {
-                    "en": "Include CT 6 in the power calculation.",
-                    "no": "Inkludere CT 6 i effektberegningen.",
-                    "nl": "CT 6 meenemen in berekening.",
-                    "de": "Beziehen Sie CT 6 in die Leistungsberechnung ein.",
-                    "sv": "Inkludera CT 6 i effektberäkningen."
                 }
             }
         ]

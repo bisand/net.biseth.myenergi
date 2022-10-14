@@ -1,37 +1,96 @@
 [
     {
-        "id": "totalEnergyOffset",
-        "type": "number",
-        "value": 0,
+        "type": "group",
         "label": {
-            "en": "Total energy consumption offset",
-            "no": "Totalt energiforbruk offset",
-            "nl": "Totaal energieverbruik offset",
-            "sv": "Total energiförbrukning offset",
-            "de": "Gesamtenergieverbrauch offset"
+            "en": "Device Info",
+            "no": "Enhetsinformasjon",
+            "nl": "Apparaat info",
+            "de": "Geräteinformationen",
+            "sv": "Enhetsinformation"
         },
-        "units": {
-            "en": "kWh"
-        },
-        "hint": {
-            "en": "If you want, you can add an offset to the total energi consumption. This setting will add the value to the current energy consumtion and reset itself back to zero."
-        }
+        "children": [
+            {
+                "id": "siteName",
+                "type": "string",
+                "value": "",
+                "label": {
+                    "en": "Site name",
+                    "no": "Plassering",
+                    "nl": "Site naam",
+                    "sv": "Platsnamn",
+                    "de": "Site-Name"
+                },
+                "hint": {
+                    "en": "Name of location for the myenergi Hub."
+                }
+            },
+            {
+                "id": "hubSerial",
+                "type": "label",
+                "value": "",
+                "label": {
+                    "en": "Hub serial no",
+                    "no": "Hub serienummer",
+                    "nl": "Serienummer naaf",
+                    "sv": "Hub serienummer",
+                    "de": "Seriennummer des Hub"
+                },
+                "hint": {
+                    "en": "Serial number of the myenergi Hub."
+                }
+            },
+            {
+                "id": "harviSerial",
+                "type": "label",
+                "value": "",
+                "label": {
+                    "en": "Harvi serial no",
+                    "no": "Harvi serienummer",
+                    "nl": "Harvi serienummer",
+                    "sv": "Harvis serienummer",
+                    "de": "Harvi-Seriennummer"
+                },
+                "hint": {
+                    "en": "Harvi serial number."
+                }
+            }
+        ]
     },
     {
         "type": "group",
         "label": {
             "en": "Power calculations",
+            "no": "Effektberegninger",
             "nl": "Vermogen berekenen",
             "de": "Leistungsberechnungen",
             "sv": "Effektberäkningar"
         },
         "children": [
             {
+                "id": "totalEnergyOffset",
+                "type": "number",
+                "value": 0,
+                "label": {
+                    "en": "Total energy consumption offset",
+                    "no": "Totalt energiforbruk offset",
+                    "nl": "Totaal energieverbruik offset",
+                    "sv": "Total energiförbrukning offset",
+                    "de": "Gesamtenergieverbrauch offset"
+                },
+                "units": {
+                    "en": "kWh"
+                },
+                "hint": {
+                    "en": "If you want, you can add an offset to the total energi consumption. This setting will add the value to the current energy consumtion and reset itself back to zero."
+                }
+            },
+            {
                 "id": "powerCalculationMode",
                 "type": "dropdown",
                 "value": "automatic",
                 "label": {
                     "en": "Default mode",
+                    "no": "Standard modus",
                     "nl": "Standaard modus",
                     "de": "Standardmodus",
                     "sv": "Standardläge"
@@ -41,6 +100,7 @@
                         "id": "automatic",
                         "label": {
                             "en": "Automatically select CTs",
+                            "no": "Velg CT automatisk",
                             "nl": "Selecteer CT's automatisch",
                             "de": "CTs automatisch auswählen",
                             "sv": "Välj CT automatiskt"
@@ -50,6 +110,7 @@
                         "id": "manual",
                         "label": {
                             "en": "Manual override CTs",
+                            "no": "Manuell CT-konfigurasjon",
                             "nl": "Handmatige instelling CT's",
                             "de": "CTs manuell Überbrücken",
                             "sv": "Manuell CT konfiguration"
@@ -62,6 +123,7 @@
                 "type": "checkbox",
                 "label": {
                     "en": "Include CT 1",
+                    "no": "Inkludere CT 1",
                     "nl": "CT 1 meenemen",
                     "de": "Inklusive CT 1",
                     "sv": "Inkludera CT 1"
@@ -69,6 +131,7 @@
                 "value": true,
                 "hint": {
                     "en": "Include CT 1 in the power calculation.",
+                    "no": "Inkludere CT 1 i effektberegningen.",
                     "nl": "CT 1 meenemen in berekening.",
                     "de": "Beziehen Sie CT 1 in die Leistungsberechnung ein.",
                     "sv": "Inkludera CT 1 i effektberäkningen."
@@ -79,6 +142,7 @@
                 "type": "checkbox",
                 "label": {
                     "en": "Include CT 2",
+                    "no": "Inkludere CT 2",
                     "nl": "CT 2 meenemen",
                     "de": "Inklusive CT 2",
                     "sv": "Inkludera CT 2"
@@ -86,6 +150,7 @@
                 "value": true,
                 "hint": {
                     "en": "Include CT 2 in the power calculation.",
+                    "no": "Inkludere CT 2 i effektberegningen.",
                     "nl": "CT 2 meenemen in berekening.",
                     "de": "Beziehen Sie CT 2 in die Leistungsberechnung ein.",
                     "sv": "Inkludera CT 2 i effektberäkningen."
@@ -96,6 +161,7 @@
                 "type": "checkbox",
                 "label": {
                     "en": "Include CT 3",
+                    "no": "Inkludere CT 3",
                     "nl": "CT 3 meenemen",
                     "de": "Inklusive CT 3",
                     "sv": "Inkludera CT 3"
@@ -103,6 +169,7 @@
                 "value": true,
                 "hint": {
                     "en": "Include CT 3 in the power calculation.",
+                    "no": "Inkludere CT 3 i effektberegningen.",
                     "nl": "CT 3 meenemen in berekening.",
                     "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein.",
                     "sv": "Inkludera CT 3 i effektberäkningen."
@@ -111,15 +178,27 @@
         ]
     },
     {
-        "id": "showNegativeValues",
-        "type": "checkbox",
-        "value": true,
+        "type": "group",
         "label": {
-            "en": "Show negative values",
-            "no": "Vis negative verdier",
-            "nl": "Negatieve waarden weergeven",
-            "sv": "Visa negativa värden",
-            "de": "Negative Werte anzeigen"
-        }
+            "en": "Other",
+            "no": "Annen",
+            "nl": "Ander",
+            "de": "Sonstiges",
+            "sv": "Övrig"
+        },
+        "children": [
+            {
+                "id": "showNegativeValues",
+                "type": "checkbox",
+                "value": true,
+                "label": {
+                    "en": "Show negative values",
+                    "no": "Vis negative verdier",
+                    "nl": "Negatieve waarden weergeven",
+                    "sv": "Visa negativa värden",
+                    "de": "Negative Werte anzeigen"
+                }
+            }
+        ]
     }
 ]
