@@ -67,5 +67,8 @@
   },
   "1.7.6": {
     "en": "Fixed a bug that crashed the app when setting total energy offset on Zappi and Harvi"
+  },
+  "1.8.0": {
+    "en": "Added possibility to see connected site and hub in device settings"
   }
 }
