@@ -155,25 +155,6 @@
                     "de": "Beziehen Sie CT 2 in die Leistungsberechnung ein.",
                     "sv": "Inkludera CT 2 i effektberäkningen."
                 }
-            },
-            {
-                "id": "includeCT3",
-                "type": "checkbox",
-                "label": {
-                    "en": "Include CT 3",
-                    "no": "Inkludere CT 3",
-                    "nl": "CT 3 meenemen",
-                    "de": "Inklusive CT 3",
-                    "sv": "Inkludera CT 3"
-                },
-                "value": true,
-                "hint": {
-                    "en": "Include CT 3 in the power calculation.",
-                    "no": "Inkludere CT 3 i effektberegningen.",
-                    "nl": "CT 3 meenemen in berekening.",
-                    "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein.",
-                    "sv": "Inkludera CT 3 i effektberäkningen."
-                }
             }
         ]
     },

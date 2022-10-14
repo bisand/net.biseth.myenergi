@@ -176,7 +176,6 @@ class HarviDevice extends Device {
         includeCT2: true,
         includeCT3: true,
       };
-
       this.setSettings(tmpSettings);
     }
 
@@ -274,6 +273,10 @@ class HarviDevice extends Device {
         this.setSettings({ totalEnergyOffset: 0 });
         clearTimeout(this._settingsTimeoutHandle);
       }, 1000);
+    }
+    if (changedKeys.includes('siteName')) {
+      this._settings.siteName = newSettings.siteName;
+      await this.myenergiClient.setAppKey("siteName", newSettings.siteName as string).catch(this.error);
     }
   }
 

@@ -26,6 +26,8 @@ export class EddiDevice extends Device {
   public myenergiClientId!: string;
   public myenergiClient!: MyEnergi;
   private _settings!: EddiSettings;
+  private _settingsTimeoutHandle?: NodeJS.Timeout;
+  private _powerCalculationModeSetToAuto!: boolean;
 
   /**
    * onInit is called when the device is initialized.
@@ -84,6 +86,17 @@ export class EddiDevice extends Device {
     this._energyTransferred = eddi.che ? eddi.che : 0;
     this._heater1Current = (this._systemVoltage > 0) ? (this._heater1Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
     this._heater2Current = (this._systemVoltage > 0) ? (this._heater2Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
+
+    if (this._powerCalculationModeSetToAuto) {
+      this._powerCalculationModeSetToAuto = false;
+      const tmpSettings =
+      {
+        includeCT1: true,
+        includeCT2: true,
+        includeCT3: true,
+      };
+      this.setSettings(tmpSettings);
+    }
   }
 
   private setCapabilityValues() {
@@ -180,11 +193,43 @@ export class EddiDevice extends Device {
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
   public async onSettings({ oldSettings, newSettings, changedKeys }: {
-    oldSettings: object;
-    newSettings: object;
+    oldSettings: EddiSettings;
+    newSettings: EddiSettings;
     changedKeys: string[];
   }): Promise<string | void> {
     this.log(`EddiDevice settings where changed: ${changedKeys} - ${oldSettings} - ${newSettings}`);
+    if (changedKeys.includes('showNegativeValues')) {
+      this._settings.showNegativeValues = newSettings.showNegativeValues;
+    }
+    if (changedKeys.includes('powerCalculationMode')) {
+      this._settings.powerCalculationMode = newSettings.powerCalculationMode;
+      if (newSettings.powerCalculationMode === "automatic") {
+        this._powerCalculationModeSetToAuto = true;
+        const eddi = await this.myenergiClient?.getStatusEddi(this.deviceId).catch(this.error);
+        if (eddi) {
+          this.log(eddi);
+          this._settings.includeCT1 = eddi.ectt1 === 'Internal Load';
+          this._settings.includeCT2 = eddi.ectt2 === 'Internal Load';
+        }
+      } else if (newSettings.powerCalculationMode === "manual") {
+        this._settings.includeCT1 = newSettings.includeCT1;
+        this._settings.includeCT2 = newSettings.includeCT2;
+      }
+    }
+    if (changedKeys.includes('totalEnergyOffset')) {
+      const prevEnergy: number = this.getCapabilityValue('meter_power');
+      this.setCapabilityValue('meter_power', prevEnergy + (newSettings.totalEnergyOffset ? newSettings.totalEnergyOffset : 0));
+      this._settings.totalEnergyOffset = 0;
+      // Reset the total energy offset after one second
+      this._settingsTimeoutHandle = setTimeout(() => {
+        this.setSettings({ totalEnergyOffset: 0 });
+        clearTimeout(this._settingsTimeoutHandle);
+      }, 1000);
+    }
+    if (changedKeys.includes('siteName')) {
+      this._settings.siteName = newSettings.siteName;
+      await this.myenergiClient.setAppKey("siteName", newSettings.siteName as string).catch(this.error);
+    }
   }
   /**
    * onRenamed is called when the user updates the device's name.

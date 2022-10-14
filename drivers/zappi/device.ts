@@ -745,6 +745,10 @@ export class ZappiDevice extends Device {
         clearTimeout(this._settingsTimeoutHandle);
       }, 1000);
     }
+    if (changedKeys.includes('siteName')) {
+      this._settings.siteName = newSettings.siteName;
+      await this.myenergiClient.setAppKey("siteName", newSettings.siteName as string).catch(this.error);
+    }
   }
 
   /**
