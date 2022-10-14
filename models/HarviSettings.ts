@@ -5,4 +5,7 @@ export interface HarviSettings {
   includeCT3?: boolean;
   showNegativeValues?: boolean;
   totalEnergyOffset?: number;
+  siteName?: string;
+  hubSerial?: string;
+  harviSerial?: string;
 }

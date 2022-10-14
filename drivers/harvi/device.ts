@@ -1,5 +1,6 @@
 import { Device } from 'homey';
 import { Harvi, MyEnergi } from 'myenergi-api';
+import { AppKeyValues } from 'myenergi-api/dist/src/models/AppKeyValues';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { HarviSettings } from '../../models/HarviSettings';
@@ -51,6 +52,24 @@ class HarviDevice extends Device {
       }
     } catch (error) {
       this.error(error);
+    }
+
+    if (this._settings && (!this._settings.siteName || !this._settings.hubSerial || !this._settings.harviSerial)) {
+      try {
+        const siteNameResult = await this.myenergiClient.getAppKeyFull("siteName").catch(this.error) as AppKeyValues;
+        const harviNameResult = await this.myenergiClient.getAppKey(`H${this.deviceId}`).catch(this.error) as KeyValue[];
+        const hubSerial = Object.keys(siteNameResult)[0];
+        const siteName = Object.values(siteNameResult)[0][0].val;
+        const harviSerial = harviNameResult[0]?.key;
+        await this.setSettings({
+          siteName: siteName,
+          hubSerial: hubSerial,
+          harviSerial: harviSerial,
+        } as HarviSettings).catch(this.error);
+
+      } catch (error) {
+        this.error(error);
+      }
     }
 
     // Set capabilities
