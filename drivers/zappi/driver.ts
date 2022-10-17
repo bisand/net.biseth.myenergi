@@ -317,7 +317,7 @@ export class ZappiDriver extends Driver {
     })).catch(this.error) as PairDevice[];
     if (process.env.DEBUG === '1') {
       try {
-        if (result && myenergiClientId && myenergiClientId.length > 0)
+        if (result && myenergiClientId.length > 0)
           result.push(this.getFakeZappi(myenergiClientId[0], '99999999', 'Zappi Test 123'));
       } catch (error) {
         this.error(error);
