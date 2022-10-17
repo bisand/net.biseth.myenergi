@@ -1,5 +1,6 @@
 import { Device } from 'homey';
 import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
+import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { ZappiSettings } from '../../models/ZappiSettings';
 import { ZappiDriver } from './driver';
@@ -36,7 +37,19 @@ export class ZappiDevice extends Device {
     this._chargerStatus = value;
   }
   private _boostMode: ZappiBoostMode = ZappiBoostMode.Stop;
+  public get boostMode(): ZappiBoostMode {
+    return this._boostMode;
+  }
+  public set boostMode(value: ZappiBoostMode) {
+    this._boostMode = value;
+  }
   private _lastBoostState: ZappiBoostMode = ZappiBoostMode.Stop;
+  public get lastBoostState(): ZappiBoostMode {
+    return this._lastBoostState;
+  }
+  public set lastBoostState(value: ZappiBoostMode) {
+    this._lastBoostState = value;
+  }
   private _lastEvConnected = false;
   private _boostManualKwh = 0;
   private _boostSmartKwh = 0;
@@ -49,6 +62,12 @@ export class ZappiDevice extends Device {
   private _chargeAdded = 0;
   private _frequency = 0;
   private _minimumGreenLevel = 0;
+  public get minimumGreenLevel() {
+    return this._minimumGreenLevel;
+  }
+  public set minimumGreenLevel(value) {
+    this._minimumGreenLevel = value;
+  }
   private _settings!: ZappiSettings;
   private _powerCalculationModeSetToAuto!: boolean;
 
@@ -88,6 +107,23 @@ export class ZappiDevice extends Device {
       }
     } catch (error) {
       this.error(error);
+    }
+
+    if (this._settings && (!this._settings.siteName || !this._settings.hubSerial || !this._settings.zappiSerial)) {
+      try {
+        const { siteNameResult, zappiNameResult } = await (this.driver as ZappiDriver).getDeviceAndSiteName(this.myenergiClient, this.deviceId);
+        const hubSerial = Object.keys(siteNameResult)[0];
+        const siteName = Object.values(siteNameResult)[0][0].val;
+        const zappiSerial = zappiNameResult[0]?.key;
+        await this.setSettings({
+          siteName: siteName,
+          hubSerial: hubSerial,
+          zappiSerial: zappiSerial,
+        } as ZappiSettings).catch(this.error);
+
+      } catch (error) {
+        this.error(error);
+      }
     }
 
     // Set capabilities
@@ -234,7 +270,7 @@ export class ZappiDevice extends Device {
    * @param timeString Must be a string in the time format HHMM
    * @returns Valid boost time string
    */
-  private getValidBoostTime(timeString: string): string {
+  public getValidBoostTime(timeString: string): string {
     try {
       timeString = timeString.replace(/\D+/g, '');
       while (timeString.length < 4) {
@@ -477,7 +513,7 @@ export class ZappiDevice extends Device {
    * Set Zappi minimum green level.
    * @param value Percentage generated power
    */
-  private async setMinimumGreenLevel(value: number): Promise<void> {
+  public async setMinimumGreenLevel(value: number): Promise<void> {
     try {
       const result = await this.myenergiClient?.setZappiGreenLevel(this.deviceId, value);
       if (result.mgl !== value) {
@@ -519,7 +555,7 @@ export class ZappiDevice extends Device {
    * @param kWh Number of kWh to boost
    * @param completeTime Time to complete
    */
-  private async setBoostMode(boostMode: ZappiBoostMode, kWh?: number, completeTime?: string): Promise<void> {
+  public async setBoostMode(boostMode: ZappiBoostMode, kWh?: number, completeTime?: string): Promise<void> {
     try {
       this.setCapabilityValue('zappi_boost_mode', `${this.getBoostModeText(boostMode)}`).catch(this.error);
       this.setCapabilityValue('zappi_boost_kwh', kWh ? kWh : 0).catch(this.error);
@@ -612,7 +648,7 @@ export class ZappiDevice extends Device {
       throw new Error(`Invalid charge mode ${value}`);
   }
 
-  private getBoostMode(value: ZappiBoostModeText): ZappiBoostMode {
+  public getBoostMode(value: ZappiBoostModeText): ZappiBoostMode {
     if (value == ZappiBoostModeText.Manual)
       return ZappiBoostMode.Manual;
     else if (value == ZappiBoostModeText.Smart)
@@ -623,7 +659,7 @@ export class ZappiDevice extends Device {
       throw new Error(`Invalid boost mode text ${value}`);
   }
 
-  private getBoostModeText(value: ZappiBoostMode): ZappiBoostModeText {
+  public getBoostModeText(value: ZappiBoostMode): ZappiBoostModeText {
     if (value == ZappiBoostMode.Manual)
       return ZappiBoostModeText.Manual;
     else if (value == ZappiBoostMode.Smart)
@@ -634,7 +670,7 @@ export class ZappiDevice extends Device {
       throw new Error(`Invalid boost mode ${value}`);
   }
 
-  private getChargerStatusText(value: ZappiStatus): ZappiStatusText {
+  public getChargerStatusText(value: ZappiStatus): ZappiStatusText {
     if (value == ZappiStatus.Charging)
       return ZappiStatusText.Charging;
     else if (value == ZappiStatus.EvConnected)
@@ -709,6 +745,10 @@ export class ZappiDevice extends Device {
         clearTimeout(this._settingsTimeoutHandle);
       }, 1000);
     }
+    if (changedKeys.includes('siteName')) {
+      this._settings.siteName = newSettings.siteName;
+      await this.myenergiClient.setAppKey("siteName", newSettings.siteName as string).catch(this.error);
+    }
   }
 
   /**
@@ -717,7 +757,11 @@ export class ZappiDevice extends Device {
    * @param {string} name The new name
    */
   public async onRenamed(name: string): Promise<void> {
-    this.log(`ZappiDevice was renamed to ${name}`);
+    const result = await this.myenergiClient.setAppKey(`Z${this.deviceId}`, name).catch(this.error) as KeyValue[];
+    if (result && result.length && result[0].val === name)
+      this.log(`ZappiDevice was renamed to ${name}`);
+    else
+      this.error(`Failed to rename ZappiDevice to ${name} at myenergi`);
   }
 
   /**

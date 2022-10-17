@@ -32,5 +32,5 @@
 	"postStartCommand": "echo alias ll=\\'ls -halF --color=auto\\' >> ~/.bashrc"
 }
 // To access the container from outside VSCode, Use the following alias definition:
-// alias devcontainer='docker exec -it -w /workspace --env-file="$(pwd)/.devcontainer/devcontainer.env" $(docker ps --filter "name=$(basename $(pwd) | sed 's/\.//g')_devcontainer-app" --format "{{.ID}}") zsh'
-// Run the command: devcontainer
+// alias docker-devcontainer='docker exec -it -w /workspace --env-file="$(pwd)/.devcontainer/devcontainer.env" $(docker ps --filter "name=$(basename $(pwd) | sed 's/\.//g')_devcontainer-app" --format "{{.ID}}") zsh'
+// Run the command: docker-devcontainer

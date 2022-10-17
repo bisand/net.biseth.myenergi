@@ -1,6 +1,10 @@
 import { Driver } from 'homey';
+import { MyEnergi } from 'myenergi-api';
+import { AppKeyValues } from 'myenergi-api/dist/src/models/AppKeyValues';
+import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { DataCallbackFunction } from '../../dataCallbackFunction';
+import { PairDevice } from '../../models/PairDevice';
 import { EddiData } from './EddiData';
 
 export class EddiDriver extends Driver {
@@ -42,6 +46,14 @@ export class EddiDriver extends Driver {
     this._dataUpdateCallbacks.splice(callbackId, 1);
   }
 
+  public async getDeviceAndSiteName(myenergiClient: MyEnergi, deviceId: string): Promise<{ siteNameResult: AppKeyValues; eddiNameResult: KeyValue[]; }> {
+    const [siteNameResult, eddiNameResult] = await Promise.all([
+      myenergiClient.getAppKeyFull("siteName"),
+      myenergiClient.getAppKey(`E${deviceId}`),
+    ]).catch(this.error) as [AppKeyValues, KeyValue[]];
+    return { siteNameResult, eddiNameResult };
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private dataUpdated(data: any[]) {
     this.log('Received data from app. Relaying to devices.');
@@ -78,21 +90,40 @@ export class EddiDriver extends Driver {
     return [];
   }
 
-  private async getEddiDevices() {
+  private async getEddiDevices(): Promise<PairDevice[]> {
     const eddiDevices = await this.loadEddiDevices().catch(this.error) as EddiData[];
-    return eddiDevices.map((v) => {
+    return await Promise.all(eddiDevices.map(async (v: EddiData): Promise<PairDevice> => {
+      let deviceName = `Eddi ${v.sno}`;
+      let hubSerial = "";
+      let siteName = "";
+      let eddiSerial = `E${v.sno}`;
+      try {
+        const client = (this.homey.app as MyEnergiApp).clients[v.myenergiClientId as string];
+        const { siteNameResult, eddiNameResult: eddiNameResult } = await this.getDeviceAndSiteName(client, v.sno);
+        hubSerial = Object.keys(siteNameResult)[0];
+        siteName = Object.values(siteNameResult)[0][0].val;
+        eddiSerial = eddiNameResult ? eddiNameResult[0]?.key : v.sno;
+        deviceName = eddiNameResult ? eddiNameResult[0].val : deviceName;
+      } catch (error) {
+        this.error(error);
+      }
       return {
-        name: `Eddi ${v.sno}`,
+        name: deviceName,
         data: { id: v.sno },
         icon: 'icon.svg', // relative to: /drivers/<driver_id>/assets/
         store: {
           myenergiClientId: v.myenergiClientId,
         },
-        capabilities: this._capabilities,
+        capabilities: this.capabilities,
         capabilitiesOptions: {
         },
-      };
-    });
+        settings: {
+          hubSerial: hubSerial,
+          siteName: siteName,
+          eddiSerial: eddiSerial,
+        },
+      } as PairDevice;
+    })).catch(this.error) as PairDevice[];
   }
 
   /**

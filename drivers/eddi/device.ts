@@ -1,6 +1,8 @@
 import { Device } from 'homey';
 import { EddiMode, EddiHeaterStatus, MyEnergi, Eddi } from 'myenergi-api';
+import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
+import { EddiSettings } from '../../models/EddiSettings';
 import { EddiDriver } from './driver';
 import { EddiData } from "./EddiData";
 
@@ -23,6 +25,9 @@ export class EddiDevice extends Device {
   public deviceId!: string;
   public myenergiClientId!: string;
   public myenergiClient!: MyEnergi;
+  private _settings!: EddiSettings;
+  private _settingsTimeoutHandle?: NodeJS.Timeout;
+  private _powerCalculationModeSetToAuto!: boolean;
 
   /**
    * onInit is called when the device is initialized.
@@ -42,6 +47,23 @@ export class EddiDevice extends Device {
       }
     } catch (error) {
       this.error(error);
+    }
+
+    if (this._settings && (!this._settings.siteName || !this._settings.hubSerial || !this._settings.eddiSerial)) {
+      try {
+        const { siteNameResult, eddiNameResult: eddiNameResult } = await (this.driver as EddiDriver).getDeviceAndSiteName(this.myenergiClient, this.deviceId);
+        const hubSerial = Object.keys(siteNameResult)[0];
+        const siteName = Object.values(siteNameResult)[0][0].val;
+        const eddiSerial = eddiNameResult[0]?.key;
+        await this.setSettings({
+          siteName: siteName,
+          hubSerial: hubSerial,
+          eddiSerial: eddiSerial,
+        } as EddiSettings).catch(this.error);
+
+      } catch (error) {
+        this.error(error);
+      }
     }
 
     this.validateCapabilities();
@@ -64,6 +86,17 @@ export class EddiDevice extends Device {
     this._energyTransferred = eddi.che ? eddi.che : 0;
     this._heater1Current = (this._systemVoltage > 0) ? (this._heater1Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
     this._heater2Current = (this._systemVoltage > 0) ? (this._heater2Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
+
+    if (this._powerCalculationModeSetToAuto) {
+      this._powerCalculationModeSetToAuto = false;
+      const tmpSettings =
+      {
+        includeCT1: true,
+        includeCT2: true,
+        includeCT3: true,
+      };
+      this.setSettings(tmpSettings);
+    }
   }
 
   private setCapabilityValues() {
@@ -160,11 +193,43 @@ export class EddiDevice extends Device {
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
   public async onSettings({ oldSettings, newSettings, changedKeys }: {
-    oldSettings: object;
-    newSettings: object;
+    oldSettings: EddiSettings;
+    newSettings: EddiSettings;
     changedKeys: string[];
   }): Promise<string | void> {
     this.log(`EddiDevice settings where changed: ${changedKeys} - ${oldSettings} - ${newSettings}`);
+    if (changedKeys.includes('showNegativeValues')) {
+      this._settings.showNegativeValues = newSettings.showNegativeValues;
+    }
+    if (changedKeys.includes('powerCalculationMode')) {
+      this._settings.powerCalculationMode = newSettings.powerCalculationMode;
+      if (newSettings.powerCalculationMode === "automatic") {
+        this._powerCalculationModeSetToAuto = true;
+        const eddi = await this.myenergiClient?.getStatusEddi(this.deviceId).catch(this.error);
+        if (eddi) {
+          this.log(eddi);
+          this._settings.includeCT1 = eddi.ectt1 === 'Internal Load';
+          this._settings.includeCT2 = eddi.ectt2 === 'Internal Load';
+        }
+      } else if (newSettings.powerCalculationMode === "manual") {
+        this._settings.includeCT1 = newSettings.includeCT1;
+        this._settings.includeCT2 = newSettings.includeCT2;
+      }
+    }
+    if (changedKeys.includes('totalEnergyOffset')) {
+      const prevEnergy: number = this.getCapabilityValue('meter_power');
+      this.setCapabilityValue('meter_power', prevEnergy + (newSettings.totalEnergyOffset ? newSettings.totalEnergyOffset : 0));
+      this._settings.totalEnergyOffset = 0;
+      // Reset the total energy offset after one second
+      this._settingsTimeoutHandle = setTimeout(() => {
+        this.setSettings({ totalEnergyOffset: 0 });
+        clearTimeout(this._settingsTimeoutHandle);
+      }, 1000);
+    }
+    if (changedKeys.includes('siteName')) {
+      this._settings.siteName = newSettings.siteName;
+      await this.myenergiClient.setAppKey("siteName", newSettings.siteName as string).catch(this.error);
+    }
   }
   /**
    * onRenamed is called when the user updates the device's name.
@@ -172,7 +237,11 @@ export class EddiDevice extends Device {
    * @param {string} name The new name
    */
   public async onRenamed(name: string) {
-    this.log(`EddiDevice was renamed to ${name}`);
+    const result = await this.myenergiClient.setAppKey(`E${this.deviceId}`, name).catch(this.error) as KeyValue[];
+    if (result && result.length && result[0].val === name)
+      this.log(`EddiDevice was renamed to ${name}`);
+    else
+      this.error(`Failed to rename EddiDevice to ${name} at myenergi`);
   }
 
   /**

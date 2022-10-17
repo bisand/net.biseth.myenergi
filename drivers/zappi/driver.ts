@@ -1,10 +1,13 @@
 import { Driver, FlowCardTriggerDevice } from 'homey';
 import { Device } from 'homey/lib/FlowCardTriggerDevice';
 import { MyEnergi, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
+import { AppKeyValues } from 'myenergi-api/dist/src/models/AppKeyValues';
+import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { DataCallbackFunction } from '../../dataCallbackFunction';
 import { Capability } from '../../models/Capability';
 import { CapabilityType } from '../../models/CapabilityType';
+import { PairDevice } from '../../models/PairDevice';
 import { ZappiDevice } from './device';
 import { ZappiData } from './ZappiData';
 
@@ -129,7 +132,7 @@ export class ZappiDriver extends Driver {
 
     const selectChargeModeAction = this.homey.flow.getActionCard('select_charge_mode');
     selectChargeModeAction.registerRunListener(async (args, state) => {
-      const dev = args.device;
+      const dev: ZappiDevice = args.device;
       if (!dev) {
         this.error('Unable to detect device on flow: select_charge_mode');
         return;
@@ -137,11 +140,11 @@ export class ZappiDriver extends Driver {
       dev.log(`Charge Mode: ${args.charge_mode_selector}`);
       dev.log(`State: ${state}`);
       try {
-        dev._chargeMode = dev.getChargeMode(args.charge_mode_selector);
-        if (dev._chargeMode !== ZappiChargeMode.Off) {
-          dev._lastOnState = dev._chargeMode;
+        dev.chargeMode = dev.getChargeMode(args.charge_mode_selector);
+        if (dev.chargeMode !== ZappiChargeMode.Off) {
+          dev.lastOnState = dev.chargeMode;
         }
-        await dev.setChargeMode(dev._chargeMode);
+        await dev.setChargeMode(dev.chargeMode);
       } catch (error) {
         dev.error(error);
       }
@@ -149,7 +152,7 @@ export class ZappiDriver extends Driver {
 
     const setBoostModeAction = this.homey.flow.getActionCard('set_boost_mode');
     setBoostModeAction.registerRunListener(async (args, state) => {
-      const dev = args.device;
+      const dev: ZappiDevice = args.device;
       if (!dev) {
         this.error('Unable to detect device on flow: set_boost_mode');
         return;
@@ -160,9 +163,9 @@ export class ZappiDriver extends Driver {
       dev.log(`Complete time: ${completeTime}`);
       dev.log(`State: ${state}`);
       try {
-        dev._boostMode = dev.getBoostMode(args.boost_mode_txt);
-        dev._lastBoostState = dev._boostMode;
-        await dev.setBoostMode(dev._boostMode, kwh, completeTime);
+        dev.boostMode = dev.getBoostMode(args.boost_mode_txt);
+        dev.lastBoostState = dev.boostMode;
+        await dev.setBoostMode(dev.boostMode, kwh, completeTime);
       } catch (error) {
         dev.error(error);
       }
@@ -170,16 +173,16 @@ export class ZappiDriver extends Driver {
 
     const setMinimumGreenLevelAction = this.homey.flow.getActionCard('set_minimum_green_level');
     setMinimumGreenLevelAction.registerRunListener(async (args, state) => {
-      const dev = args.device;
+      const dev: ZappiDevice = args.device;
       if (!dev) {
         this.error('Unable to detect device on flow: set_minimum_green_level');
         return;
       }
       dev.log(`Minimum Green Level: ${args.minimum_green_level}`);
       dev.log(`State: ${state}`);
-      dev._minimumGreenLevel = args.minimum_green_level;
+      dev.minimumGreenLevel = args.minimum_green_level;
       try {
-        await dev.setMinimumGreenLevel(dev._minimumGreenLevel);
+        await dev.setMinimumGreenLevel(dev.minimumGreenLevel);
       } catch (error) {
         dev.error(error);
       }
@@ -238,6 +241,14 @@ export class ZappiDriver extends Driver {
     this._dataUpdateCallbacks.splice(callbackId, 1);
   }
 
+  public async getDeviceAndSiteName(myenergiClient: MyEnergi, deviceId: string): Promise<{ siteNameResult: AppKeyValues; zappiNameResult: KeyValue[]; }> {
+    const [siteNameResult, zappiNameResult] = await Promise.all([
+      myenergiClient.getAppKeyFull("siteName"),
+      myenergiClient.getAppKey(`Z${deviceId}`),
+    ]).catch(this.error) as [AppKeyValues, KeyValue[]];
+    return { siteNameResult, zappiNameResult };
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private dataUpdated(data: any[]) {
     this.log('Received data from app. Relaying to devices.');
@@ -269,11 +280,26 @@ export class ZappiDriver extends Driver {
     return [];
   }
 
-  private async getZappiDevices() {
+  private async getZappiDevices(): Promise<PairDevice[]> {
     const zappiDevices = await this.loadZappiDevices().catch(this.error) as ZappiData[];
-    const result = zappiDevices.map((v) => {
+    const myenergiClientId: string[] = [];
+    const result = await Promise.all(zappiDevices.map(async (v: ZappiData): Promise<PairDevice> => {
+      let deviceName = `Zappi ${v.sno}`;
+      let hubSerial = "";
+      let siteName = "";
+      let zappiSerial = `Z${v.sno}`;
+      try {
+        const client = (this.homey.app as MyEnergiApp).clients[v.myenergiClientId as string];
+        const { siteNameResult, zappiNameResult } = await this.getDeviceAndSiteName(client, v.sno);
+        hubSerial = Object.keys(siteNameResult)[0];
+        siteName = Object.values(siteNameResult)[0][0].val;
+        zappiSerial = zappiNameResult ? zappiNameResult[0]?.key : v.sno;
+        deviceName = zappiNameResult ? zappiNameResult[0].val : deviceName;
+      } catch (error) {
+        this.error(error);
+      }
       return {
-        name: `Zappi ${v.sno}`,
+        name: deviceName,
         data: { id: v.sno },
         icon: 'icon.svg', // relative to: /drivers/<driver_id>/assets/
         store: {
@@ -282,12 +308,17 @@ export class ZappiDriver extends Driver {
         capabilities: this.capabilities,
         capabilitiesOptions: {
         },
-      };
-    });
+        settings: {
+          hubSerial: hubSerial,
+          siteName: siteName,
+          zappiSerial: zappiSerial,
+        },
+      } as PairDevice;
+    })).catch(this.error) as PairDevice[];
     if (process.env.DEBUG === '1') {
       try {
-        const myenergiClientId = result[0]?.store.myenergiClientId;
-        result.push(this.getFakeZappi(myenergiClientId, '99999999', 'Zappi Test 123'));
+        if (result && myenergiClientId.length > 0)
+          result.push(this.getFakeZappi(myenergiClientId[0], '99999999', 'Zappi Test 123'));
       } catch (error) {
         this.error(error);
       }

@@ -1,5 +1,6 @@
 import { Device } from 'homey';
 import { Harvi, MyEnergi } from 'myenergi-api';
+import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { HarviSettings } from '../../models/HarviSettings';
 import { HarviDriver } from './driver';
@@ -50,6 +51,23 @@ class HarviDevice extends Device {
       }
     } catch (error) {
       this.error(error);
+    }
+
+    if (this._settings && (!this._settings.siteName || !this._settings.hubSerial || !this._settings.harviSerial)) {
+      try {
+        const { siteNameResult, harviNameResult } = await (this.driver as HarviDriver).getDeviceAndSiteName(this.myenergiClient, this.deviceId);
+        const hubSerial = Object.keys(siteNameResult)[0];
+        const siteName = Object.values(siteNameResult)[0][0].val;
+        const harviSerial = harviNameResult[0]?.key;
+        await this.setSettings({
+          siteName: siteName,
+          hubSerial: hubSerial,
+          harviSerial: harviSerial,
+        } as HarviSettings).catch(this.error);
+
+      } catch (error) {
+        this.error(error);
+      }
     }
 
     // Set capabilities
@@ -158,7 +176,6 @@ class HarviDevice extends Device {
         includeCT2: true,
         includeCT3: true,
       };
-
       this.setSettings(tmpSettings);
     }
 
@@ -257,6 +274,10 @@ class HarviDevice extends Device {
         clearTimeout(this._settingsTimeoutHandle);
       }, 1000);
     }
+    if (changedKeys.includes('siteName')) {
+      this._settings.siteName = newSettings.siteName;
+      await this.myenergiClient.setAppKey("siteName", newSettings.siteName as string).catch(this.error);
+    }
   }
 
   /**
@@ -265,7 +286,11 @@ class HarviDevice extends Device {
    * @param {string} name The new name
    */
   public async onRenamed(name: string) {
-    this.log(`HarviDevice was renamed to ${name}`);
+    const result = await this.myenergiClient.setAppKey(`H${this.deviceId}`, name).catch(this.error) as KeyValue[];
+    if (result && result.length && result[0].val === name)
+      this.log(`HarviDevice was renamed to ${name}`);
+    else
+      this.error(`Failed to rename HarviDevice to ${name} at myenergi`);
   }
 
   /**

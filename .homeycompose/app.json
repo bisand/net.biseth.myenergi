@@ -1,12 +1,11 @@
 {
   "id": "net.biseth.myenergi",
-  "version": "1.7.6",
+  "version": "1.8.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#2bcc64",
   "platforms": [
-    "local",
-    "cloud"
+    "local"
   ],
   "name": {
     "en": "myenergi"

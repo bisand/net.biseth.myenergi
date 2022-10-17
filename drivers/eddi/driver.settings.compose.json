@@ -40,18 +40,18 @@
                 }
             },
             {
-                "id": "harviSerial",
+                "id": "eddiSerial",
                 "type": "label",
                 "value": "",
                 "label": {
-                    "en": "Harvi serial no",
-                    "no": "Harvi serienummer",
-                    "nl": "Harvi serienummer",
-                    "sv": "Harvis serienummer",
-                    "de": "Harvi-Seriennummer"
+                    "en": "Eddi serial no",
+                    "no": "Eddi serienummer",
+                    "nl": "Eddi serienummer",
+                    "sv": "Eddis serienummer",
+                    "de": "Eddi-Seriennummer"
                 },
                 "hint": {
-                    "en": "Harvi serial number."
+                    "en": "Eddi serial number."
                 }
             }
         ]
@@ -154,25 +154,6 @@
                     "nl": "CT 2 meenemen in berekening.",
                     "de": "Beziehen Sie CT 2 in die Leistungsberechnung ein.",
                     "sv": "Inkludera CT 2 i effektberäkningen."
-                }
-            },
-            {
-                "id": "includeCT3",
-                "type": "checkbox",
-                "label": {
-                    "en": "Include CT 3",
-                    "no": "Inkludere CT 3",
-                    "nl": "CT 3 meenemen",
-                    "de": "Inklusive CT 3",
-                    "sv": "Inkludera CT 3"
-                },
-                "value": true,
-                "hint": {
-                    "en": "Include CT 3 in the power calculation.",
-                    "no": "Inkludere CT 3 i effektberegningen.",
-                    "nl": "CT 3 meenemen in berekening.",
-                    "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein.",
-                    "sv": "Inkludera CT 3 i effektberäkningen."
                 }
             }
         ]
