@@ -27,6 +27,20 @@
 	// Replace when using a ptrace-based debugger like C++, Go, and Rust
 	// "runArgs": [ "--init", "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
 	// Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"dbaeumer.vscode-eslint",
+				"github.vscode-pull-request-github",
+				"eamodio.gitlens",
+				"visualstudioexptteam.vscodeintellicode",
+				"visualstudioexptteam.intellicode-api-usage-examples",
+				"homey.homey-apps-extension"
+			]
+		}
+	},
 	"remoteUser": "vscode",
 	"postCreateCommand": "",
 	"postStartCommand": "echo alias ll=\\'ls -halF --color=auto\\' >> ~/.bashrc"
