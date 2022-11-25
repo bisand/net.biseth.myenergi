@@ -70,5 +70,8 @@
   },
   "1.8.0": {
     "en": "Added possibility to see connected site and hub in device settings"
+  },
+  "1.8.1": {
+    "en": "Updated myenergi-api component"
   }
 }
