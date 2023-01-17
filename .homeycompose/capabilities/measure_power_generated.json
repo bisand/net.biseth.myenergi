@@ -2,16 +2,16 @@
     "type": "number",
     "title": {
         "en": "Power generated",
-        "no": "Generert kraft",
-        "nl": "Opgewekt vermogen",
-        "sv": "Genererad energi",
-        "de": "Erzeugte Energie"
+        "no": "Generert effekt",
+        "nl": "Opgewekte stroom",
+        "sv": "Genererad kraft",
+        "de": "Erzeugte Leistung"
     },
     "getable": true,
     "setable": false,
     "uiComponent": "sensor",
     "units": {
-        "en": "kWh"
+        "en": "W"
     },
     "icon": "/assets/solar_panel.svg",
     "min": 0,
