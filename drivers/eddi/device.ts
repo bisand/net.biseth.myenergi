@@ -3,6 +3,7 @@ import { EddiMode, EddiHeaterStatus, MyEnergi, Eddi } from 'myenergi-api';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { EddiSettings } from '../../models/EddiSettings';
+import { calculateEnergy } from '../../tools';
 import { EddiDriver } from './driver';
 import { EddiData } from "./EddiData";
 
@@ -21,13 +22,18 @@ export class EddiDevice extends Device {
   private _heater2Current = 0;
   private _energyTransferred = 0;
   private _generatedPower = 0;
+  private _settings!: EddiSettings;
+  private _settingsTimeoutHandle?: NodeJS.Timeout;
+  private _powerCalculationModeSetToAuto!: boolean;
+
+  private _lastEnergyCalculation: Date = new Date();
+  private _lastHeater1Power = 0;
+  private _lastHeater2Power = 0;
+  private _lastGeneratedPower = 0;
 
   public deviceId!: string;
   public myenergiClientId!: string;
   public myenergiClient!: MyEnergi;
-  private _settings!: EddiSettings;
-  private _settingsTimeoutHandle?: NodeJS.Timeout;
-  private _powerCalculationModeSetToAuto!: boolean;
 
   /**
    * onInit is called when the device is initialized.
@@ -111,6 +117,18 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('measure_current_ct2', this._heater2Current).catch(this.error);
     this.setCapabilityValue('measure_power_generated', this._generatedPower).catch(this.error);
     this.setCapabilityValue('heater_session_transferred', this._energyTransferred).catch(this.error);
+
+    const meter_power_ct1 = calculateEnergy(this._lastEnergyCalculation, this._lastHeater1Power, this._heater1Power, this.getCapabilityValue('meter_power_ct1'));
+    this._lastHeater1Power = this._heater1Power;
+    const meter_power_ct2 = calculateEnergy(this._lastEnergyCalculation, this._lastHeater2Power, this._heater2Power, this.getCapabilityValue('meter_power_ct2'));
+    this._lastHeater2Power = this._heater2Power;
+    const meter_power_gen = calculateEnergy(this._lastEnergyCalculation, this._lastGeneratedPower, this._generatedPower, this.getCapabilityValue('meter_power_gen'));
+    this._lastGeneratedPower = this._generatedPower;
+    this._lastEnergyCalculation = new Date();
+
+    this.setCapabilityValue('meter_power_ct1', meter_power_ct1).catch(this.error);
+    this.setCapabilityValue('meter_power_ct2', meter_power_ct2).catch(this.error);
+    this.setCapabilityValue('meter_power_gen', meter_power_gen).catch(this.error);
   }
 
   private validateCapabilities() {

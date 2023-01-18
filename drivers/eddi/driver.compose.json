@@ -14,7 +14,8 @@
     "measure_current_ct2",
     "measure_voltage",
     "heater_1_name",
-    "heater_2_name"
+    "heater_2_name",
+    "meter_power"
   ],
   "platforms": [
     "local"

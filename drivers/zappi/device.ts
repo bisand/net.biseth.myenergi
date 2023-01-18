@@ -3,6 +3,7 @@ import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiStatus } from 'm
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { ZappiSettings } from '../../models/ZappiSettings';
+import { calculateEnergy } from '../../tools';
 import { ZappiDriver } from './driver';
 import { ZappiBoostModeText } from './ZappiBoostModeText';
 import { ZappiChargeModeText } from './ZappiChargeModeText';
@@ -72,7 +73,7 @@ export class ZappiDevice extends Device {
   private _powerCalculationModeSetToAuto!: boolean;
 
   private _lastEnergyCalculation: Date = new Date();
-  private _lastPowerMeasurement = 0;
+  private _lastChargingPower = 0;
   private _settingsTimeoutHandle!: NodeJS.Timeout;
 
   public deviceId!: string;
@@ -222,7 +223,6 @@ export class ZappiDevice extends Device {
     this.setCapabilityValue('measure_current', this._chargingCurrent ? this._chargingCurrent : 0).catch(this.error);
     this.setCapabilityValue('charge_session_consumption', this._chargeAdded ? this._chargeAdded : 0).catch(this.error);
     this.setCapabilityValue('measure_frequency', this._frequency ? this._frequency : 0).catch(this.error);
-    this.setCapabilityValue('meter_power', this.calculateEnergy()).catch(this.error);
     this.setCapabilityValue('minimum_green_level', this._minimumGreenLevel).catch(this.error);
     this.setCapabilityValue('set_minimum_green_level', this._minimumGreenLevel).catch(this.error);
     this.setCapabilityValue('zappi_boost_mode', `${this.getBoostModeText(this._boostMode)}`).catch(this.error);
@@ -230,21 +230,12 @@ export class ZappiDevice extends Device {
     this.setCapabilityValue('zappi_boost_kwh_remaining', (this._boostMode === ZappiBoostMode.Manual ? this._boostManualKwhRemaining : (this._boostMode === ZappiBoostMode.Smart ? this._boostSmartKwhRemaining : 0))).catch(this.error);
     this.setCapabilityValue('zappi_boost_time', `${this._boostSmartTime}`).catch(this.error);
     this.setCapabilityValue('ev_connected', this._chargerStatus !== ZappiStatus.EvDisconnected).catch(this.error);
-  }
 
-  /**
-   * Calculate accumulated kWh since last power measurement
-   * @returns Accumulated kWh 
-   */
-  private calculateEnergy(): number {
-    const dateNow = new Date();
-    const seconds = Math.abs((dateNow.getTime() - this._lastEnergyCalculation.getTime()) / 1000);
-    const prevEnergy: number = this.getCapabilityValue('meter_power');
-    const newEnergy: number = prevEnergy + ((((this._lastPowerMeasurement + this._chargingPower) / 2) * seconds) / 3600000);
-    this.log(`Energy algo: ${prevEnergy} + ((((${this._lastPowerMeasurement} + ${this._chargingPower}) / 2) * ${seconds}) / 3600000)`);
-    this._lastPowerMeasurement = this._chargingPower;
-    this._lastEnergyCalculation = dateNow;
-    return newEnergy;
+    const meter_power = calculateEnergy(this._lastEnergyCalculation, this._lastChargingPower, this._chargingPower, this.getCapabilityValue('meter_power'));
+    this._lastChargingPower = this._chargingPower;
+    this._lastEnergyCalculation = new Date();
+
+    this.setCapabilityValue('meter_power', meter_power).catch(this.error);
   }
 
   /**
