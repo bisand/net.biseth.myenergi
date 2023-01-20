@@ -122,13 +122,13 @@ export class EddiDevice extends Device {
     this._lastHeater1Power = this._heater1Power;
     const meter_power_ct2 = calculateEnergy(this._lastEnergyCalculation, this._lastHeater2Power, this._heater2Power, this.getCapabilityValue('meter_power_ct2'));
     this._lastHeater2Power = this._heater2Power;
-    const meter_power_gen = calculateEnergy(this._lastEnergyCalculation, this._lastGeneratedPower, this._generatedPower, this.getCapabilityValue('meter_power_gen'));
+    const meter_power_gen = calculateEnergy(this._lastEnergyCalculation, this._lastGeneratedPower, this._generatedPower, this.getCapabilityValue('meter_power_generated'));
     this._lastGeneratedPower = this._generatedPower;
     this._lastEnergyCalculation = new Date();
 
     this.setCapabilityValue('meter_power_ct1', meter_power_ct1).catch(this.error);
     this.setCapabilityValue('meter_power_ct2', meter_power_ct2).catch(this.error);
-    this.setCapabilityValue('meter_power_gen', meter_power_gen).catch(this.error);
+    this.setCapabilityValue('meter_power_generated', meter_power_gen).catch(this.error);
   }
 
   private validateCapabilities() {

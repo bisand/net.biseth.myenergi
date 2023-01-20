@@ -134,7 +134,11 @@
         "measure_current_ct2",
         "measure_voltage",
         "heater_1_name",
-        "heater_2_name"
+        "heater_2_name",
+        "meter_power",
+        "meter_power_ct1",
+        "meter_power_ct2",
+        "meter_power_generated"
       ],
       "platforms": [
         "local"
@@ -2167,8 +2171,115 @@
       "type": "number",
       "title": {
         "en": "Power generated",
-        "no": "Generert kraft",
-        "nl": "Opgewekt vermogen",
+        "no": "Generert effekt",
+        "nl": "Opgewekte stroom",
+        "sv": "Genererad kraft",
+        "de": "Erzeugte Leistung"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "W"
+      },
+      "icon": "/assets/solar_wind_power.svg",
+      "min": 0,
+      "decimals": 2
+    },
+    "meter_power_ct1": {
+      "type": "number",
+      "title": {
+        "en": "Energi CT1",
+        "nl": "Energie CT1",
+        "de": "Energie CT1",
+        "fr": "Énergie CT1",
+        "it": "Energia CT1",
+        "sv": "Energi CT1",
+        "no": "Energi CT1",
+        "es": "Energía CT1",
+        "da": "Energi CT1"
+      },
+      "units": {
+        "en": "kWh"
+      },
+      "icon": "/assets/gauge_energy.svg",
+      "insights": true,
+      "desc": {
+        "en": "Energy in Kilowatt-hour (kWh)",
+        "nl": "Energie in kilowattuur (kWh)",
+        "de": "Energie in Kilowattstunden (kWh)",
+        "fr": "Énergie en Kilowattheures (kWh)",
+        "it": "Energia in Kilowattora (kWh)",
+        "sv": "Energi i kilowatt-timmar (kWt)",
+        "no": "Energi i kilowatt-timer (kWt)",
+        "es": "Energía en Kilovatios-hora (kWh)",
+        "da": "Energi i kilowatt-timer (kWh)"
+      },
+      "options": {
+        "isApproximated": {
+          "type": "boolean",
+          "default": false,
+          "desc": {
+            "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+          }
+        }
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "meter_power_ct2": {
+      "type": "number",
+      "title": {
+        "en": "Energi CT2",
+        "nl": "Energie CT2",
+        "de": "Energie CT2",
+        "fr": "Énergie CT2",
+        "it": "Energia CT2",
+        "sv": "Energi CT2",
+        "no": "Energi CT2",
+        "es": "Energía CT2",
+        "da": "Energi CT2"
+      },
+      "units": {
+        "en": "kWh"
+      },
+      "icon": "/assets/gauge_energy.svg",
+      "insights": true,
+      "desc": {
+        "en": "Energy in Kilowatt-hour (kWh)",
+        "nl": "Energie in kilowattuur (kWh)",
+        "de": "Energie in Kilowattstunden (kWh)",
+        "fr": "Énergie en Kilowattheures (kWh)",
+        "it": "Energia in Kilowattora (kWh)",
+        "sv": "Energi i kilowatt-timmar (kWt)",
+        "no": "Energi i kilowatt-timer (kWt)",
+        "es": "Energía en Kilovatios-hora (kWh)",
+        "da": "Energi i kilowatt-timer (kWh)"
+      },
+      "options": {
+        "isApproximated": {
+          "type": "boolean",
+          "default": false,
+          "desc": {
+            "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+          }
+        }
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "meter_power_generated": {
+      "type": "number",
+      "title": {
+        "en": "Generated energy",
+        "no": "Generert energi",
+        "nl": "Opgewekte energie",
         "sv": "Genererad energi",
         "de": "Erzeugte Energie"
       },
@@ -2178,7 +2289,7 @@
       "units": {
         "en": "kWh"
       },
-      "icon": "/assets/solar_panel.svg",
+      "icon": "/assets/solar_wind_energy.svg",
       "min": 0,
       "decimals": 2
     },
