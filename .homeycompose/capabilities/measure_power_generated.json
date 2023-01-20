@@ -13,7 +13,7 @@
     "units": {
         "en": "W"
     },
-    "icon": "/assets/solar_panel.svg",
+    "icon": "/assets/solar_wind_power.svg",
     "min": 0,
     "decimals": 2
 }

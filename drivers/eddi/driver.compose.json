@@ -15,7 +15,10 @@
     "measure_voltage",
     "heater_1_name",
     "heater_2_name",
-    "meter_power"
+    "meter_power",
+    "meter_power_ct1",
+    "meter_power_ct2",
+    "meter_power_gen"
   ],
   "platforms": [
     "local"

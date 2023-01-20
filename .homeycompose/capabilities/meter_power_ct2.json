@@ -1,0 +1,80 @@
+{
+    "type": "number",
+    "title": {
+      "en": "Energi CT2",
+      "nl": "Energie CT2",
+      "de": "Energie CT2",
+      "fr": "Énergie CT2",
+      "it": "Energia CT2",
+      "sv": "Energi CT2",
+      "no": "Energi CT2",
+      "es": "Energía CT2",
+      "da": "Energi CT2"
+    },
+    "units": {
+      "en": "kWh"
+    },
+    "icon": "/assets/gauge_energy.svg",
+    "insights": true,
+    "desc": {
+      "en": "Energy in Kilowatt-hour (kWh)",
+      "nl": "Energie in kilowattuur (kWh)",
+      "de": "Energie in Kilowattstunden (kWh)",
+      "fr": "Énergie en Kilowattheures (kWh)",
+      "it": "Energia in Kilowattora (kWh)",
+      "sv": "Energi i kilowatt-timmar (kWt)",
+      "no": "Energi i kilowatt-timer (kWt)",
+      "es": "Energía en Kilovatios-hora (kWh)",
+      "da": "Energi i kilowatt-timer (kWh)"
+    },
+    "options": {
+      "isApproximated": {
+        "type": "boolean",
+        "default": false,
+        "desc": {
+          "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+        }
+      }
+    },
+    "chartType": "stepLine",
+    "decimals": 2,
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "$flow": {
+      "triggers": [
+        {
+          "id": "meter_power_ct2_changed",
+          "title": {
+            "en": "The energy changed",
+            "nl": "De energie veranderde",
+            "de": "Die Energie ändert sich",
+            "fr": "L'énergie a changé",
+            "it": "L'energia è cambiata",
+            "sv": "Energin förändrades",
+            "no": "Energien ble endret",
+            "es": "La energía cambió",
+            "da": "Energien ændrede sig"
+          },
+          "tokens": [
+            {
+              "name": "meter_power_ct2",
+              "title": {
+                "en": "Energy",
+                "nl": "Energie",
+                "de": "Energie",
+                "fr": "Énergie",
+                "it": "Energia",
+                "sv": "Energi",
+                "no": "Energi",
+                "es": "Energía",
+                "da": "Energi"
+              },
+              "type": "number",
+              "example": 7.5
+            }
+          ]
+        }
+      ]
+    }
+  }

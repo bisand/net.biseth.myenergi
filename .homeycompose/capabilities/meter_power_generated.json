@@ -1,0 +1,19 @@
+{
+    "type": "number",
+    "title": {
+        "en": "Generated energy",
+        "no": "Generert energi",
+        "nl": "Opgewekte energie",
+        "sv": "Genererad energi",
+        "de": "Erzeugte Energie"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "units": {
+        "en": "kWh"
+    },
+    "icon": "/assets/solar_wind_energy.svg",
+    "min": 0,
+    "decimals": 2
+}
