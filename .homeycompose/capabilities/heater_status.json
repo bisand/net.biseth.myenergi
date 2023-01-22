@@ -13,6 +13,16 @@
     "icon": "/assets/water_heater.svg",
     "values": [
         {
+            "id": "0",
+            "title": {
+                "en": "Starting",
+                "no": "Starter",
+                "nl": "Beginnend",
+                "sv": "Startar",
+                "de": "Beginnend"
+            }
+        },
+        {
             "id": "1",
             "title": {
                 "en": "Paused",
@@ -25,11 +35,7 @@
         {
             "id": "2",
             "title": {
-                "en": "Unknown",
-                "no": "Ukjent",
-                "nl": "Onbekend",
-                "sv": "Okänd",
-                "de": "Unbekannt"
+                "en": "DSR"
             }
         },
         {

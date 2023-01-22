@@ -43,6 +43,7 @@ export class EddiDevice extends Device {
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
+    this.log(`myenergiClientId: ${this.myenergiClientId}`);
 
     try {
       this.myenergiClient = (this.homey.app as MyEnergiApp).clients[this.myenergiClientId];
@@ -188,11 +189,16 @@ export class EddiDevice extends Device {
     }
   }
 
+  /**
+   * Event handler for onoff capability listener
+   * @param value On or off
+   * @param opts Options
+   */
   public async onCapabilityOnoff(value: boolean, opts: unknown) {
     this.log(`onoff: ${value} - ${opts}`);
     await this.setEddiMode(value).catch(this.error);
-    this.setCapabilityValue('onoff', value ? EddiMode.On : EddiMode.Off).catch(this.error);
-    this.setCapabilityValue('heater_status', value ? `${this._lastHeaterStatus}` : EddiHeaterStatus.Stopped).catch(this.error);
+    this.setCapabilityValue('onoff', value).catch(this.error);
+    this.setCapabilityValue('heater_status', value ? `${this._lastHeaterStatus}` : `${EddiHeaterStatus.Stopped}`).catch(this.error);
   }
 
   /**

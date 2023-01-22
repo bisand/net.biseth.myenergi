@@ -22,6 +22,10 @@ export class EddiDriver extends Driver {
     'measure_voltage',
     'heater_1_name',
     'heater_2_name',
+    "meter_power",
+    "meter_power_ct1",
+    "meter_power_ct2",
+    "meter_power_generated"
   ];
 
   public eddiDevices: EddiData[] = [];
@@ -69,30 +73,29 @@ export class EddiDriver extends Driver {
   }
 
   private async loadEddiDevices(): Promise<EddiData[]> {
-    for (const key in (this.homey.app as MyEnergiApp).clients) {
-      try {
+    try {
+      for (const key in (this.homey.app as MyEnergiApp).clients) {
         if (Object.prototype.hasOwnProperty.call((this.homey.app as MyEnergiApp).clients, key)) {
-          const client = (this.homey.app as MyEnergiApp).clients[key];
-          const eddis: EddiData[] = await client.getStatusEddiAll();
+          const client: MyEnergi = (this.homey.app as MyEnergiApp).clients[key];
+          const eddis: EddiData[] = await client.getStatusEddiAll().catch(this.error) as EddiData[];
           for (const eddi of eddis) {
             if (this.eddiDevices.findIndex((e: EddiData) => e.sno === eddi.sno) === -1) {
               eddi.myenergiClientId = key;
               this.eddiDevices.push(eddi);
             }
           }
-          return this.eddiDevices;
         }
-
-      } catch (error) {
-        this.error(error);
       }
+      return this.eddiDevices;
+    } catch (error) {
+      this.error(error);
     }
     return [];
   }
 
   private async getEddiDevices(): Promise<PairDevice[]> {
     const eddiDevices = await this.loadEddiDevices().catch(this.error) as EddiData[];
-    return await Promise.all(eddiDevices.map(async (v: EddiData): Promise<PairDevice> => {
+    const result = await Promise.all(eddiDevices.map(async (v: EddiData): Promise<PairDevice> => {
       let deviceName = `Eddi ${v.sno}`;
       let hubSerial = "";
       let siteName = "";
@@ -124,6 +127,7 @@ export class EddiDriver extends Driver {
         },
       } as PairDevice;
     })).catch(this.error) as PairDevice[];
+    return result;
   }
 
   /**

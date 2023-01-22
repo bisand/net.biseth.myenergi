@@ -7,7 +7,9 @@ import { DataCallbackFunction } from './dataCallbackFunction';
 import { Credential } from './models/Credential';
 import { MyEnergiHub } from './models/MyEnergiHub';
 import { Response } from './models/Result';
+import { MyEnergiFake } from './services/MyEnergiFake';
 import { SchedulerService } from './services/SchedulerService';
+import { includeFakeData } from './tools';
 
 export class MyEnergiApp extends Homey.App {
 
@@ -17,6 +19,7 @@ export class MyEnergiApp extends Homey.App {
 
   public clients: { [name: string]: MyEnergi } = {};
   private _schedulerService!: SchedulerService;
+  public fakeClientId = '';
 
   private async initClients(hubs: MyEnergiHub[]) {
     this.log(`Starting client init...`);
@@ -28,6 +31,13 @@ export class MyEnergiApp extends Homey.App {
     }
     if (hubs) {
       this.clients = {};
+      if (process.env.DEBUG === '1') {
+        if (!(this.fakeClientId = this.homey.settings.get('fakeClientId'))) {
+          this.fakeClientId = `fake_${Date.now()}`;
+          this.homey.settings.set('fakeClientId', this.fakeClientId);
+        }
+        this.clients[this.fakeClientId] = new MyEnergiFake('hub.username', 'hub.password', 'https://fake.url');
+      }
       hubs.forEach((hub: MyEnergiHub, index: number) => {
         // this.log(hub);
         this.clients[`${hub.hubname}_${hub.username}`] = new MyEnergi(hub.username, hub.password, this._apiBaseUrl);
@@ -49,7 +59,7 @@ export class MyEnergiApp extends Homey.App {
           if (data)
             this._dataUpdateCallbacks.forEach(callback => {
               try {
-                callback(data);
+                callback(includeFakeData(data));
               } catch (error) {
                 this.error(error);
               }
@@ -96,7 +106,7 @@ export class MyEnergiApp extends Homey.App {
     // Start debuger
     if (process.env.DEBUG === '1') {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      // require('inspector').open(9229, '0.0.0.0', false);
+      require('inspector').open(9229, '0.0.0.0', false);
       // debugger;
       // eslint-disable-next-line @typescript-eslint/no-var-requires
     }
