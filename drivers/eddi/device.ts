@@ -23,13 +23,14 @@ export class EddiDevice extends Device {
   private _heater2Current = 0;
   private _generatedPower = 0;
   private _settings!: EddiSettings;
-  private _settingsTimeoutHandle?: NodeJS.Timeout;
   private _powerCalculationModeSetToAuto!: boolean;
 
   private _lastEnergyCalculation: Date = new Date();
   private _lastHeater1Power = 0;
   private _lastHeater2Power = 0;
   private _lastGeneratedPower = 0;
+
+  private _settingsTimeoutHandle?: NodeJS.Timeout;
 
   public deviceId!: string;
   public myenergiClientId!: string;
@@ -44,11 +45,10 @@ export class EddiDevice extends Device {
       await this.InitializeCapabilities().catch(this.error);
     }
 
+    this._settings = this.getSettings();
     this._callbackId = (this.driver as EddiDriver).registerDataUpdateCallback((data: EddiData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
-    this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
-    this.log(`myenergiClientId: ${this.myenergiClientId}`);
 
     try {
       this.myenergiClient = (this.homey.app as MyEnergiApp).clients[this.myenergiClientId];
@@ -85,6 +85,15 @@ export class EddiDevice extends Device {
 
     this.registerCapabilityListener('button.reset_meter', async () => {
       this.setCapabilityValue('meter_power', 0);
+    });
+    this.registerCapabilityListener('button.reset_meter_ct1', async () => {
+      this.setCapabilityValue('meter_power_ct1', 0);
+    });
+    this.registerCapabilityListener('button.reset_meter_ct2', async () => {
+      this.setCapabilityValue('meter_power_ct2', 0);
+    });
+    this.registerCapabilityListener('button.reset_meter_generated', async () => {
+      this.setCapabilityValue('meter_power_generated', 0);
     });
     this.registerCapabilityListener('button.reload_capabilities', async () => {
       this.InitializeCapabilities();
@@ -190,18 +199,22 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('measure_current_ct2', this._heater2Current).catch(this.error);
     this.setCapabilityValue('measure_power_generated', this._generatedPower).catch(this.error);
 
-    const meter_power_ct1 = calculateEnergy(this._lastEnergyCalculation, this._lastHeater1Power, this._heater1Power, this.getCapabilityValue('meter_power_ct1'));
+    const meter_power_prev = this.getCapabilityValue('meter_power');
+    const meter_power_ct1_prev = this.getCapabilityValue('meter_power_ct1');
+    const meter_power_ct1 = calculateEnergy(this._lastEnergyCalculation, this._lastHeater1Power, this._heater1Power, 0);
     this._lastHeater1Power = this._heater1Power;
-    const meter_power_ct2 = calculateEnergy(this._lastEnergyCalculation, this._lastHeater2Power, this._heater2Power, this.getCapabilityValue('meter_power_ct2'));
+    const meter_power_ct2_prev = this.getCapabilityValue('meter_power_ct2');
+    const meter_power_ct2 = calculateEnergy(this._lastEnergyCalculation, this._lastHeater2Power, this._heater2Power, 0);
     this._lastHeater2Power = this._heater2Power;
-    const meter_power_gen = calculateEnergy(this._lastEnergyCalculation, this._lastGeneratedPower, this._generatedPower, this.getCapabilityValue('meter_power_generated'));
+    const meter_power_gen_prev = this.getCapabilityValue('meter_power_generated');
+    const meter_power_gen = calculateEnergy(this._lastEnergyCalculation, this._lastGeneratedPower, this._generatedPower, 0);
     this._lastGeneratedPower = this._generatedPower;
     this._lastEnergyCalculation = new Date();
 
-    this.setCapabilityValue('meter_power_ct1', meter_power_ct1).catch(this.error);
-    this.setCapabilityValue('meter_power_ct2', meter_power_ct2).catch(this.error);
-    this.setCapabilityValue('meter_power_generated', meter_power_gen).catch(this.error);
-    this.setCapabilityValue('meter_power', (meter_power_ct1 + meter_power_ct2) - meter_power_gen).catch(this.error);
+    this.setCapabilityValue('meter_power_ct1', meter_power_ct1_prev + meter_power_ct1).catch(this.error);
+    this.setCapabilityValue('meter_power_ct2', meter_power_ct2_prev + meter_power_ct2).catch(this.error);
+    this.setCapabilityValue('meter_power_generated', meter_power_gen_prev + meter_power_gen).catch(this.error);
+    this.setCapabilityValue('meter_power', meter_power_prev + ((meter_power_ct1 + meter_power_ct2) - meter_power_gen)).catch(this.error);
   }
 
   private validateCapabilities() {
@@ -312,20 +325,36 @@ export class EddiDevice extends Device {
         this._settings.includeCT2 = newSettings.includeCT2;
       }
     }
-    if (changedKeys.includes('totalEnergyOffset')) {
+    if (changedKeys.includes('energyOffsetTotal')) {
       const prevEnergy: number = this.getCapabilityValue('meter_power');
-      this.setCapabilityValue('meter_power', prevEnergy + (newSettings.totalEnergyOffset ? newSettings.totalEnergyOffset : 0));
-      this._settings.totalEnergyOffset = 0;
-      // Reset the total energy offset after one second
-      this._settingsTimeoutHandle = setTimeout(() => {
-        this.setSettings({ totalEnergyOffset: 0 });
-        clearTimeout(this._settingsTimeoutHandle);
-      }, 1000);
+      this.setCapabilityValue('meter_power', prevEnergy + (newSettings.energyOffsetTotal ? newSettings.energyOffsetTotal : 0));
+      this._settings.energyOffsetTotal = 0;
+    }
+    if (changedKeys.includes('energyOffsetCT1')) {
+      const prevEnergy: number = this.getCapabilityValue('meter_power_ct1');
+      this.setCapabilityValue('meter_power_ct1', prevEnergy + (newSettings.energyOffsetCT1 ? newSettings.energyOffsetCT1 : 0));
+      this._settings.energyOffsetCT1 = 0;
+    }
+    if (changedKeys.includes('energyOffsetCT2')) {
+      const prevEnergy: number = this.getCapabilityValue('meter_power_ct2');
+      this.setCapabilityValue('meter_power_ct2', prevEnergy + (newSettings.energyOffsetCT2 ? newSettings.energyOffsetCT2 : 0));
+      this._settings.energyOffsetCT2 = 0;
+    }
+    if (changedKeys.includes('energyOffsetGenerated')) {
+      const prevEnergy: number = this.getCapabilityValue('meter_power_generated');
+      this.setCapabilityValue('meter_power_generated', prevEnergy + (newSettings.energyOffsetGenerated ? newSettings.energyOffsetGenerated : 0));
+      this._settings.energyOffsetGenerated = 0;
     }
     if (changedKeys.includes('siteName')) {
       this._settings.siteName = newSettings.siteName;
       await this.myenergiClient.setAppKey("siteName", newSettings.siteName as string).catch(this.error);
     }
+
+    // Reset energy offset settings after one second to prevent potential conflicts.
+    this._settingsTimeoutHandle = setTimeout(() => {
+      this.setSettings({ energyOffsetTotal: 0, energyOffsetCT1: 0, energyOffsetCT2: 0, energyOffsetGenerated: 0 });
+      clearTimeout(this._settingsTimeoutHandle);
+    }, 1000);
   }
   /**
    * onRenamed is called when the user updates the device's name.

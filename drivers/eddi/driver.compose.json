@@ -5,8 +5,6 @@
   "class": "heater",
   "capabilities": [
     "onoff",
-    "button.reset_meter",
-    "button.reload_capabilities",
     "heater_status",
     "meter_power",
     "meter_power_ct1",
@@ -20,8 +18,92 @@
     "heater_1_name",
     "heater_2_name",
     "measure_voltage",
-    "measure_frequency"
+    "measure_frequency",
+    "button.reset_meter",
+    "button.reset_meter_ct1",
+    "button.reset_meter_ct2",
+    "button.reset_meter_generated",
+    "button.reload_capabilities"
   ],
+  "capabilitiesOptions": {
+    "button.reset_meter": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reset energy meter (Total)",
+        "no": "Tilbakestill strømmåler (Total)",
+        "nl": "Energiemeter resetten (Total)",
+        "se": "Återställ energimätaren (Total)",
+        "de": "Energiezähler zurücksetzen (Total)"
+      },
+      "desc": {
+        "en": "Reset the total accumulated energy usage (kWh), this can not be restored.",
+        "no": "Tilbakestill totalt akkumulert strømforbruk (kWh), dette kan ikke gjenopprettes.",
+        "nl": "Reset het totale geaccumuleerde energieverbruik (kWh), dit kan niet worden hersteld.",
+        "de": "Setzen Sie den gesamten kumulierten Energieverbrauch (kWh) zurück, dieser kann nicht wiederhergestellt werden.",
+        "se": "Återställ den totala ackumulerade energianvändningen (kWh), detta kan inte återställas."
+      }
+    },
+    "button.reset_meter_ct1": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reset energy meter (CT1)",
+        "no": "Tilbakestill strømmåler (CT1)",
+        "nl": "Energiemeter resetten (CT1)",
+        "se": "Återställ energimätaren (CT1)",
+        "de": "Energiezähler zurücksetzen (CT1)"
+      },
+      "desc": {
+        "en": "Reset the accumulated energy usage for CT1 (kWh), this can not be restored.",
+        "no": "Tilbakestill akkumulert energiforbruk for CT1 (kWh), dette kan ikke gjenopprettes.",
+        "nl": "Reset het geaccumuleerde energieverbruik voor CT1 (kWh), dit kan niet worden hersteld.",
+        "de": "Setzen Sie den kumulierten Energieverbrauch für CT1 (kWh) zurück, dieser kann nicht wiederhergestellt werden.",
+        "se": "Återställ den ackumulerade energianvändningen för CT1 (kWh), detta kan inte återställas."
+      }
+    },
+    "button.reset_meter_ct2": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reset energy meter (CT2)",
+        "no": "Tilbakestill strømmåler (CT2)",
+        "nl": "Energiemeter resetten (CT2)",
+        "se": "Återställ energimätaren (CT2)",
+        "de": "Energiezähler zurücksetzen (CT2)"
+      },
+      "desc": {
+        "en": "Reset the accumulated energy usage for CT2 (kWh), this can not be restored.",
+        "no": "Tilbakestill akkumulert energiforbruk for CT2 (kWh), dette kan ikke gjenopprettes.",
+        "nl": "Reset het geaccumuleerde energieverbruik voor CT2 (kWh), dit kan niet worden hersteld.",
+        "de": "Setzen Sie den kumulierten Energieverbrauch für CT2 (kWh) zurück, dieser kann nicht wiederhergestellt werden.",
+        "se": "Återställ den ackumulerade energianvändningen för CT2 (kWh), detta kan inte återställas."
+      }
+    },
+    "button.reset_meter_generated": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reset energy meter (Generated)",
+        "no": "Tilbakestill energimåler (Generert)",
+        "nl": "Energiemeter resetten (Gegenereerd)",
+        "se": "Återställ energimätare (Genererad)",
+        "de": "Energiezähler zurücksetzen (Erzeugt)"
+      },
+      "desc": {
+        "en": "Reset the accumulated generated energy (kWh), this can not be restored.",
+        "no": "Tilbakestill den akkumulerte genererte energien (kWh), denne kan ikke gjenopprettes.",
+        "nl": "Reset de opgebouwde opgewekte energie (kWh), dit kan niet worden hersteld.",
+        "de": "Setzen Sie die akkumulierte erzeugte Energie (kWh) zurück, diese kann nicht wiederhergestellt werden.",
+        "se": "Återställ den ackumulerade genererade energin (kWh), denna kan inte återställas."
+      }
+    },
+    "button.reload_capabilities": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reload capabilities"
+      },
+      "desc": {
+        "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
+      }
+    }
+  },
   "platforms": [
     "local"
   ],
