@@ -56,18 +56,19 @@ export class MyEnergiFake extends MyEnergi {
         return new Promise<any>((resolve) => {
             console.log(`${typeof MyEnergiFake}->getStatusEddiAll()`);
             const result = [];
-            result.push(getFakeEddiData());
+            result.push(getFakeEddiData(99999997, this._fakeEddiMode));
             resolve(result);
         });
     }
     public override getStatusEddi(serialNumber: string): Promise<Eddi | null> {
         return new Promise<any>((resolve) => {
             console.log(`${typeof MyEnergiFake}->getStatusEddi(${serialNumber})`);
-            resolve(getFakeEddiData(Number(serialNumber)));
+            resolve(getFakeEddiData(Number(serialNumber), this._fakeEddiMode));
         });
     }
     public override setEddiMode(serialNo: string, mode: EddiMode): Promise<any> {
         return new Promise<any>((resolve) => {
+            this._fakeEddiMode = mode;
             console.log(`${typeof MyEnergiFake}->setEddiMode(${serialNo}, ${mode})`);
             resolve({ status: 0, statustext: "" });
         });

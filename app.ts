@@ -9,7 +9,6 @@ import { MyEnergiHub } from './models/MyEnergiHub';
 import { Response } from './models/Result';
 import { MyEnergiFake } from './services/MyEnergiFake';
 import { SchedulerService } from './services/SchedulerService';
-import { includeFakeData } from './tools';
 
 export class MyEnergiApp extends Homey.App {
 
@@ -59,7 +58,7 @@ export class MyEnergiApp extends Homey.App {
           if (data)
             this._dataUpdateCallbacks.forEach(callback => {
               try {
-                callback(includeFakeData(data));
+                callback(data);
               } catch (error) {
                 this.error(error);
               }

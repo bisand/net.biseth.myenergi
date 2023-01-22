@@ -199,7 +199,7 @@ class HarviDevice extends Device {
   }
 
   private dataUpdated(data: HarviData[]) {
-    this.log('Received data from driver.');
+    if (process.env.DEBUG === '1') this.log('Received data from driver.');
     if (data) {
       data.forEach(harvi => {
         if (harvi && harvi.sno === this.deviceId) {

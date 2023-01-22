@@ -83,6 +83,7 @@ export class EddiDevice extends Device {
   }
 
   private calculateValues(eddi: Eddi) {
+    this._onOff = (eddi.sta === EddiHeaterStatus.Stopped) ? EddiMode.Off : EddiMode.On;
     this._heaterStatus = eddi.sta;
     this._heater1Power = eddi.ectp1 ? eddi.ectp1 : 0;
     this._heater2Power = eddi.ectp2 ? eddi.ectp2 : 0;
@@ -160,7 +161,7 @@ export class EddiDevice extends Device {
   }
 
   private dataUpdated(data: EddiData[]) {
-    this.log('Received data from driver.');
+    if (process.env.DEBUG === '1') this.log('Received data from driver.');
     if (data) {
       data.forEach((eddi: EddiData) => {
         if (eddi && eddi.sno === this.deviceId) {

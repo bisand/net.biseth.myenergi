@@ -463,7 +463,7 @@ export class ZappiDevice extends Device {
    * @param data Zappi data
    */
   private async dataUpdated(data: ZappiData[]): Promise<void> {
-    this.log('Received data from driver.');
+    if (process.env.DEBUG === '1') this.log('Received data from driver.');
     if (!this.getAvailable())
       return;
     if (data) {

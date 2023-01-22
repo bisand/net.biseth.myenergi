@@ -62,7 +62,7 @@ export class HarviDriver extends Driver {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private dataUpdated(data: any[]) {
-    this.log('Received data from app. Relaying to devices.');
+    if (process.env.DEBUG === '1') this.log('Received data from app. Relaying to devices.');
     if (data) {
       data.forEach(d => {
         if (d.harvi) {
