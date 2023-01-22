@@ -10,6 +10,7 @@
     "getable": true,
     "setable": false,
     "uiComponent": "sensor",
+    "icon": "/assets/water_heater.svg",
     "$flow": {
         "triggers": [
             {

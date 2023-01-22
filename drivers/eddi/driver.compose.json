@@ -5,20 +5,22 @@
   "class": "heater",
   "capabilities": [
     "onoff",
+    "button.reset_meter",
+    "button.reload_capabilities",
     "heater_status",
-    "heater_session_transferred",
-    "measure_power_ct1",
-    "measure_power_ct2",
-    "measure_power_generated",
-    "measure_current_ct1",
-    "measure_current_ct2",
-    "measure_voltage",
-    "heater_1_name",
-    "heater_2_name",
     "meter_power",
     "meter_power_ct1",
     "meter_power_ct2",
-    "meter_power_generated"
+    "measure_power_generated",
+    "meter_power_generated",
+    "measure_power_ct1",
+    "measure_power_ct2",
+    "measure_current_ct1",
+    "measure_current_ct2",
+    "heater_1_name",
+    "heater_2_name",
+    "measure_voltage",
+    "measure_frequency"
   ],
   "platforms": [
     "local"

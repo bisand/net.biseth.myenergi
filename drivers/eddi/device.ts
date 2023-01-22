@@ -14,13 +14,13 @@ export class EddiDevice extends Device {
   private _heaterStatus: EddiHeaterStatus = EddiHeaterStatus.Boost;
   private _lastHeaterStatus: EddiHeaterStatus = EddiHeaterStatus.Boost;
   private _systemVoltage = 0;
+  private _systemFrequency = 0.0;
   private _heater1Power = 0;
   private _heater2Power = 0;
   private _heater1Name = 'Heater 1';
   private _heater2Name = 'Heater 2';
   private _heater1Current = 0;
   private _heater2Current = 0;
-  private _energyTransferred = 0;
   private _generatedPower = 0;
   private _settings!: EddiSettings;
   private _settingsTimeoutHandle?: NodeJS.Timeout;
@@ -39,6 +39,11 @@ export class EddiDevice extends Device {
    * onInit is called when the device is initialized.
    */
   public async onInit() {
+    // Make sure capabilities are up to date.
+    if (this.detectCapabilityChanges()) {
+      await this.InitializeCapabilities().catch(this.error);
+    }
+
     this._callbackId = (this.driver as EddiDriver).registerDataUpdateCallback((data: EddiData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
@@ -73,13 +78,78 @@ export class EddiDevice extends Device {
       }
     }
 
-    this.validateCapabilities();
     this.setCapabilityValues();
     this.log(`Status: ${this._heaterStatus}`);
 
     this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
 
+    this.registerCapabilityListener('button.reset_meter', async () => {
+      this.setCapabilityValue('meter_power', 0);
+    });
+    this.registerCapabilityListener('button.reload_capabilities', async () => {
+      this.InitializeCapabilities();
+    });
+
     this.log('EddiDevice has been initialized');
+  }
+
+  /**
+   * Validate capabilities. Add new and delete removed capabilities.
+   */
+  private async InitializeCapabilities(): Promise<void> {
+    await this.setUnavailable('Zappi is currently doing some maintenance taks and will be back shortly.').catch(this.error);
+    this.log(`****** Initializing Zappi sensor capabilities ******`);
+    const caps = this.getCapabilities();
+    const tmpCaps: { [name: string]: unknown } = {};
+    // Remove all capabilities in case the order has changed
+    for (const cap of caps) {
+      try {
+        tmpCaps[cap] = this.getCapabilityValue(cap);
+        await this.removeCapability(cap).catch(this.error);
+        this.log(`*** ${cap} - Removed`);
+      } catch (error) {
+        this.error(error);
+      }
+    }
+    // Re-apply all capabilities.
+    for (const cap of (this.driver as EddiDriver).capabilities) {
+      try {
+        if (this.hasCapability(cap))
+          continue;
+        await this.addCapability(cap).catch(this.error);
+        if (tmpCaps[cap])
+          this.setCapabilityValue(cap, tmpCaps[cap]);
+        this.log(`*** ${cap} - Added`);
+      } catch (error) {
+        this.error(error);
+      }
+    }
+    this.log(`****** Sensor capability initialization complete ******`);
+    this.setAvailable().catch(this.error);
+  }
+
+  /**
+   * Validate capabilities. Add new and delete removed capabilities.
+   */
+  private detectCapabilityChanges(): boolean {
+    let result = false;
+    this.log(`Detecting Zappi capability changes...`);
+    const caps = this.getCapabilities();
+    for (const cap of caps) {
+      if (!(this.driver as EddiDriver).capabilities.includes(cap)) {
+        this.log(`Zappi capability ${cap} was removed.`);
+        result = true;
+      }
+    }
+    for (const cap of (this.driver as EddiDriver).capabilities) {
+      if (!this.hasCapability(cap)) {
+        this.log(`Zappi capability ${cap} was added.`);
+        result = true;
+      }
+    }
+    if (!result)
+      this.log('No changes in capabilities.');
+    return result;
   }
 
   private calculateValues(eddi: Eddi) {
@@ -90,8 +160,8 @@ export class EddiDevice extends Device {
     this._heater1Name = eddi.ht1 ? eddi.ht1 : this._heater1Name;
     this._heater2Name = eddi.ht2 ? eddi.ht2 : this._heater2Name;
     this._systemVoltage = eddi.vol ? (eddi.vol / 10) : 0;
+    this._systemFrequency = eddi.frq;
     this._generatedPower = eddi.gen ? eddi.gen : 0;
-    this._energyTransferred = eddi.che ? eddi.che : 0;
     this._heater1Current = (this._systemVoltage > 0) ? (this._heater1Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
     this._heater2Current = (this._systemVoltage > 0) ? (this._heater2Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
 
@@ -113,12 +183,12 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('heater_1_name', `${this._heater1Name}`).catch(this.error);
     this.setCapabilityValue('heater_2_name', `${this._heater2Name}`).catch(this.error);
     this.setCapabilityValue('measure_voltage', this._systemVoltage).catch(this.error);
+    this.setCapabilityValue('measure_frequency', this._systemFrequency).catch(this.error);
     this.setCapabilityValue('measure_power_ct1', this._heater1Power).catch(this.error);
     this.setCapabilityValue('measure_power_ct2', this._heater2Power).catch(this.error);
     this.setCapabilityValue('measure_current_ct1', this._heater1Current).catch(this.error);
     this.setCapabilityValue('measure_current_ct2', this._heater2Current).catch(this.error);
     this.setCapabilityValue('measure_power_generated', this._generatedPower).catch(this.error);
-    this.setCapabilityValue('heater_session_transferred', this._energyTransferred).catch(this.error);
 
     const meter_power_ct1 = calculateEnergy(this._lastEnergyCalculation, this._lastHeater1Power, this._heater1Power, this.getCapabilityValue('meter_power_ct1'));
     this._lastHeater1Power = this._heater1Power;
@@ -131,6 +201,7 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('meter_power_ct1', meter_power_ct1).catch(this.error);
     this.setCapabilityValue('meter_power_ct2', meter_power_ct2).catch(this.error);
     this.setCapabilityValue('meter_power_generated', meter_power_gen).catch(this.error);
+    this.setCapabilityValue('meter_power', (meter_power_ct1 + meter_power_ct2) - meter_power_gen).catch(this.error);
   }
 
   private validateCapabilities() {
