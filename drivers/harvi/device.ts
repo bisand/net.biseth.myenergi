@@ -3,6 +3,7 @@ import { Harvi, MyEnergi } from 'myenergi-api';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { HarviSettings } from '../../models/HarviSettings';
+import { calculateEnergy } from '../../tools';
 import { HarviDriver } from './driver';
 import { HarviData } from "./HarviData";
 
@@ -189,26 +190,16 @@ class HarviDevice extends Device {
     this.setCapabilityValue('ct2_type', this._ectt2).catch(this.error);
     this.setCapabilityValue('ct3_type', this._ectt3).catch(this.error);
     this.setCapabilityValue('measure_power', this._power ? this._power : 0).catch(this.error);
-    this.setCapabilityValue('meter_power', this.calculateEnergy()).catch(this.error);
-  }
 
-  /**
-   * Calculate accumulated kWh since last power measurement
-   * @returns Accumulated kWh 
-   */
-  private calculateEnergy(): number {
-    const dateNow = new Date();
-    const seconds = Math.abs((dateNow.getTime() - this._lastEnergyCalculation.getTime()) / 1000);
-    const prevEnergy: number = this.getCapabilityValue('meter_power');
-    const newEnergy: number = prevEnergy + ((((this._lastPowerMeasurement + this._power) / 2) * seconds) / 3600000);
-    this.log(`Energy algo: ${prevEnergy} + ((((${this._lastPowerMeasurement} + ${this._power}) / 2) * ${seconds}) / 3600000)`);
+    const meter_power = calculateEnergy(this._lastEnergyCalculation, this._lastPowerMeasurement, this._power, this.getCapabilityValue('meter_power'));
     this._lastPowerMeasurement = this._power;
-    this._lastEnergyCalculation = dateNow;
-    return newEnergy;
+    this._lastEnergyCalculation = new Date();
+
+    this.setCapabilityValue('meter_power', meter_power).catch(this.error);
   }
 
   private dataUpdated(data: HarviData[]) {
-    this.log('Received data from driver.');
+    if (process.env.DEBUG === '1') this.log('Received data from driver.');
     if (data) {
       data.forEach(harvi => {
         if (harvi && harvi.sno === this.deviceId) {

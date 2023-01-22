@@ -251,7 +251,7 @@ export class ZappiDriver extends Driver {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private dataUpdated(data: any[]) {
-    this.log('Received data from app. Relaying to devices.');
+    if (process.env.DEBUG === '1') this.log('Received data from app. Relaying to devices.');
     if (data) {
       data.forEach((d) => {
         if (d.zappi) {
@@ -264,18 +264,22 @@ export class ZappiDriver extends Driver {
   }
 
   private async loadZappiDevices(): Promise<ZappiData[]> {
-    for (const key in (this.homey.app as MyEnergiApp).clients) {
-      if (Object.prototype.hasOwnProperty.call((this.homey.app as MyEnergiApp).clients, key)) {
-        const client: MyEnergi = (this.homey.app as MyEnergiApp).clients[key];
-        const zappis: ZappiData[] = await client.getStatusZappiAll().catch(this.error) as ZappiData[];
-        for (const zappi of zappis) {
-          if (this.zappiDevices.findIndex((z: ZappiData) => z.sno === zappi.sno) === -1) {
-            zappi.myenergiClientId = key;
-            this.zappiDevices.push(zappi);
+    try {
+      for (const key in (this.homey.app as MyEnergiApp).clients) {
+        if (Object.prototype.hasOwnProperty.call((this.homey.app as MyEnergiApp).clients, key)) {
+          const client: MyEnergi = (this.homey.app as MyEnergiApp).clients[key];
+          const zappis: ZappiData[] = await client.getStatusZappiAll().catch(this.error) as ZappiData[];
+          for (const zappi of zappis) {
+            if (this.zappiDevices.findIndex((z: ZappiData) => z.sno === zappi.sno) === -1) {
+              zappi.myenergiClientId = key;
+              this.zappiDevices.push(zappi);
+            }
           }
         }
-        return this.zappiDevices;
       }
+      return this.zappiDevices;
+    } catch (error) {
+      this.error(error);
     }
     return [];
   }
@@ -295,6 +299,8 @@ export class ZappiDriver extends Driver {
         siteName = Object.values(siteNameResult)[0][0].val;
         zappiSerial = zappiNameResult ? zappiNameResult[0]?.key : v.sno;
         deviceName = zappiNameResult ? zappiNameResult[0].val : deviceName;
+        if (v.myenergiClientId)
+          myenergiClientId.push(v.myenergiClientId);
       } catch (error) {
         this.error(error);
       }
@@ -315,14 +321,6 @@ export class ZappiDriver extends Driver {
         },
       } as PairDevice;
     })).catch(this.error) as PairDevice[];
-    if (process.env.DEBUG === '1') {
-      try {
-        if (result && myenergiClientId.length > 0)
-          result.push(this.getFakeZappi(myenergiClientId[0], '99999999', 'Zappi Test 123'));
-      } catch (error) {
-        this.error(error);
-      }
-    }
     return result;
   }
 
@@ -341,48 +339,6 @@ export class ZappiDriver extends Driver {
     } catch (error) {
       throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`);
     }
-  }
-
-  /**
-   * Generates a fake Zappi EV charger that can be used for testing/debug porposes.
-   * @returns A fake Zappi object.
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private getFakeZappi(myenergiClientId: string, id: string, name: string): any {
-    return {
-      name: name,
-      data: {
-        id: id,
-      },
-      icon: 'icon.svg',
-      store: {
-        myenergiClientId: myenergiClientId
-      },
-      capabilities: [
-        "onoff",
-        "charge_mode_selector",
-        "set_minimum_green_level",
-        "button.reset_meter",
-        "button.reload_capabilities",
-        "charge_mode",
-        "charge_mode_txt",
-        "charger_status",
-        "charger_status_txt",
-        "measure_power",
-        "measure_current",
-        "measure_voltage",
-        "measure_frequency",
-        "charge_session_consumption",
-        "meter_power",
-        "zappi_boost_mode",
-        "minimum_green_level",
-        "zappi_boost_kwh",
-        "zappi_boost_time",
-        "zappi_boost_kwh_remaining",
-        "ev_connected"
-      ],
-      capabilitiesOptions: {}
-    };
   }
 }
 

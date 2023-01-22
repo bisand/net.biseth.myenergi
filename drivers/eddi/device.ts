@@ -3,6 +3,7 @@ import { EddiMode, EddiHeaterStatus, MyEnergi, Eddi } from 'myenergi-api';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { EddiSettings } from '../../models/EddiSettings';
+import { calculateEnergy } from '../../tools';
 import { EddiDriver } from './driver';
 import { EddiData } from "./EddiData";
 
@@ -13,29 +14,40 @@ export class EddiDevice extends Device {
   private _heaterStatus: EddiHeaterStatus = EddiHeaterStatus.Boost;
   private _lastHeaterStatus: EddiHeaterStatus = EddiHeaterStatus.Boost;
   private _systemVoltage = 0;
+  private _systemFrequency = 0.0;
   private _heater1Power = 0;
   private _heater2Power = 0;
   private _heater1Name = 'Heater 1';
   private _heater2Name = 'Heater 2';
   private _heater1Current = 0;
   private _heater2Current = 0;
-  private _energyTransferred = 0;
   private _generatedPower = 0;
+  private _settings!: EddiSettings;
+  private _powerCalculationModeSetToAuto!: boolean;
+
+  private _lastEnergyCalculation: Date = new Date();
+  private _lastHeater1Power = 0;
+  private _lastHeater2Power = 0;
+  private _lastGeneratedPower = 0;
+
+  private _settingsTimeoutHandle?: NodeJS.Timeout;
 
   public deviceId!: string;
   public myenergiClientId!: string;
   public myenergiClient!: MyEnergi;
-  private _settings!: EddiSettings;
-  private _settingsTimeoutHandle?: NodeJS.Timeout;
-  private _powerCalculationModeSetToAuto!: boolean;
 
   /**
    * onInit is called when the device is initialized.
    */
   public async onInit() {
+    // Make sure capabilities are up to date.
+    if (this.detectCapabilityChanges()) {
+      await this.InitializeCapabilities().catch(this.error);
+    }
+
+    this._settings = this.getSettings();
     this._callbackId = (this.driver as EddiDriver).registerDataUpdateCallback((data: EddiData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
-    this.log(`Device ID: ${this.deviceId}`);
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
 
     try {
@@ -66,24 +78,99 @@ export class EddiDevice extends Device {
       }
     }
 
-    this.validateCapabilities();
     this.setCapabilityValues();
     this.log(`Status: ${this._heaterStatus}`);
 
     this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
 
+    this.registerCapabilityListener('button.reset_meter', async () => {
+      this.setCapabilityValue('meter_power', 0);
+    });
+    this.registerCapabilityListener('button.reset_meter_ct1', async () => {
+      this.setCapabilityValue('meter_power_ct1', 0);
+    });
+    this.registerCapabilityListener('button.reset_meter_ct2', async () => {
+      this.setCapabilityValue('meter_power_ct2', 0);
+    });
+    this.registerCapabilityListener('button.reset_meter_generated', async () => {
+      this.setCapabilityValue('meter_power_generated', 0);
+    });
+    this.registerCapabilityListener('button.reload_capabilities', async () => {
+      this.InitializeCapabilities();
+    });
+
     this.log('EddiDevice has been initialized');
   }
 
+  /**
+   * Validate capabilities. Add new and delete removed capabilities.
+   */
+  private async InitializeCapabilities(): Promise<void> {
+    await this.setUnavailable('Zappi is currently doing some maintenance taks and will be back shortly.').catch(this.error);
+    this.log(`****** Initializing Zappi sensor capabilities ******`);
+    const caps = this.getCapabilities();
+    const tmpCaps: { [name: string]: unknown } = {};
+    // Remove all capabilities in case the order has changed
+    for (const cap of caps) {
+      try {
+        tmpCaps[cap] = this.getCapabilityValue(cap);
+        await this.removeCapability(cap).catch(this.error);
+        this.log(`*** ${cap} - Removed`);
+      } catch (error) {
+        this.error(error);
+      }
+    }
+    // Re-apply all capabilities.
+    for (const cap of (this.driver as EddiDriver).capabilities) {
+      try {
+        if (this.hasCapability(cap))
+          continue;
+        await this.addCapability(cap).catch(this.error);
+        if (tmpCaps[cap])
+          this.setCapabilityValue(cap, tmpCaps[cap]);
+        this.log(`*** ${cap} - Added`);
+      } catch (error) {
+        this.error(error);
+      }
+    }
+    this.log(`****** Sensor capability initialization complete ******`);
+    this.setAvailable().catch(this.error);
+  }
+
+  /**
+   * Validate capabilities. Add new and delete removed capabilities.
+   */
+  private detectCapabilityChanges(): boolean {
+    let result = false;
+    this.log(`Detecting Zappi capability changes...`);
+    const caps = this.getCapabilities();
+    for (const cap of caps) {
+      if (!(this.driver as EddiDriver).capabilities.includes(cap)) {
+        this.log(`Zappi capability ${cap} was removed.`);
+        result = true;
+      }
+    }
+    for (const cap of (this.driver as EddiDriver).capabilities) {
+      if (!this.hasCapability(cap)) {
+        this.log(`Zappi capability ${cap} was added.`);
+        result = true;
+      }
+    }
+    if (!result)
+      this.log('No changes in capabilities.');
+    return result;
+  }
+
   private calculateValues(eddi: Eddi) {
+    this._onOff = (eddi.sta === EddiHeaterStatus.Stopped) ? EddiMode.Off : EddiMode.On;
     this._heaterStatus = eddi.sta;
     this._heater1Power = eddi.ectp1 ? eddi.ectp1 : 0;
     this._heater2Power = eddi.ectp2 ? eddi.ectp2 : 0;
     this._heater1Name = eddi.ht1 ? eddi.ht1 : this._heater1Name;
     this._heater2Name = eddi.ht2 ? eddi.ht2 : this._heater2Name;
     this._systemVoltage = eddi.vol ? (eddi.vol / 10) : 0;
+    this._systemFrequency = eddi.frq;
     this._generatedPower = eddi.gen ? eddi.gen : 0;
-    this._energyTransferred = eddi.che ? eddi.che : 0;
     this._heater1Current = (this._systemVoltage > 0) ? (this._heater1Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
     this._heater2Current = (this._systemVoltage > 0) ? (this._heater2Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
 
@@ -105,12 +192,29 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('heater_1_name', `${this._heater1Name}`).catch(this.error);
     this.setCapabilityValue('heater_2_name', `${this._heater2Name}`).catch(this.error);
     this.setCapabilityValue('measure_voltage', this._systemVoltage).catch(this.error);
+    this.setCapabilityValue('measure_frequency', this._systemFrequency).catch(this.error);
     this.setCapabilityValue('measure_power_ct1', this._heater1Power).catch(this.error);
     this.setCapabilityValue('measure_power_ct2', this._heater2Power).catch(this.error);
     this.setCapabilityValue('measure_current_ct1', this._heater1Current).catch(this.error);
     this.setCapabilityValue('measure_current_ct2', this._heater2Current).catch(this.error);
     this.setCapabilityValue('measure_power_generated', this._generatedPower).catch(this.error);
-    this.setCapabilityValue('heater_session_transferred', this._energyTransferred).catch(this.error);
+
+    const meter_power_prev = this.getCapabilityValue('meter_power');
+    const meter_power_ct1_prev = this.getCapabilityValue('meter_power_ct1');
+    const meter_power_ct1 = calculateEnergy(this._lastEnergyCalculation, this._lastHeater1Power, this._heater1Power, 0);
+    this._lastHeater1Power = this._heater1Power;
+    const meter_power_ct2_prev = this.getCapabilityValue('meter_power_ct2');
+    const meter_power_ct2 = calculateEnergy(this._lastEnergyCalculation, this._lastHeater2Power, this._heater2Power, 0);
+    this._lastHeater2Power = this._heater2Power;
+    const meter_power_gen_prev = this.getCapabilityValue('meter_power_generated');
+    const meter_power_gen = calculateEnergy(this._lastEnergyCalculation, this._lastGeneratedPower, this._generatedPower, 0);
+    this._lastGeneratedPower = this._generatedPower;
+    this._lastEnergyCalculation = new Date();
+
+    this.setCapabilityValue('meter_power_ct1', meter_power_ct1_prev + meter_power_ct1).catch(this.error);
+    this.setCapabilityValue('meter_power_ct2', meter_power_ct2_prev + meter_power_ct2).catch(this.error);
+    this.setCapabilityValue('meter_power_generated', meter_power_gen_prev + meter_power_gen).catch(this.error);
+    this.setCapabilityValue('meter_power', meter_power_prev + ((meter_power_ct1 + meter_power_ct2) - meter_power_gen)).catch(this.error);
   }
 
   private validateCapabilities() {
@@ -141,7 +245,7 @@ export class EddiDevice extends Device {
   }
 
   private dataUpdated(data: EddiData[]) {
-    this.log('Received data from driver.');
+    if (process.env.DEBUG === '1') this.log('Received data from driver.');
     if (data) {
       data.forEach((eddi: EddiData) => {
         if (eddi && eddi.sno === this.deviceId) {
@@ -170,11 +274,16 @@ export class EddiDevice extends Device {
     }
   }
 
+  /**
+   * Event handler for onoff capability listener
+   * @param value On or off
+   * @param opts Options
+   */
   public async onCapabilityOnoff(value: boolean, opts: unknown) {
     this.log(`onoff: ${value} - ${opts}`);
     await this.setEddiMode(value).catch(this.error);
-    this.setCapabilityValue('onoff', value ? EddiMode.On : EddiMode.Off).catch(this.error);
-    this.setCapabilityValue('heater_status', value ? `${this._lastHeaterStatus}` : EddiHeaterStatus.Stopped).catch(this.error);
+    this.setCapabilityValue('onoff', value).catch(this.error);
+    this.setCapabilityValue('heater_status', value ? `${this._lastHeaterStatus}` : `${EddiHeaterStatus.Stopped}`).catch(this.error);
   }
 
   /**
@@ -216,20 +325,36 @@ export class EddiDevice extends Device {
         this._settings.includeCT2 = newSettings.includeCT2;
       }
     }
-    if (changedKeys.includes('totalEnergyOffset')) {
+    if (changedKeys.includes('energyOffsetTotal')) {
       const prevEnergy: number = this.getCapabilityValue('meter_power');
-      this.setCapabilityValue('meter_power', prevEnergy + (newSettings.totalEnergyOffset ? newSettings.totalEnergyOffset : 0));
-      this._settings.totalEnergyOffset = 0;
-      // Reset the total energy offset after one second
-      this._settingsTimeoutHandle = setTimeout(() => {
-        this.setSettings({ totalEnergyOffset: 0 });
-        clearTimeout(this._settingsTimeoutHandle);
-      }, 1000);
+      this.setCapabilityValue('meter_power', prevEnergy + (newSettings.energyOffsetTotal ? newSettings.energyOffsetTotal : 0));
+      this._settings.energyOffsetTotal = 0;
+    }
+    if (changedKeys.includes('energyOffsetCT1')) {
+      const prevEnergy: number = this.getCapabilityValue('meter_power_ct1');
+      this.setCapabilityValue('meter_power_ct1', prevEnergy + (newSettings.energyOffsetCT1 ? newSettings.energyOffsetCT1 : 0));
+      this._settings.energyOffsetCT1 = 0;
+    }
+    if (changedKeys.includes('energyOffsetCT2')) {
+      const prevEnergy: number = this.getCapabilityValue('meter_power_ct2');
+      this.setCapabilityValue('meter_power_ct2', prevEnergy + (newSettings.energyOffsetCT2 ? newSettings.energyOffsetCT2 : 0));
+      this._settings.energyOffsetCT2 = 0;
+    }
+    if (changedKeys.includes('energyOffsetGenerated')) {
+      const prevEnergy: number = this.getCapabilityValue('meter_power_generated');
+      this.setCapabilityValue('meter_power_generated', prevEnergy + (newSettings.energyOffsetGenerated ? newSettings.energyOffsetGenerated : 0));
+      this._settings.energyOffsetGenerated = 0;
     }
     if (changedKeys.includes('siteName')) {
       this._settings.siteName = newSettings.siteName;
       await this.myenergiClient.setAppKey("siteName", newSettings.siteName as string).catch(this.error);
     }
+
+    // Reset energy offset settings after one second to prevent potential conflicts.
+    this._settingsTimeoutHandle = setTimeout(() => {
+      this.setSettings({ energyOffsetTotal: 0, energyOffsetCT1: 0, energyOffsetCT2: 0, energyOffsetGenerated: 0 });
+      clearTimeout(this._settingsTimeoutHandle);
+    }, 1000);
   }
   /**
    * onRenamed is called when the user updates the device's name.

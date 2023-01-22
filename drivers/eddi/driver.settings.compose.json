@@ -67,7 +67,7 @@
         },
         "children": [
             {
-                "id": "totalEnergyOffset",
+                "id": "energyOffsetTotal",
                 "type": "number",
                 "value": 0,
                 "label": {
@@ -82,6 +82,60 @@
                 },
                 "hint": {
                     "en": "If you want, you can add an offset to the total energi consumption. This setting will add the value to the current energy consumtion and reset itself back to zero."
+                }
+            },
+            {
+                "id": "energyOffsetCT1",
+                "type": "number",
+                "value": 0,
+                "label": {
+                    "en": "CT1 energy consumption offset",
+                    "no": "CT1 energiforbruk offset",
+                    "nl": "CT1 energieverbruik offset",
+                    "sv": "CT1 energiförbrukning offset",
+                    "de": "Offset des Energieverbrauchs von CT1"
+                },
+                "units": {
+                    "en": "kWh"
+                },
+                "hint": {
+                    "en": "If you want, you can add an offset to the energi consumption for CT1. This setting will add the value to the current energy consumtion and reset itself back to zero."
+                }
+            },
+            {
+                "id": "energyOffsetCT2",
+                "type": "number",
+                "value": 0,
+                "label": {
+                    "en": "CT2 energy consumption offset",
+                    "no": "CT2 energiforbruk offset",
+                    "nl": "CT2 energieverbruik offset",
+                    "sv": "CT2 energiförbrukning offset",
+                    "de": "Offset des Energieverbrauchs von CT2"
+                },
+                "units": {
+                    "en": "kWh"
+                },
+                "hint": {
+                    "en": "If you want, you can add an offset to the energi consumption for CT2. This setting will add the value to the current energy consumtion and reset itself back to zero."
+                }
+            },
+            {
+                "id": "energyOffsetGenerated",
+                "type": "number",
+                "value": 0,
+                "label": {
+                    "en": "Generated energy consumption offset",
+                    "no": "Generert energiforbruk offset",
+                    "nl": "Gegenereerd energieverbruik offset",
+                    "sv": "Genererad energiförbrukning offset",
+                    "de": "Offset des erzeugten Energieverbrauchs"
+                },
+                "units": {
+                    "en": "kWh"
+                },
+                "hint": {
+                    "en": "If you want, you can add an offset to the generated energi consumption. This setting will add the value to the current energy consumtion and reset itself back to zero."
                 }
             },
             {

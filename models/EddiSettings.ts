@@ -4,7 +4,10 @@ export interface EddiSettings {
   includeCT1?: boolean;
   includeCT2?: boolean;
   showNegativeValues?: boolean;
-  totalEnergyOffset?: number;
+  energyOffsetTotal?: number;
+  energyOffsetCT1?: number;
+  energyOffsetCT2?: number;
+  energyOffsetGenerated?: number;
   siteName?: string;
   hubSerial?: string;
   eddiSerial?: string;
