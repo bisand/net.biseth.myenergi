@@ -15,19 +15,22 @@ export class EddiDevice extends Device {
   private _lastHeaterStatus: EddiHeaterStatus = EddiHeaterStatus.Boost;
   private _systemVoltage = 0;
   private _systemFrequency = 0.0;
-  private _heater1Power = 0;
-  private _heater2Power = 0;
+  private _ct1Power = 0;
+  private _ct2Power = 0;
+  private _ct3Power = 0;
   private _heater1Name = 'Heater 1';
   private _heater2Name = 'Heater 2';
-  private _heater1Current = 0;
-  private _heater2Current = 0;
+  private _ct1Current = 0;
+  private _ct2Current = 0;
+  private _ct3Current = 0;
   private _generatedPower = 0;
   private _settings!: EddiSettings;
   private _powerCalculationModeSetToAuto!: boolean;
 
   private _lastEnergyCalculation: Date = new Date();
-  private _lastHeater1Power = 0;
-  private _lastHeater2Power = 0;
+  private _lastCT1Power = 0;
+  private _lastCT2Power = 0;
+  private _lastCT3Power = 0;
   private _lastGeneratedPower = 0;
 
   private _settingsTimeoutHandle?: NodeJS.Timeout;
@@ -91,6 +94,9 @@ export class EddiDevice extends Device {
     });
     this.registerCapabilityListener('button.reset_meter_ct2', async () => {
       this.setCapabilityValue('meter_power_ct2', 0);
+    });
+    this.registerCapabilityListener('button.reset_meter_ct3', async () => {
+      this.setCapabilityValue('meter_power_ct3', 0);
     });
     this.registerCapabilityListener('button.reset_meter_generated', async () => {
       this.setCapabilityValue('meter_power_generated', 0);
@@ -164,15 +170,17 @@ export class EddiDevice extends Device {
   private calculateValues(eddi: Eddi) {
     this._onOff = (eddi.sta === EddiHeaterStatus.Stopped) ? EddiMode.Off : EddiMode.On;
     this._heaterStatus = eddi.sta;
-    this._heater1Power = eddi.ectp1 ? eddi.ectp1 : 0;
-    this._heater2Power = eddi.ectp2 ? eddi.ectp2 : 0;
+    this._ct1Power = eddi.ectp1 ? eddi.ectp1 : 0;
+    this._ct2Power = eddi.ectp2 ? eddi.ectp2 : 0;
+    this._ct3Power = eddi.ectp3 ? eddi.ectp3 : 0;
     this._heater1Name = eddi.ht1 ? eddi.ht1 : this._heater1Name;
     this._heater2Name = eddi.ht2 ? eddi.ht2 : this._heater2Name;
     this._systemVoltage = eddi.vol ? (eddi.vol / 10) : 0;
     this._systemFrequency = eddi.frq;
     this._generatedPower = eddi.gen ? eddi.gen : 0;
-    this._heater1Current = (this._systemVoltage > 0) ? (this._heater1Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
-    this._heater2Current = (this._systemVoltage > 0) ? (this._heater2Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
+    this._ct1Current = (this._systemVoltage > 0) ? (this._ct1Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
+    this._ct2Current = (this._systemVoltage > 0) ? (this._ct2Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
+    this._ct3Current = (this._systemVoltage > 0) ? (this._ct3Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
 
     if (this._powerCalculationModeSetToAuto) {
       this._powerCalculationModeSetToAuto = false;
@@ -193,19 +201,24 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('heater_2_name', `${this._heater2Name}`).catch(this.error);
     this.setCapabilityValue('measure_voltage', this._systemVoltage).catch(this.error);
     this.setCapabilityValue('measure_frequency', this._systemFrequency).catch(this.error);
-    this.setCapabilityValue('measure_power_ct1', this._heater1Power).catch(this.error);
-    this.setCapabilityValue('measure_power_ct2', this._heater2Power).catch(this.error);
-    this.setCapabilityValue('measure_current_ct1', this._heater1Current).catch(this.error);
-    this.setCapabilityValue('measure_current_ct2', this._heater2Current).catch(this.error);
+    this.setCapabilityValue('measure_power_ct1', this._ct1Power).catch(this.error);
+    this.setCapabilityValue('measure_power_ct2', this._ct2Power).catch(this.error);
+    this.setCapabilityValue('measure_power_ct3', this._ct3Power).catch(this.error);
+    this.setCapabilityValue('measure_current_ct1', this._ct1Current).catch(this.error);
+    this.setCapabilityValue('measure_current_ct2', this._ct2Current).catch(this.error);
+    this.setCapabilityValue('measure_current_ct3', this._ct3Current).catch(this.error);
     this.setCapabilityValue('measure_power_generated', this._generatedPower).catch(this.error);
 
     const meter_power_prev = this.getCapabilityValue('meter_power');
     const meter_power_ct1_prev = this.getCapabilityValue('meter_power_ct1');
-    const meter_power_ct1 = calculateEnergy(this._lastEnergyCalculation, this._lastHeater1Power, this._heater1Power, 0);
-    this._lastHeater1Power = this._heater1Power;
+    const meter_power_ct1 = calculateEnergy(this._lastEnergyCalculation, this._lastCT1Power, this._ct1Power, 0);
+    this._lastCT1Power = this._ct1Power;
     const meter_power_ct2_prev = this.getCapabilityValue('meter_power_ct2');
-    const meter_power_ct2 = calculateEnergy(this._lastEnergyCalculation, this._lastHeater2Power, this._heater2Power, 0);
-    this._lastHeater2Power = this._heater2Power;
+    const meter_power_ct2 = calculateEnergy(this._lastEnergyCalculation, this._lastCT2Power, this._ct2Power, 0);
+    this._lastCT2Power = this._ct2Power;
+    const meter_power_ct3_prev = this.getCapabilityValue('meter_power_ct3');
+    const meter_power_ct3 = calculateEnergy(this._lastEnergyCalculation, this._lastCT3Power, this._ct3Power, 0);
+    this._lastCT3Power = this._ct3Power;
     const meter_power_gen_prev = this.getCapabilityValue('meter_power_generated');
     const meter_power_gen = calculateEnergy(this._lastEnergyCalculation, this._lastGeneratedPower, this._generatedPower, 0);
     this._lastGeneratedPower = this._generatedPower;
@@ -213,8 +226,9 @@ export class EddiDevice extends Device {
 
     this.setCapabilityValue('meter_power_ct1', meter_power_ct1_prev + meter_power_ct1).catch(this.error);
     this.setCapabilityValue('meter_power_ct2', meter_power_ct2_prev + meter_power_ct2).catch(this.error);
+    this.setCapabilityValue('meter_power_ct3', meter_power_ct3_prev + meter_power_ct3).catch(this.error);
     this.setCapabilityValue('meter_power_generated', meter_power_gen_prev + meter_power_gen).catch(this.error);
-    this.setCapabilityValue('meter_power', meter_power_prev + ((meter_power_ct1 + meter_power_ct2) - meter_power_gen)).catch(this.error);
+    this.setCapabilityValue('meter_power', meter_power_prev + ((meter_power_ct1 + meter_power_ct2 + meter_power_ct3) - meter_power_gen)).catch(this.error);
   }
 
   private validateCapabilities() {
@@ -319,10 +333,12 @@ export class EddiDevice extends Device {
           this.log(eddi);
           this._settings.includeCT1 = eddi.ectt1 === 'Internal Load';
           this._settings.includeCT2 = eddi.ectt2 === 'Internal Load';
+          this._settings.includeCT3 = eddi.ectt3 === 'Internal Load';
         }
       } else if (newSettings.powerCalculationMode === "manual") {
         this._settings.includeCT1 = newSettings.includeCT1;
         this._settings.includeCT2 = newSettings.includeCT2;
+        this._settings.includeCT3 = newSettings.includeCT3;
       }
     }
     if (changedKeys.includes('energyOffsetTotal')) {
@@ -340,6 +356,11 @@ export class EddiDevice extends Device {
       this.setCapabilityValue('meter_power_ct2', prevEnergy + (newSettings.energyOffsetCT2 ? newSettings.energyOffsetCT2 : 0));
       this._settings.energyOffsetCT2 = 0;
     }
+    if (changedKeys.includes('energyOffsetCT3')) {
+      const prevEnergy: number = this.getCapabilityValue('meter_power_ct3');
+      this.setCapabilityValue('meter_power_ct3', prevEnergy + (newSettings.energyOffsetCT3 ? newSettings.energyOffsetCT3 : 0));
+      this._settings.energyOffsetCT3 = 0;
+    }
     if (changedKeys.includes('energyOffsetGenerated')) {
       const prevEnergy: number = this.getCapabilityValue('meter_power_generated');
       this.setCapabilityValue('meter_power_generated', prevEnergy + (newSettings.energyOffsetGenerated ? newSettings.energyOffsetGenerated : 0));
@@ -352,7 +373,7 @@ export class EddiDevice extends Device {
 
     // Reset energy offset settings after one second to prevent potential conflicts.
     this._settingsTimeoutHandle = setTimeout(() => {
-      this.setSettings({ energyOffsetTotal: 0, energyOffsetCT1: 0, energyOffsetCT2: 0, energyOffsetGenerated: 0 });
+      this.setSettings({ energyOffsetTotal: 0, energyOffsetCT1: 0, energyOffsetCT2: 0, energyOffsetCT3: 0, energyOffsetGenerated: 0 });
       clearTimeout(this._settingsTimeoutHandle);
     }, 1000);
   }

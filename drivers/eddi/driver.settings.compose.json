@@ -121,6 +121,24 @@
                 }
             },
             {
+                "id": "energyOffsetCT3",
+                "type": "number",
+                "value": 0,
+                "label": {
+                    "en": "CT3 energy consumption offset",
+                    "no": "CT3 energiforbruk offset",
+                    "nl": "CT3 energieverbruik offset",
+                    "sv": "CT3 energiförbrukning offset",
+                    "de": "Offset des Energieverbrauchs von CT3"
+                },
+                "units": {
+                    "en": "kWh"
+                },
+                "hint": {
+                    "en": "If you want, you can add an offset to the energi consumption for CT3. This setting will add the value to the current energy consumtion and reset itself back to zero."
+                }
+            },
+            {
                 "id": "energyOffsetGenerated",
                 "type": "number",
                 "value": 0,
@@ -208,6 +226,25 @@
                     "nl": "CT 2 meenemen in berekening.",
                     "de": "Beziehen Sie CT 2 in die Leistungsberechnung ein.",
                     "sv": "Inkludera CT 2 i effektberäkningen."
+                }
+            },
+            {
+                "id": "includeCT3",
+                "type": "checkbox",
+                "label": {
+                    "en": "Include CT 3",
+                    "no": "Inkludere CT 3",
+                    "nl": "CT 3 meenemen",
+                    "de": "Inklusive CT 3",
+                    "sv": "Inkludera CT 3"
+                },
+                "value": true,
+                "hint": {
+                    "en": "Include CT 3 in the power calculation.",
+                    "no": "Inkludere CT 3 i effektberegningen.",
+                    "nl": "CT 3 meenemen in berekening.",
+                    "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein.",
+                    "sv": "Inkludera CT 3 i effektberäkningen."
                 }
             }
         ]

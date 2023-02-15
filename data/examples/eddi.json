@@ -1,0 +1,79 @@
+[
+    {
+        "eddi": [
+            {
+                "sno": 00000000,
+                "dat": "25-01-2023",
+                "tim": "16:24:05",
+                "ectp2": 279,
+                "ectt1": "Internal Load",
+                "ectt2": "Generation",
+                "ectt3": "None",
+                "bsm": 0,
+                "bst": 0,
+                "cmt": 254,
+                "dst": 1,
+                "div": 0,
+                "frq": 49.96,
+                "fwv": "3200S3.051",
+                "gen": 271,
+                "grd": 310,
+                "pha": 1,
+                "pri": 1,
+                "sta": 1,
+                "tz": 1,
+                "vol": 2339,
+                "hpri": 1,
+                "hno": 1,
+                "ht1": "Tank 1",
+                "ht2": "Tank 2",
+                "r1a": 0,
+                "r2a": 0,
+                "rbc": 0,
+                "rbt": 3527,
+                "tp1": 127,
+                "tp2": 127,
+                "newAppAvailable": null,
+                "newBootloaderAvailable": null,
+                "batteryDischargeEnabled": false
+            }
+        ]
+    },
+    {
+        "zappi": []
+    },
+    {
+        "harvi": [
+            {
+                "sno": 00000000,
+                "dat": "25-01-2023",
+                "tim": "16:24:00",
+                "ectp1": 2,
+                "ectt1": "Monitor",
+                "ectt2": "None",
+                "ectt3": "None",
+                "ect1p": 1,
+                "ect2p": 1,
+                "ect3p": 1,
+                "fwv": "3170S0.000"
+            },
+            {
+                "sno": 00000000,
+                "dat": "25-01-2023",
+                "tim": "16:24:05",
+                "ectp1": 293,
+                "ectt1": "Grid",
+                "ectt2": "None",
+                "ectt3": "None",
+                "ect1p": 1,
+                "ect2p": 1,
+                "ect3p": 1,
+                "fwv": "3170S0.000"
+            }
+        ]
+    },
+    {
+        "asn": "s18.myenergi.net",
+        "fwv": "3401S3.077"
+    }
+]

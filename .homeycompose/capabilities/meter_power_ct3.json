@@ -1,15 +1,15 @@
 {
     "type": "number",
     "title": {
-      "en": "Energy CT1",
-      "nl": "Energie CT1",
-      "de": "Energie CT1",
-      "fr": "Énergie CT1",
-      "it": "Energia CT1",
-      "sv": "Energi CT1",
-      "no": "Energi CT1",
-      "es": "Energía CT1",
-      "da": "Energi CT1"
+      "en": "Energy CT3",
+      "nl": "Energie CT3",
+      "de": "Energie CT3",
+      "fr": "Énergie CT3",
+      "it": "Energia CT3",
+      "sv": "Energi CT3",
+      "no": "Energi CT3",
+      "es": "Energía CT3",
+      "da": "Energi CT3"
     },
     "units": {
       "en": "kWh"
@@ -44,7 +44,7 @@
     "$flow": {
       "triggers": [
         {
-          "id": "meter_power_ct1_changed",
+          "id": "meter_power_CT3_changed",
           "title": {
             "en": "The energy changed",
             "nl": "De energie veranderde",
@@ -58,7 +58,7 @@
           },
           "tokens": [
             {
-              "name": "meter_power_ct1",
+              "name": "meter_power_CT3",
               "title": {
                 "en": "Energy",
                 "nl": "Energie",

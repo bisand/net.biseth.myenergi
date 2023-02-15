@@ -2338,7 +2338,7 @@
     "meter_power_ct1": {
       "type": "number",
       "title": {
-        "en": "Energi CT1",
+        "en": "Energy CT1",
         "nl": "Energie CT1",
         "de": "Energie CT1",
         "fr": "Énergie CT1",
@@ -2382,7 +2382,7 @@
     "meter_power_ct2": {
       "type": "number",
       "title": {
-        "en": "Energi CT2",
+        "en": "Energy CT2",
         "nl": "Energie CT2",
         "de": "Energie CT2",
         "fr": "Énergie CT2",
@@ -2391,6 +2391,50 @@
         "no": "Energi CT2",
         "es": "Energía CT2",
         "da": "Energi CT2"
+      },
+      "units": {
+        "en": "kWh"
+      },
+      "icon": "/assets/gauge_energy.svg",
+      "insights": true,
+      "desc": {
+        "en": "Energy in Kilowatt-hour (kWh)",
+        "nl": "Energie in kilowattuur (kWh)",
+        "de": "Energie in Kilowattstunden (kWh)",
+        "fr": "Énergie en Kilowattheures (kWh)",
+        "it": "Energia in Kilowattora (kWh)",
+        "sv": "Energi i kilowatt-timmar (kWt)",
+        "no": "Energi i kilowatt-timer (kWt)",
+        "es": "Energía en Kilovatios-hora (kWh)",
+        "da": "Energi i kilowatt-timer (kWh)"
+      },
+      "options": {
+        "isApproximated": {
+          "type": "boolean",
+          "default": false,
+          "desc": {
+            "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+          }
+        }
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "meter_power_ct3": {
+      "type": "number",
+      "title": {
+        "en": "Energy CT3",
+        "nl": "Energie CT3",
+        "de": "Energie CT3",
+        "fr": "Énergie CT3",
+        "it": "Energia CT3",
+        "sv": "Energi CT3",
+        "no": "Energi CT3",
+        "es": "Energía CT3",
+        "da": "Energi CT3"
       },
       "units": {
         "en": "kWh"
