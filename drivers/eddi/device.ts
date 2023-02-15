@@ -15,6 +15,9 @@ export class EddiDevice extends Device {
   private _lastHeaterStatus: EddiHeaterStatus = EddiHeaterStatus.Boost;
   private _systemVoltage = 0;
   private _systemFrequency = 0.0;
+  private _ct1Type = 'None';
+  private _ct2Type = 'None';
+  private _ct3Type = 'None';
   private _ct1Power = 0;
   private _ct2Power = 0;
   private _ct3Power = 0;
@@ -173,6 +176,9 @@ export class EddiDevice extends Device {
     this._ct1Power = eddi.ectp1 ? eddi.ectp1 : 0;
     this._ct2Power = eddi.ectp2 ? eddi.ectp2 : 0;
     this._ct3Power = eddi.ectp3 ? eddi.ectp3 : 0;
+    this._ct1Type = eddi.ectt1;
+    this._ct2Type = eddi.ectt2;
+    this._ct3Type = eddi.ectt3;
     this._heater1Name = eddi.ht1 ? eddi.ht1 : this._heater1Name;
     this._heater2Name = eddi.ht2 ? eddi.ht2 : this._heater2Name;
     this._systemVoltage = eddi.vol ? (eddi.vol / 10) : 0;
@@ -201,6 +207,9 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('heater_2_name', `${this._heater2Name}`).catch(this.error);
     this.setCapabilityValue('measure_voltage', this._systemVoltage).catch(this.error);
     this.setCapabilityValue('measure_frequency', this._systemFrequency).catch(this.error);
+    this.setCapabilityValue('ct1_type', this._ct1Type).catch(this.error);
+    this.setCapabilityValue('ct2_type', this._ct2Type).catch(this.error);
+    this.setCapabilityValue('ct3_type', this._ct3Type).catch(this.error);
     this.setCapabilityValue('measure_power_ct1', this._ct1Power).catch(this.error);
     this.setCapabilityValue('measure_power_ct2', this._ct2Power).catch(this.error);
     this.setCapabilityValue('measure_power_ct3', this._ct3Power).catch(this.error);
