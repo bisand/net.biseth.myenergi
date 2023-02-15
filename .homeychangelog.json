@@ -76,5 +76,8 @@
   },
   "1.9.0": {
     "en": "Added more capabilities to Eddi device and the possibility to adjust and reset energy usage. Bug fixes."
+  },
+  "1.9.1": {
+    "en": "Added new, and re-arranged Eddi capabilities to support more CT clamps."
   }
 }
