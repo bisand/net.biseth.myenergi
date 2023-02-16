@@ -79,5 +79,8 @@
   },
   "1.9.1": {
     "en": "Added new, and re-arranged Eddi capabilities to support more CT clamps."
+  },
+  "1.9.2": {
+    "en": "Added more power capabilities to Eddi"
   }
 }
