@@ -139,6 +139,8 @@
         "meter_power_ct3",
         "measure_power_ct3",
         "measure_current_ct3",
+        "measure_power",
+        "measure_power_diverted",
         "measure_power_generated",
         "meter_power_generated",
         "heater_1_name",
@@ -2376,6 +2378,25 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor"
+    },
+    "measure_power_diverted": {
+      "type": "number",
+      "title": {
+        "en": "Diverted power",
+        "no": "Avledet effekt",
+        "nl": "Omgeleide kracht",
+        "sv": "Avledd kraft",
+        "de": "Umgeleitete Kraft"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "W"
+      },
+      "icon": "/assets/power_fire.svg",
+      "min": 0,
+      "decimals": 2
     },
     "measure_power_generated": {
       "type": "number",

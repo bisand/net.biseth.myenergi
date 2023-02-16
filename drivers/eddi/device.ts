@@ -26,7 +26,9 @@ export class EddiDevice extends Device {
   private _ct1Current = 0;
   private _ct2Current = 0;
   private _ct3Current = 0;
+  private _gridPower = 0;
   private _generatedPower = 0;
+  private _divertedPower = 0;
   private _settings!: EddiSettings;
   private _powerCalculationModeSetToAuto!: boolean;
 
@@ -184,6 +186,8 @@ export class EddiDevice extends Device {
     this._systemVoltage = eddi.vol ? (eddi.vol / 10) : 0;
     this._systemFrequency = eddi.frq;
     this._generatedPower = eddi.gen ? eddi.gen : 0;
+    this._divertedPower = eddi.div ? eddi.div : 0;
+    this._gridPower = eddi.grd ? eddi.grd : 0;
     this._ct1Current = (this._systemVoltage > 0) ? (this._ct1Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
     this._ct2Current = (this._systemVoltage > 0) ? (this._ct2Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
     this._ct3Current = (this._systemVoltage > 0) ? (this._ct3Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
@@ -216,7 +220,9 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('measure_current_ct1', this._ct1Current).catch(this.error);
     this.setCapabilityValue('measure_current_ct2', this._ct2Current).catch(this.error);
     this.setCapabilityValue('measure_current_ct3', this._ct3Current).catch(this.error);
+    this.setCapabilityValue('measure_power', this._gridPower).catch(this.error);
     this.setCapabilityValue('measure_power_generated', this._generatedPower).catch(this.error);
+    this.setCapabilityValue('measure_power_diverted', this._divertedPower).catch(this.error);
 
     const meter_power_prev = this.getCapabilityValue('meter_power');
     const meter_power_ct1_prev = this.getCapabilityValue('meter_power_ct1');

@@ -19,6 +19,8 @@
     "meter_power_ct3",
     "measure_power_ct3",
     "measure_current_ct3",
+    "measure_power",
+    "measure_power_diverted",
     "measure_power_generated",
     "meter_power_generated",
     "heater_1_name",
