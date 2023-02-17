@@ -181,8 +181,8 @@ export class EddiDevice extends Device {
     this._ct1Type = eddi.ectt1;
     this._ct2Type = eddi.ectt2;
     this._ct3Type = eddi.ectt3;
-    this._heater1Name = eddi.ht1 ? eddi.ht1 : this._heater1Name;
-    this._heater2Name = eddi.ht2 ? eddi.ht2 : this._heater2Name;
+    this._heater1Name = (eddi.ht1 ? eddi.ht1 : this._heater1Name) + (eddi.hno === 1 ? ': ON' : ': OFF');
+    this._heater2Name = (eddi.ht2 ? eddi.ht2 : this._heater2Name) + (eddi.hno === 2 ? ': ON' : ': OFF');
     this._systemVoltage = eddi.vol ? (eddi.vol / 10) : 0;
     this._systemFrequency = eddi.frq;
     this._generatedPower = eddi.gen ? eddi.gen : 0;
