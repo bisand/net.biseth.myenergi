@@ -82,5 +82,8 @@
   },
   "1.9.2": {
     "en": "Added more power capabilities to Eddi"
+  },
+  "1.9.3": {
+    "en": "Added status indicator to heaters."
   }
 }
