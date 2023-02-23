@@ -121,21 +121,39 @@
                 }
             },
             {
-                "id": "energyOffsetGenerated",
+                "id": "energyOffsetCT3",
                 "type": "number",
                 "value": 0,
                 "label": {
-                    "en": "Generated energy consumption offset",
-                    "no": "Generert energiforbruk offset",
-                    "nl": "Gegenereerd energieverbruik offset",
-                    "sv": "Genererad energiförbrukning offset",
-                    "de": "Offset des erzeugten Energieverbrauchs"
+                    "en": "CT3 energy consumption offset",
+                    "no": "CT3 energiforbruk offset",
+                    "nl": "CT3 energieverbruik offset",
+                    "sv": "CT3 energiförbrukning offset",
+                    "de": "Offset des Energieverbrauchs von CT3"
                 },
                 "units": {
                     "en": "kWh"
                 },
                 "hint": {
-                    "en": "If you want, you can add an offset to the generated energi consumption. This setting will add the value to the current energy consumtion and reset itself back to zero."
+                    "en": "If you want, you can add an offset to the energi consumption for CT3. This setting will add the value to the current energy consumtion and reset itself back to zero."
+                }
+            },
+            {
+                "id": "energyOffsetGenerated",
+                "type": "number",
+                "value": 0,
+                "label": {
+                    "en": "Generated energy offset",
+                    "no": "Generert energi offset",
+                    "nl": "Gegenereerd energie offset",
+                    "sv": "Genererad energi offset",
+                    "de": "Offset des erzeugten Energie"
+                },
+                "units": {
+                    "en": "kWh"
+                },
+                "hint": {
+                    "en": "If you want, you can add an offset to the generated energi. This setting will add the value to the current energy consumtion and reset itself back to zero."
                 }
             },
             {
@@ -208,6 +226,25 @@
                     "nl": "CT 2 meenemen in berekening.",
                     "de": "Beziehen Sie CT 2 in die Leistungsberechnung ein.",
                     "sv": "Inkludera CT 2 i effektberäkningen."
+                }
+            },
+            {
+                "id": "includeCT3",
+                "type": "checkbox",
+                "label": {
+                    "en": "Include CT 3",
+                    "no": "Inkludere CT 3",
+                    "nl": "CT 3 meenemen",
+                    "de": "Inklusive CT 3",
+                    "sv": "Inkludera CT 3"
+                },
+                "value": true,
+                "hint": {
+                    "en": "Include CT 3 in the power calculation.",
+                    "no": "Inkludere CT 3 i effektberegningen.",
+                    "nl": "CT 3 meenemen in berekening.",
+                    "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein.",
+                    "sv": "Inkludera CT 3 i effektberäkningen."
                 }
             }
         ]

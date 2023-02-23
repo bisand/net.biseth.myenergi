@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "net.biseth.myenergi",
-  "version": "1.9.0",
+  "version": "1.9.3",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#2bcc64",
@@ -127,14 +127,22 @@
         "onoff",
         "heater_status",
         "meter_power",
+        "ct1_type",
         "meter_power_ct1",
+        "measure_power_ct1",
+        "measure_current_ct1",
+        "ct2_type",
         "meter_power_ct2",
+        "measure_power_ct2",
+        "measure_current_ct2",
+        "ct3_type",
+        "meter_power_ct3",
+        "measure_power_ct3",
+        "measure_current_ct3",
+        "measure_power",
+        "measure_power_diverted",
         "measure_power_generated",
         "meter_power_generated",
-        "measure_power_ct1",
-        "measure_power_ct2",
-        "measure_current_ct1",
-        "measure_current_ct2",
         "heater_1_name",
         "heater_2_name",
         "measure_voltage",
@@ -142,6 +150,7 @@
         "button.reset_meter",
         "button.reset_meter_ct1",
         "button.reset_meter_ct2",
+        "button.reset_meter_ct3",
         "button.reset_meter_generated",
         "button.reload_capabilities"
       ],
@@ -195,6 +204,23 @@
             "nl": "Reset het geaccumuleerde energieverbruik voor CT2 (kWh), dit kan niet worden hersteld.",
             "de": "Setzen Sie den kumulierten Energieverbrauch für CT2 (kWh) zurück, dieser kann nicht wiederhergestellt werden.",
             "se": "Återställ den ackumulerade energianvändningen för CT2 (kWh), detta kan inte återställas."
+          }
+        },
+        "button.reset_meter_ct3": {
+          "maintenanceAction": true,
+          "title": {
+            "en": "Reset energy meter (CT3)",
+            "no": "Tilbakestill strømmåler (CT3)",
+            "nl": "Energiemeter resetten (CT3)",
+            "se": "Återställ energimätaren (CT3)",
+            "de": "Energiezähler zurücksetzen (CT3)"
+          },
+          "desc": {
+            "en": "Reset the accumulated energy usage for CT3 (kWh), this can not be restored.",
+            "no": "Tilbakestill akkumulert energiforbruk for CT3 (kWh), dette kan ikke gjenopprettes.",
+            "nl": "Reset het geaccumuleerde energieverbruik voor CT3 (kWh), dit kan niet worden hersteld.",
+            "de": "Setzen Sie den kumulierten Energieverbrauch für CT3 (kWh) zurück, dieser kann nicht wiederhergestellt werden.",
+            "se": "Återställ den ackumulerade energianvändningen för CT3 (kWh), detta kan inte återställas."
           }
         },
         "button.reset_meter_generated": {
@@ -373,21 +399,39 @@
               }
             },
             {
-              "id": "energyOffsetGenerated",
+              "id": "energyOffsetCT3",
               "type": "number",
               "value": 0,
               "label": {
-                "en": "Generated energy consumption offset",
-                "no": "Generert energiforbruk offset",
-                "nl": "Gegenereerd energieverbruik offset",
-                "sv": "Genererad energiförbrukning offset",
-                "de": "Offset des erzeugten Energieverbrauchs"
+                "en": "CT3 energy consumption offset",
+                "no": "CT3 energiforbruk offset",
+                "nl": "CT3 energieverbruik offset",
+                "sv": "CT3 energiförbrukning offset",
+                "de": "Offset des Energieverbrauchs von CT3"
               },
               "units": {
                 "en": "kWh"
               },
               "hint": {
-                "en": "If you want, you can add an offset to the generated energi consumption. This setting will add the value to the current energy consumtion and reset itself back to zero."
+                "en": "If you want, you can add an offset to the energi consumption for CT3. This setting will add the value to the current energy consumtion and reset itself back to zero."
+              }
+            },
+            {
+              "id": "energyOffsetGenerated",
+              "type": "number",
+              "value": 0,
+              "label": {
+                "en": "Generated energy offset",
+                "no": "Generert energi offset",
+                "nl": "Gegenereerd energie offset",
+                "sv": "Genererad energi offset",
+                "de": "Offset des erzeugten Energie"
+              },
+              "units": {
+                "en": "kWh"
+              },
+              "hint": {
+                "en": "If you want, you can add an offset to the generated energi. This setting will add the value to the current energy consumtion and reset itself back to zero."
               }
             },
             {
@@ -460,6 +504,25 @@
                 "nl": "CT 2 meenemen in berekening.",
                 "de": "Beziehen Sie CT 2 in die Leistungsberechnung ein.",
                 "sv": "Inkludera CT 2 i effektberäkningen."
+              }
+            },
+            {
+              "id": "includeCT3",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 3",
+                "no": "Inkludere CT 3",
+                "nl": "CT 3 meenemen",
+                "de": "Inklusive CT 3",
+                "sv": "Inkludera CT 3"
+              },
+              "value": true,
+              "hint": {
+                "en": "Include CT 3 in the power calculation.",
+                "no": "Inkludere CT 3 i effektberegningen.",
+                "nl": "CT 3 meenemen in berekening.",
+                "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein.",
+                "sv": "Inkludera CT 3 i effektberäkningen."
               }
             }
           ]
@@ -2316,6 +2379,25 @@
       "setable": false,
       "uiComponent": "sensor"
     },
+    "measure_power_diverted": {
+      "type": "number",
+      "title": {
+        "en": "Diverted power",
+        "no": "Avledet effekt",
+        "nl": "Omgeleide kracht",
+        "sv": "Avledd kraft",
+        "de": "Umgeleitete Kraft"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "W"
+      },
+      "icon": "/assets/power_fire.svg",
+      "min": 0,
+      "decimals": 2
+    },
     "measure_power_generated": {
       "type": "number",
       "title": {
@@ -2338,7 +2420,7 @@
     "meter_power_ct1": {
       "type": "number",
       "title": {
-        "en": "Energi CT1",
+        "en": "Energy CT1",
         "nl": "Energie CT1",
         "de": "Energie CT1",
         "fr": "Énergie CT1",
@@ -2382,7 +2464,7 @@
     "meter_power_ct2": {
       "type": "number",
       "title": {
-        "en": "Energi CT2",
+        "en": "Energy CT2",
         "nl": "Energie CT2",
         "de": "Energie CT2",
         "fr": "Énergie CT2",
@@ -2391,6 +2473,50 @@
         "no": "Energi CT2",
         "es": "Energía CT2",
         "da": "Energi CT2"
+      },
+      "units": {
+        "en": "kWh"
+      },
+      "icon": "/assets/gauge_energy.svg",
+      "insights": true,
+      "desc": {
+        "en": "Energy in Kilowatt-hour (kWh)",
+        "nl": "Energie in kilowattuur (kWh)",
+        "de": "Energie in Kilowattstunden (kWh)",
+        "fr": "Énergie en Kilowattheures (kWh)",
+        "it": "Energia in Kilowattora (kWh)",
+        "sv": "Energi i kilowatt-timmar (kWt)",
+        "no": "Energi i kilowatt-timer (kWt)",
+        "es": "Energía en Kilovatios-hora (kWh)",
+        "da": "Energi i kilowatt-timer (kWh)"
+      },
+      "options": {
+        "isApproximated": {
+          "type": "boolean",
+          "default": false,
+          "desc": {
+            "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+          }
+        }
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "meter_power_ct3": {
+      "type": "number",
+      "title": {
+        "en": "Energy CT3",
+        "nl": "Energie CT3",
+        "de": "Energie CT3",
+        "fr": "Énergie CT3",
+        "it": "Energia CT3",
+        "sv": "Energi CT3",
+        "no": "Energi CT3",
+        "es": "Energía CT3",
+        "da": "Energi CT3"
       },
       "units": {
         "en": "kWh"

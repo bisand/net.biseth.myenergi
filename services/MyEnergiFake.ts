@@ -12,7 +12,7 @@ export class MyEnergiFake extends MyEnergi {
     }
     public override getStatusAll(): Promise<any> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->getStatusAll()`);
+            console.log(`MyEnergiFake->getStatusAll()`);
             const result = [];
             result.push({ eddi: Array(1).fill(getFakeEddiData(99999997, this._fakeEddiMode)) });
             result.push({ zappi: Array(1).fill(getFakeZappiData()) });
@@ -22,7 +22,7 @@ export class MyEnergiFake extends MyEnergi {
     }
     public override getStatusZappiAll(): Promise<Zappi[]> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->getStatusZappiAll()`);
+            console.log(`MyEnergiFake->getStatusZappiAll()`);
             const result = [];
             result.push(getFakeZappiData());
             resolve(result);
@@ -30,31 +30,31 @@ export class MyEnergiFake extends MyEnergi {
     }
     public override getStatusZappi(serialNumber: string): Promise<Zappi | null> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->getStatusZappi(${serialNumber})`);
+            console.log(`MyEnergiFake->getStatusZappi(${serialNumber})`);
             resolve(getFakeZappiData(Number(serialNumber)));
         });
     }
     public override setZappiChargeMode(serialNo: string, chargeMode: ZappiChargeMode): Promise<any> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->setZappiChargeMode(${serialNo}, ${chargeMode})`);
+            console.log(`MyEnergiFake->setZappiChargeMode(${serialNo}, ${chargeMode})`);
             resolve({ status: 0, statustext: "" });
         });
     }
     public override setZappiBoostMode(serialNo: string, boostMode: ZappiBoostMode, kwh?: number, completeTime?: string): Promise<any> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->setZappiBoostMode(${serialNo}, ${boostMode}, ${kwh}, ${completeTime})`);
+            console.log(`MyEnergiFake->setZappiBoostMode(${serialNo}, ${boostMode}, ${kwh}, ${completeTime})`);
             resolve({ status: 0, statustext: "" });
         });
     }
     public override setZappiGreenLevel(serialNo: string, percentage: number): Promise<any> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->setZappiGreenLevel(${serialNo}, ${percentage})`);
+            console.log(`MyEnergiFake->setZappiGreenLevel(${serialNo}, ${percentage})`);
             resolve({ status: 0, statustext: "" });
         });
     }
     public override getStatusEddiAll(): Promise<Eddi[]> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->getStatusEddiAll()`);
+            console.log(`MyEnergiFake->getStatusEddiAll()`);
             const result = [];
             result.push(getFakeEddiData(99999997, this._fakeEddiMode));
             resolve(result);
@@ -62,26 +62,26 @@ export class MyEnergiFake extends MyEnergi {
     }
     public override getStatusEddi(serialNumber: string): Promise<Eddi | null> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->getStatusEddi(${serialNumber})`);
+            console.log(`MyEnergiFake->getStatusEddi(${serialNumber})`);
             resolve(getFakeEddiData(Number(serialNumber), this._fakeEddiMode));
         });
     }
     public override setEddiMode(serialNo: string, mode: EddiMode): Promise<any> {
         return new Promise<any>((resolve) => {
             this._fakeEddiMode = mode;
-            console.log(`${typeof MyEnergiFake}->setEddiMode(${serialNo}, ${mode})`);
+            console.log(`MyEnergiFake->setEddiMode(${serialNo}, ${mode})`);
             resolve({ status: 0, statustext: "" });
         });
     }
     public override setEddiBoost(serialNo: string, boost: EddiBoost, minutes?: number): Promise<any> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->setEddiBoost(${serialNo}, ${boost}, ${minutes})`);
+            console.log(`MyEnergiFake->setEddiBoost(${serialNo}, ${boost}, ${minutes})`);
             resolve({ status: 0, statustext: "" });
         });
     }
     public override getStatusHarviAll(): Promise<Harvi[]> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->getStatusHarviAll()`);
+            console.log(`MyEnergiFake->getStatusHarviAll()`);
             const result = [];
             result.push(getFakeHarviData());
             resolve(result);
@@ -89,25 +89,25 @@ export class MyEnergiFake extends MyEnergi {
     }
     public override getStatusHarvi(serialNumber: string): Promise<Harvi | null> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->getStatusHarviAll(${serialNumber})`);
+            console.log(`MyEnergiFake->getStatusHarviAll(${serialNumber})`);
             resolve(getFakeHarviData(Number(serialNumber)));
         });
     }
     public override getAppKeyFull(key: string): Promise<AppKeyValues | null> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->getAppKeyFull(${key})`);
+            console.log(`MyEnergiFake->getAppKeyFull(${key})`);
             resolve({ H00000000: [{ key: key, val: `Fake ${key}` }] });
         });
     }
     public override getAppKey(key: string): Promise<KeyValue[] | null> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->getAppKey(${key})`);
+            console.log(`MyEnergiFake->getAppKey(${key})`);
             resolve([{ key: key, val: `Fake ${key}` }]);
         });
     }
     public override setAppKey(key: string, val: string): Promise<KeyValue[] | null> {
         return new Promise<any>((resolve) => {
-            console.log(`${typeof MyEnergiFake}->setAppKey(${key}, ${val})`);
+            console.log(`MyEnergiFake->setAppKey(${key}, ${val})`);
             resolve({ H00000000: [{ key: key, val: val }] });
         });
     }

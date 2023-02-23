@@ -7,14 +7,22 @@
     "onoff",
     "heater_status",
     "meter_power",
+    "ct1_type",
     "meter_power_ct1",
+    "measure_power_ct1",
+    "measure_current_ct1",
+    "ct2_type",
     "meter_power_ct2",
+    "measure_power_ct2",
+    "measure_current_ct2",
+    "ct3_type",
+    "meter_power_ct3",
+    "measure_power_ct3",
+    "measure_current_ct3",
+    "measure_power",
+    "measure_power_diverted",
     "measure_power_generated",
     "meter_power_generated",
-    "measure_power_ct1",
-    "measure_power_ct2",
-    "measure_current_ct1",
-    "measure_current_ct2",
     "heater_1_name",
     "heater_2_name",
     "measure_voltage",
@@ -22,6 +30,7 @@
     "button.reset_meter",
     "button.reset_meter_ct1",
     "button.reset_meter_ct2",
+    "button.reset_meter_ct3",
     "button.reset_meter_generated",
     "button.reload_capabilities"
   ],
@@ -75,6 +84,23 @@
         "nl": "Reset het geaccumuleerde energieverbruik voor CT2 (kWh), dit kan niet worden hersteld.",
         "de": "Setzen Sie den kumulierten Energieverbrauch für CT2 (kWh) zurück, dieser kann nicht wiederhergestellt werden.",
         "se": "Återställ den ackumulerade energianvändningen för CT2 (kWh), detta kan inte återställas."
+      }
+    },
+    "button.reset_meter_ct3": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reset energy meter (CT3)",
+        "no": "Tilbakestill strømmåler (CT3)",
+        "nl": "Energiemeter resetten (CT3)",
+        "se": "Återställ energimätaren (CT3)",
+        "de": "Energiezähler zurücksetzen (CT3)"
+      },
+      "desc": {
+        "en": "Reset the accumulated energy usage for CT3 (kWh), this can not be restored.",
+        "no": "Tilbakestill akkumulert energiforbruk for CT3 (kWh), dette kan ikke gjenopprettes.",
+        "nl": "Reset het geaccumuleerde energieverbruik voor CT3 (kWh), dit kan niet worden hersteld.",
+        "de": "Setzen Sie den kumulierten Energieverbrauch für CT3 (kWh) zurück, dieser kann nicht wiederhergestellt werden.",
+        "se": "Återställ den ackumulerade energianvändningen för CT3 (kWh), detta kan inte återställas."
       }
     },
     "button.reset_meter_generated": {

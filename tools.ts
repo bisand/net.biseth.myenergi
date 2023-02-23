@@ -125,7 +125,7 @@ export function getFakeEddiData(serialNumber = 99999997, eddiMode: EddiMode = Ed
         cmt: 255,                       // Command Tries
         dat: getDate(),                 // Date of Data
         dcv: 0,                         // Device Config Version
-        div: getRandom(500),            // Diverted Power (Load power)
+        div: getRandomInt(2000),            // Diverted Power (Load power)
         dst: 0,                         // Daylight savings time
         ectp1: getRandomInt(2500),      // CT 1 Power (Watts)
         ectp2: getRandomInt(4000),      // CT 2 Power
