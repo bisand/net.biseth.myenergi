@@ -85,5 +85,8 @@
   },
   "1.9.3": {
     "en": "Added status indicator to heaters."
+  },
+  "1.9.4": {
+    "en": "Changed total power and energy calculation."
   }
 }
