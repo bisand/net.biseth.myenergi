@@ -133,7 +133,7 @@ export function getFakeEddiData(serialNumber = 99999997, eddiMode: EddiMode = Ed
         ectp4: 0,                       // CT 4 Power
         ectp5: 0,                       // CT 5 Power
         ectp6: 0,                       // CT 6 Power
-        ectt1: "Grid",                  // CT 1 Type (AC Battery, Generation, Generation & Battery, Grid, Internal Load, Monitor, None, Storage)
+        ectt1: "Internal Load",         // CT 1 Type (AC Battery, Generation, Generation & Battery, Grid, Internal Load, Monitor, None, Storage)
         ectt2: "Generation",            // CT 2 Type
         ectt3: "None",                  // CT 3 Type
         ectt4: "None",                  // CT 4 Type

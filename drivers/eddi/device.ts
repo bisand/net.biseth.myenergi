@@ -29,6 +29,7 @@ export class EddiDevice extends Device {
   private _gridPower = 0;
   private _generatedPower = 0;
   private _divertedPower = 0;
+  private _powerUsage = 0;
   private _settings!: EddiSettings;
   private _powerCalculationModeSetToAuto!: boolean;
 
@@ -37,6 +38,7 @@ export class EddiDevice extends Device {
   private _lastCT2Power = 0;
   private _lastCT3Power = 0;
   private _lastGeneratedPower = 0;
+  private _lastPowerUsage = 0;
 
   private _settingsTimeoutHandle?: NodeJS.Timeout;
 
@@ -188,6 +190,21 @@ export class EddiDevice extends Device {
     this._generatedPower = eddi.gen ? eddi.gen : 0;
     this._divertedPower = eddi.div ? eddi.div : 0;
     this._gridPower = eddi.grd ? eddi.grd : 0;
+
+    this._powerUsage = 0;
+    if ((this._settings.powerCalculationMode === 'automatic' && eddi.ectt1 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT1)) {
+      this._powerUsage += eddi.ectp1 ? eddi.ectp1 : 0;
+    }
+    if ((this._settings.powerCalculationMode === 'automatic' && eddi.ectt2 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT2)) {
+      this._powerUsage += eddi.ectp2 ? eddi.ectp2 : 0;
+    }
+    if ((this._settings.powerCalculationMode === 'automatic' && eddi.ectt3 === 'Internal Load')
+      || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT3)) {
+      this._powerUsage += eddi.ectp3 ? eddi.ectp3 : 0;
+    }
+
     this._ct1Current = (this._systemVoltage > 0) ? (this._ct1Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
     this._ct2Current = (this._systemVoltage > 0) ? (this._ct2Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
     this._ct3Current = (this._systemVoltage > 0) ? (this._ct3Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
@@ -220,30 +237,27 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('measure_current_ct1', this._ct1Current).catch(this.error);
     this.setCapabilityValue('measure_current_ct2', this._ct2Current).catch(this.error);
     this.setCapabilityValue('measure_current_ct3', this._ct3Current).catch(this.error);
-    this.setCapabilityValue('measure_power', this._gridPower).catch(this.error);
+    this.setCapabilityValue('measure_power', this._powerUsage).catch(this.error);
     this.setCapabilityValue('measure_power_generated', this._generatedPower).catch(this.error);
     this.setCapabilityValue('measure_power_diverted', this._divertedPower).catch(this.error);
 
-    const meter_power_prev = this.getCapabilityValue('meter_power');
-    const meter_power_ct1_prev = this.getCapabilityValue('meter_power_ct1');
-    const meter_power_ct1 = calculateEnergy(this._lastEnergyCalculation, this._lastCT1Power, this._ct1Power, 0);
+    const meter_power = calculateEnergy(this._lastEnergyCalculation, this._lastPowerUsage, this._powerUsage, this.getCapabilityValue('meter_power'));
+    const meter_power_ct1 = calculateEnergy(this._lastEnergyCalculation, this._lastCT1Power, this._ct1Power, this.getCapabilityValue('meter_power_ct1'));
+    const meter_power_ct2 = calculateEnergy(this._lastEnergyCalculation, this._lastCT2Power, this._ct2Power, this.getCapabilityValue('meter_power_ct2'));
+    const meter_power_ct3 = calculateEnergy(this._lastEnergyCalculation, this._lastCT3Power, this._ct3Power, this.getCapabilityValue('meter_power_ct3'));
+    const meter_power_gen = calculateEnergy(this._lastEnergyCalculation, this._lastGeneratedPower, this._generatedPower, this.getCapabilityValue('meter_power_generated'));
+    this._lastPowerUsage = this._powerUsage;
     this._lastCT1Power = this._ct1Power;
-    const meter_power_ct2_prev = this.getCapabilityValue('meter_power_ct2');
-    const meter_power_ct2 = calculateEnergy(this._lastEnergyCalculation, this._lastCT2Power, this._ct2Power, 0);
     this._lastCT2Power = this._ct2Power;
-    const meter_power_ct3_prev = this.getCapabilityValue('meter_power_ct3');
-    const meter_power_ct3 = calculateEnergy(this._lastEnergyCalculation, this._lastCT3Power, this._ct3Power, 0);
     this._lastCT3Power = this._ct3Power;
-    const meter_power_gen_prev = this.getCapabilityValue('meter_power_generated');
-    const meter_power_gen = calculateEnergy(this._lastEnergyCalculation, this._lastGeneratedPower, this._generatedPower, 0);
     this._lastGeneratedPower = this._generatedPower;
     this._lastEnergyCalculation = new Date();
 
-    this.setCapabilityValue('meter_power_ct1', meter_power_ct1_prev + meter_power_ct1).catch(this.error);
-    this.setCapabilityValue('meter_power_ct2', meter_power_ct2_prev + meter_power_ct2).catch(this.error);
-    this.setCapabilityValue('meter_power_ct3', meter_power_ct3_prev + meter_power_ct3).catch(this.error);
-    this.setCapabilityValue('meter_power_generated', meter_power_gen_prev + meter_power_gen).catch(this.error);
-    this.setCapabilityValue('meter_power', meter_power_prev + ((meter_power_ct1 + meter_power_ct2 + meter_power_ct3) - meter_power_gen)).catch(this.error);
+    this.setCapabilityValue('meter_power_ct1', meter_power_ct1).catch(this.error);
+    this.setCapabilityValue('meter_power_ct2', meter_power_ct2).catch(this.error);
+    this.setCapabilityValue('meter_power_ct3', meter_power_ct3).catch(this.error);
+    this.setCapabilityValue('meter_power_generated', meter_power_gen).catch(this.error);
+    this.setCapabilityValue('meter_power', meter_power).catch(this.error);
   }
 
   private validateCapabilities() {
