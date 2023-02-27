@@ -5,6 +5,7 @@ export interface EddiSettings {
   includeCT2?: boolean;
   includeCT3?: boolean;
   showNegativeValues?: boolean;
+  subtractGeneratedEnergy?: boolean;
   energyOffsetTotal?: number;
   energyOffsetCT1?: number;
   energyOffsetCT2?: number;

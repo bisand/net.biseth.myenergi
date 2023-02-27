@@ -157,6 +157,25 @@
                 }
             },
             {
+                "id": "subtractGeneratedEnergy",
+                "type": "checkbox",
+                "label": {
+                    "en": "Subtract generated energy",
+                    "no": "Trekk fra generert energi",
+                    "nl": "Trek opgewekte energie af",
+                    "de": "Erzeugte Energie abziehen",
+                    "sv": "Subtrahera genererad energi"
+                },
+                "value": true,
+                "hint": {
+                    "en": "Subtract generated energy when calculating total energy.",
+                    "no": "Trekk fra generert energi når total energi blir beregnet.",
+                    "nl": "Trek opgewekte energie af bij het berekenen van de totale energie.",
+                    "de": "Ziehen Sie die erzeugte Energie ab, wenn Sie die Gesamtenergie berechnen.",
+                    "sv": "Subtrahera genererad energi när total energi blir beräknad."
+                }
+            },
+            {
                 "id": "powerCalculationMode",
                 "type": "dropdown",
                 "value": "automatic",

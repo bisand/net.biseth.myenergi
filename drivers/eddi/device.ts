@@ -241,11 +241,14 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('measure_power_generated', this._generatedPower).catch(this.error);
     this.setCapabilityValue('measure_power_diverted', this._divertedPower).catch(this.error);
 
-    const meter_power = calculateEnergy(this._lastEnergyCalculation, this._lastPowerUsage, this._powerUsage, this.getCapabilityValue('meter_power'));
+    const lastGeneratedEnergy = this.getCapabilityValue('meter_power_generated');
+    const lastTotalEnergy = this.getCapabilityValue('meter_power');
     const meter_power_ct1 = calculateEnergy(this._lastEnergyCalculation, this._lastCT1Power, this._ct1Power, this.getCapabilityValue('meter_power_ct1'));
     const meter_power_ct2 = calculateEnergy(this._lastEnergyCalculation, this._lastCT2Power, this._ct2Power, this.getCapabilityValue('meter_power_ct2'));
     const meter_power_ct3 = calculateEnergy(this._lastEnergyCalculation, this._lastCT3Power, this._ct3Power, this.getCapabilityValue('meter_power_ct3'));
-    const meter_power_gen = calculateEnergy(this._lastEnergyCalculation, this._lastGeneratedPower, this._generatedPower, this.getCapabilityValue('meter_power_generated'));
+    const meter_power_gen = calculateEnergy(this._lastEnergyCalculation, this._lastGeneratedPower, this._generatedPower, lastGeneratedEnergy);
+    const meter_power = calculateEnergy(this._lastEnergyCalculation, this._lastPowerUsage, this._powerUsage, lastTotalEnergy);
+
     this._lastPowerUsage = this._powerUsage;
     this._lastCT1Power = this._ct1Power;
     this._lastCT2Power = this._ct2Power;
@@ -257,7 +260,10 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('meter_power_ct2', meter_power_ct2).catch(this.error);
     this.setCapabilityValue('meter_power_ct3', meter_power_ct3).catch(this.error);
     this.setCapabilityValue('meter_power_generated', meter_power_gen).catch(this.error);
-    this.setCapabilityValue('meter_power', meter_power).catch(this.error);
+    this.setCapabilityValue('meter_power', meter_power - (this._settings.subtractGeneratedEnergy ? (meter_power_gen - lastGeneratedEnergy) : 0)).catch(this.error);
+
+    if (process.env.DEBUG === '1')
+      this.log(`Energy: (${meter_power} + ${meter_power - lastTotalEnergy}) - (${this._settings.subtractGeneratedEnergy} ? ${meter_power_gen - lastGeneratedEnergy} : 0)`);
   }
 
   private validateCapabilities() {
@@ -352,6 +358,9 @@ export class EddiDevice extends Device {
     this.log(`EddiDevice settings where changed: ${changedKeys} - ${oldSettings} - ${newSettings}`);
     if (changedKeys.includes('showNegativeValues')) {
       this._settings.showNegativeValues = newSettings.showNegativeValues;
+    }
+    if (changedKeys.includes('subtractGeneratedEnergy')) {
+      this._settings.subtractGeneratedEnergy = newSettings.subtractGeneratedEnergy;
     }
     if (changedKeys.includes('powerCalculationMode')) {
       this._settings.powerCalculationMode = newSettings.powerCalculationMode;
