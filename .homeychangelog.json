@@ -88,5 +88,8 @@
   },
   "1.9.4": {
     "en": "Changed total power and energy calculation."
+  },
+  "1.9.5": {
+    "en": "Added setting to be able to subtract generated from total when calculating energy."
   }
 }
