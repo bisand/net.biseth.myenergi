@@ -80,10 +80,26 @@ export class ZappiDevice extends Device {
   public myenergiClientId!: string;
   public myenergiClient!: MyEnergi;
 
+    /**
+   * Athom added an EV Charger class – migrate existing Zappi devices to the new class.
+   */
+    private async migrateClass(): Promise<void> {
+      if (this.getClass() !== 'evcharger') {
+        try {
+          await this.setClass('evcharger');
+          this.log(`Migrated device class to 'evcharger'`);
+        } catch (err) {
+          this.error(`Failed to set device class to 'evcharger':`, err);
+        }
+      }
+    }
+  
   /**
    * onInit is called when the device is initialized.
    */
   public async onInit(): Promise<void> {
+    // migrate this device over to the 'evcharger' class if it's still the old one
+    await this.migrateClass();
 
     // Make sure capabilities are up to date.
     if (this.detectCapabilityChanges()) {
