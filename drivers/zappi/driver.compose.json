@@ -2,7 +2,7 @@
   "name": {
     "en": "Zappi"
   },
-  "class": "other",
+  "class": "evcharger",
   "capabilities": [
     "onoff",
     "charge_mode_selector",
