@@ -5,6 +5,8 @@
   "class": "sensor",
   "capabilities": [
     "meter_power",
+    "meter_power.imported",
+    "meter_power.exported",
     "measure_power",
     "ct1_type",
     "measure_power_ct1",
@@ -16,7 +18,9 @@
     "button.reload_capabilities"
   ],
   "energy": {
-    "cumulative": true
+    "cumulative": true,
+    "cumulativeImportedCapability": "meter_power.imported",
+    "cumulativeExportedCapability": "meter_power.exported"
   },
   "capabilitiesOptions": {
     "button.reset_meter": {
