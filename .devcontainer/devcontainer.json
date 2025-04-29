@@ -17,6 +17,10 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "yarn install",
+	"mounts": [
+		"type=bind,source=/home/${localEnv:USER}/.ssh,target=/home/node/.ssh",
+		"type=bind,source=/home/${localEnv:USER}/.zshrc,target=/home/node/.zshrc"
+	],
 
 	// Configure tool-specific properties.
 	"customizations": {
@@ -29,7 +33,8 @@
 				"eamodio.gitlens",
 				"visualstudioexptteam.vscodeintellicode",
 				"visualstudioexptteam.intellicode-api-usage-examples",
-				"homey.homey-apps-extension"
+				"homey.homey-apps-extension",
+				"github.vscode-github-actions"
 			]
 		}
 	},
