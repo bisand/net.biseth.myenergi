@@ -85,5 +85,8 @@
   },
   "1.9.3": {
     "en": "Added status indicator to heaters."
+  },
+  "1.10.0": {
+    "en": "Migrated Zappi to evcharger class"
   }
 }
