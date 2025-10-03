@@ -88,5 +88,8 @@
   },
   "1.10.0": {
     "en": "Migrated Zappi to evcharger class"
+  },
+  "1.11.0": {
+    "en": "Support for contribution to the Energy Hub"
   }
 }
