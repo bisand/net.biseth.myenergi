@@ -45,7 +45,7 @@ class HarviDevice extends Device {
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
 
     try {
-      this.myenergiClient = (this.homey.app as MyEnergiApp).clients[this.myenergiClientId];
+      this.myenergiClient = (this.homey.app as unknown as MyEnergiApp).clients[this.myenergiClientId];
       const harvi = await this.myenergiClient.getStatusHarvi(this.deviceId);
       if (harvi) {
         this.calculateValues(harvi);
@@ -76,6 +76,12 @@ class HarviDevice extends Device {
 
     this.registerCapabilityListener('button.reset_meter', async () => {
       this.setCapabilityValue('meter_power', 0);
+      if (this.hasCapability('meter_power.imported')) {
+        this.setCapabilityValue('meter_power.imported', 0);
+      }
+      if (this.hasCapability('meter_power.exported')) {
+        this.setCapabilityValue('meter_power.exported', 0);
+      }
     });
     this.registerCapabilityListener('button.reload_capabilities', async () => {
       this.InitializeCapabilities();
@@ -192,6 +198,28 @@ class HarviDevice extends Device {
     this.setCapabilityValue('measure_power', this._power ? this._power : 0).catch(this.error);
 
     const meter_power = calculateEnergy(this._lastEnergyCalculation, this._lastPowerMeasurement, this._power, this.getCapabilityValue('meter_power'));
+
+    // Calculate imported and exported energy for Homey Energy Hub
+    // Positive power means importing from grid, negative means exporting to grid
+    if (this.hasCapability('meter_power.imported') && this.hasCapability('meter_power.exported')) {
+      const currentImported = this.getCapabilityValue('meter_power.imported') || 0;
+      const currentExported = this.getCapabilityValue('meter_power.exported') || 0;
+
+      if (this._power >= 0) {
+        // Importing energy from grid (including zero power case)
+        const lastImportedPower = Math.max(0, this._lastPowerMeasurement);
+        const currentImportedPower = Math.max(0, this._power);
+        const importedEnergy = calculateEnergy(this._lastEnergyCalculation, lastImportedPower, currentImportedPower, currentImported);
+        this.setCapabilityValue('meter_power.imported', importedEnergy).catch(this.error);
+      } else {
+        // Exporting energy to grid
+        const lastExportedPower = Math.abs(Math.min(0, this._lastPowerMeasurement));
+        const currentExportedPower = Math.abs(Math.min(0, this._power));
+        const exportedEnergy = calculateEnergy(this._lastEnergyCalculation, lastExportedPower, currentExportedPower, currentExported);
+        this.setCapabilityValue('meter_power.exported', exportedEnergy).catch(this.error);
+      }
+    }
+
     this._lastPowerMeasurement = this._power;
     this._lastEnergyCalculation = new Date();
 
