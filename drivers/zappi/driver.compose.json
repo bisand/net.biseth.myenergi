@@ -26,6 +26,10 @@
     "zappi_boost_kwh_remaining",
     "ev_connected"
   ],
+  "energy": {
+    "cumulative": true,
+    "cumulativeCapability": "meter_power"
+  },
   "capabilitiesOptions": {
     "charge_mode_selector": {
       "preventTag": true,

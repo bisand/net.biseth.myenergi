@@ -34,6 +34,10 @@
     "button.reset_meter_generated",
     "button.reload_capabilities"
   ],
+  "energy": {
+    "cumulative": true,
+    "cumulativeCapability": "meter_power"
+  },
   "capabilitiesOptions": {
     "button.reset_meter": {
       "maintenanceAction": true,
