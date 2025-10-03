@@ -198,10 +198,6 @@ class HarviDevice extends Device {
     this.setCapabilityValue('measure_power', this._power ? this._power : 0).catch(this.error);
 
     const meter_power = calculateEnergy(this._lastEnergyCalculation, this._lastPowerMeasurement, this._power, this.getCapabilityValue('meter_power'));
-    this._lastPowerMeasurement = this._power;
-    this._lastEnergyCalculation = new Date();
-
-    this.setCapabilityValue('meter_power', meter_power).catch(this.error);
 
     // Calculate imported and exported energy for Homey Energy Hub
     // Positive power means importing from grid, negative means exporting to grid
@@ -219,6 +215,11 @@ class HarviDevice extends Device {
         this.setCapabilityValue('meter_power.exported', exportedEnergy).catch(this.error);
       }
     }
+
+    this._lastPowerMeasurement = this._power;
+    this._lastEnergyCalculation = new Date();
+
+    this.setCapabilityValue('meter_power', meter_power).catch(this.error);
   }
 
   private dataUpdated(data: HarviData[]) {
