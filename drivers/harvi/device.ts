@@ -45,7 +45,7 @@ class HarviDevice extends Device {
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
 
     try {
-      this.myenergiClient = (this.homey.app as MyEnergiApp).clients[this.myenergiClientId];
+      this.myenergiClient = (this.homey.app as unknown as MyEnergiApp).clients[this.myenergiClientId];
       const harvi = await this.myenergiClient.getStatusHarvi(this.deviceId);
       if (harvi) {
         this.calculateValues(harvi);
@@ -204,14 +204,18 @@ class HarviDevice extends Device {
     if (this.hasCapability('meter_power.imported') && this.hasCapability('meter_power.exported')) {
       const currentImported = this.getCapabilityValue('meter_power.imported') || 0;
       const currentExported = this.getCapabilityValue('meter_power.exported') || 0;
-      
-      if (this._power > 0) {
-        // Importing energy from grid
-        const importedEnergy = calculateEnergy(this._lastEnergyCalculation, Math.max(0, this._lastPowerMeasurement), Math.max(0, this._power), currentImported);
+
+      if (this._power >= 0) {
+        // Importing energy from grid (including zero power case)
+        const lastImportedPower = Math.max(0, this._lastPowerMeasurement);
+        const currentImportedPower = Math.max(0, this._power);
+        const importedEnergy = calculateEnergy(this._lastEnergyCalculation, lastImportedPower, currentImportedPower, currentImported);
         this.setCapabilityValue('meter_power.imported', importedEnergy).catch(this.error);
-      } else if (this._power < 0) {
+      } else {
         // Exporting energy to grid
-        const exportedEnergy = calculateEnergy(this._lastEnergyCalculation, Math.abs(Math.min(0, this._lastPowerMeasurement)), Math.abs(Math.min(0, this._power)), currentExported);
+        const lastExportedPower = Math.abs(Math.min(0, this._lastPowerMeasurement));
+        const currentExportedPower = Math.abs(Math.min(0, this._power));
+        const exportedEnergy = calculateEnergy(this._lastEnergyCalculation, lastExportedPower, currentExportedPower, currentExported);
         this.setCapabilityValue('meter_power.exported', exportedEnergy).catch(this.error);
       }
     }
