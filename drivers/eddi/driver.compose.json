@@ -36,7 +36,9 @@
   ],
   "energy": {
     "cumulative": true,
-    "cumulativeCapability": "meter_power"
+    "cumulativeCapability": "meter_power",
+    "cumulativeImportedCapability": "meter_power",
+    "cumulativeExportedCapability": "meter_power"
   },
   "capabilitiesOptions": {
     "button.reset_meter": {
