@@ -870,10 +870,8 @@
         "ev_connected"
       ],
       "energy": {
-        "cumulative": true,
-        "cumulativeCapability": "meter_power",
-        "cumulativeImportedCapability": "meter_power",
-        "cumulativeExportedCapability": "meter_power"
+        "evCharger": true,
+        "meterPowerImportedCapability": "meter_power"
       },
       "capabilitiesOptions": {
         "charge_mode_selector": {

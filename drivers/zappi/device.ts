@@ -101,6 +101,15 @@ export class ZappiDevice extends Device {
     // migrate this device over to the 'evcharger' class if it's still the old one
     await this.migrateClass();
 
+
+    // If energyConfig is not defined or requires an update, request the manifest definition and set the Energy object
+    const energyConfig = this.getEnergy();
+    const driverManifestEnergyObj = this.driver?.manifest.energy;
+    if (driverManifestEnergyObj && Object.keys(energyConfig).length !== Object.keys(driverManifestEnergyObj).length) {
+      this.log('updating ENERGY object to', driverManifestEnergyObj);
+      this.setEnergy(driverManifestEnergyObj).catch(this.error);
+    }
+
     // Make sure capabilities are up to date.
     if (this.detectCapabilityChanges()) {
       await this.InitializeCapabilities().catch(this.error);
