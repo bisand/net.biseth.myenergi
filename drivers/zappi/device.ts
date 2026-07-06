@@ -238,6 +238,15 @@ export class ZappiDevice extends Device {
         result = true;
       }
     }
+    if (!result) {
+      // The Homey app derives the default picker from the capability order,
+      // so an order change must also trigger a rebuild.
+      const driverCaps = (this.driver as ZappiDriver).capabilities;
+      if (caps.some((cap, i) => cap !== driverCaps[i])) {
+        this.log('Zappi capability order changed.');
+        result = true;
+      }
+    }
     if (!result)
       this.log('No changes in capabilities.');
     return result;

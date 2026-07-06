@@ -1669,9 +1669,9 @@
       "capabilities": [
         "onoff",
         "evcharger_charging",
+        "zappi_phase_setting",
         "charge_mode_selector",
         "set_minimum_green_level",
-        "zappi_phase_setting",
         "button.reset_meter",
         "button.reload_capabilities",
         "evcharger_charging_state",

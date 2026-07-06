@@ -165,7 +165,16 @@ export class EddiDevice extends Device {
     }
     for (const cap of (this.driver as EddiDriver).capabilities) {
       if (!this.hasCapability(cap)) {
-        this.log(`Zappi capability ${cap} was added.`);
+        this.log(`Eddi capability ${cap} was added.`);
+        result = true;
+      }
+    }
+    if (!result) {
+      // The Homey app derives the default picker from the capability order,
+      // so an order change must also trigger a rebuild.
+      const driverCaps = (this.driver as EddiDriver).capabilities;
+      if (caps.some((cap, i) => cap !== driverCaps[i])) {
+        this.log('Eddi capability order changed.');
         result = true;
       }
     }

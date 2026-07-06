@@ -25,7 +25,7 @@ export class ZappiDriver extends Driver {
 
   private _capabilities: Capability[] = [
     new Capability('onoff', CapabilityType.Control, 1),
-    new Capability('charge_mode_selector', CapabilityType.Control, 2),
+    new Capability('charge_mode_selector', CapabilityType.Control, 22),
     new Capability('button.reset_meter', CapabilityType.Control, 3),
     new Capability('button.reload_capabilities', CapabilityType.Control, 4),
     new Capability('set_minimum_green_level', CapabilityType.Control, 5),
@@ -45,7 +45,7 @@ export class ZappiDriver extends Driver {
     new Capability('zappi_boost_time', CapabilityType.Sensor, 19),
     new Capability('zappi_boost_kwh_remaining', CapabilityType.Sensor, 20),
     new Capability('ev_connected', CapabilityType.Sensor, 21),
-    new Capability('zappi_phase_setting', CapabilityType.Control, 22),
+    new Capability('zappi_phase_setting', CapabilityType.Control, 2),
     new Capability('measure_power_house', CapabilityType.Sensor, 23),
     new Capability('ct1_type', CapabilityType.Sensor, 24),
     new Capability('measure_power_ct1', CapabilityType.Sensor, 25),
