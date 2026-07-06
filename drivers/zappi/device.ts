@@ -169,6 +169,7 @@ export class ZappiDevice extends Device {
     this.log(`Status: ${this._chargerStatus}`);
 
     this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
+    this.registerCapabilityListener('evcharger_charging', this.onCapabilityOnoff.bind(this));
     this.registerCapabilityListener('charge_mode_selector', this.onCapabilityChargeMode.bind(this));
     this.registerCapabilityListener('set_minimum_green_level', this.onCapabilityGreenLevel.bind(this));
     this.registerCapabilityListener('zappi_phase_setting', this.onCapabilityPhaseSetting.bind(this));
@@ -276,6 +277,9 @@ export class ZappiDevice extends Device {
       this.setCapabilityValue(`ct${i + 1}_type`, this._ctTypes[i]).catch(this.error);
       this.setCapabilityValue(`measure_power_ct${i + 1}`, this._ctPowers[i]).catch(this.error);
     }
+    const evChargerChargingState = this.getEvChargerChargingState();
+    this.setCapabilityValue('evcharger_charging_state', evChargerChargingState).catch(this.error);
+    this.setCapabilityValue('evcharger_charging', evChargerChargingState === 'plugged_in_charging').catch(this.error);
 
     const meter_power = calculateEnergy(this._lastEnergyCalculation, this._lastChargingPower, this._chargingPower, this.getCapabilityValue('meter_power'));
     this._lastChargingPower = this._chargingPower;
@@ -847,6 +851,26 @@ export class ZappiDevice extends Device {
       return ZappiBoostModeText.Stop;
     else
       throw new Error(`Invalid boost mode ${value}`);
+  }
+
+  /**
+   * Map the combined charger status to the Homey system
+   * evcharger_charging_state capability, which drives the EV charger
+   * visualization in the Homey Energy view.
+   */
+  private getEvChargerChargingState(): string {
+    switch (this.getChargerStatusText(this._chargerStatus, this._deviceState)) {
+      case ZappiStatusText.EvDisconnected:
+        return 'plugged_out';
+      case ZappiStatusText.Charging:
+      case ZappiStatusText.Boosting:
+        return 'plugged_in_charging';
+      case ZappiStatusText.Paused:
+        return 'plugged_in_paused';
+      default:
+        // Connected, waiting, ready to charge, charge complete or fault
+        return 'plugged_in';
+    }
   }
 
   /**
