@@ -107,7 +107,7 @@ export class LibbiDevice extends Device {
         if (this.hasCapability(cap))
           continue;
         await this.addCapability(cap).catch(this.error);
-        if (tmpCaps[cap])
+        if (tmpCaps[cap] !== undefined && tmpCaps[cap] !== null)
           this.setCapabilityValue(cap, tmpCaps[cap]);
         this.log(`*** ${cap} - Added`);
       } catch (error) {

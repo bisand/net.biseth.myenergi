@@ -208,7 +208,7 @@ export class ZappiDevice extends Device {
         if (this.hasCapability(cap))
           continue;
         await this.addCapability(cap).catch(this.error);
-        if (tmpCaps[cap])
+        if (tmpCaps[cap] !== undefined && tmpCaps[cap] !== null)
           this.setCapabilityValue(cap, tmpCaps[cap]);
         this.log(`*** ${cap} - Added`);
       } catch (error) {
@@ -681,12 +681,15 @@ export class ZappiDevice extends Device {
   /**
    * Convert the phaseSetting status field ("1", "3" or "auto") to the capability text value.
    */
-  private getPhaseSettingText(value?: string): ZappiPhaseSettingText | null {
-    if (value === '1')
+  private getPhaseSettingText(value?: string | number): ZappiPhaseSettingText | null {
+    // Some firmware versions report the field as a number instead of a
+    // string, so normalize before comparing.
+    const normalized = (value === undefined || value === null) ? '' : `${value}`.trim().toLowerCase();
+    if (normalized === '1')
       return ZappiPhaseSettingText.SinglePhase;
-    else if (value === '3')
+    else if (normalized === '3')
       return ZappiPhaseSettingText.ThreePhase;
-    else if (value === 'auto')
+    else if (normalized === 'auto')
       return ZappiPhaseSettingText.Auto;
     return null;
   }
