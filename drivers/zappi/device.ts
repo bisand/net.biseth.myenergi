@@ -1,5 +1,5 @@
 import { Device } from 'homey';
-import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
+import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiPhaseSetting, ZappiStatus } from 'myenergi-api';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { ZappiSettings } from '../../models/ZappiSettings';
@@ -9,6 +9,7 @@ import { ZappiBoostModeText } from './ZappiBoostModeText';
 import { ZappiChargeModeText } from './ZappiChargeModeText';
 import { ZappiData } from "./ZappiData";
 import { ZappiDeviceState } from './ZappiDeviceState';
+import { ZappiPhaseSettingText } from './ZappiPhaseSettingText';
 import { ZappiStatusText } from './ZappiStatusText';
 
 export class ZappiDevice extends Device {
@@ -43,6 +44,7 @@ export class ZappiDevice extends Device {
     return this._deviceState;
   }
   private _lastChargerStatusText: ZappiStatusText | null = null;
+  private _phaseSetting: ZappiPhaseSettingText | null = null;
   private _boostMode: ZappiBoostMode = ZappiBoostMode.Stop;
   public get boostMode(): ZappiBoostMode {
     return this._boostMode;
@@ -165,6 +167,7 @@ export class ZappiDevice extends Device {
     this.registerCapabilityListener('onoff', this.onCapabilityOnoff.bind(this));
     this.registerCapabilityListener('charge_mode_selector', this.onCapabilityChargeMode.bind(this));
     this.registerCapabilityListener('set_minimum_green_level', this.onCapabilityGreenLevel.bind(this));
+    this.registerCapabilityListener('zappi_phase_setting', this.onCapabilityPhaseSetting.bind(this));
 
     this.registerCapabilityListener('button.reset_meter', async () => {
       this.setCapabilityValue('meter_power', 0);
@@ -261,6 +264,9 @@ export class ZappiDevice extends Device {
     this.setCapabilityValue('zappi_boost_kwh_remaining', (this._boostMode === ZappiBoostMode.Manual ? this._boostManualKwhRemaining : (this._boostMode === ZappiBoostMode.Smart ? this._boostSmartKwhRemaining : 0))).catch(this.error);
     this.setCapabilityValue('zappi_boost_time', `${this._boostSmartTime}`).catch(this.error);
     this.setCapabilityValue('ev_connected', this._chargerStatus !== ZappiStatus.EvDisconnected).catch(this.error);
+    if (this._phaseSetting !== null) {
+      this.setCapabilityValue('zappi_phase_setting', `${this._phaseSetting}`).catch(this.error);
+    }
 
     const meter_power = calculateEnergy(this._lastEnergyCalculation, this._lastChargingPower, this._chargingPower, this.getCapabilityValue('meter_power'));
     this._lastChargingPower = this._chargingPower;
@@ -323,6 +329,7 @@ export class ZappiDevice extends Device {
     this._chargeMode = zappi.zmo;
     this._chargerStatus = zappi.pst as ZappiStatus;
     this._deviceState = (zappi.sta !== undefined && zappi.sta !== null) ? zappi.sta as ZappiDeviceState : ZappiDeviceState.Unknown;
+    this._phaseSetting = this.getPhaseSettingText(zappi.phaseSetting) ?? this._phaseSetting;
     this._chargingPower = 0;
     if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt1 === 'Internal Load')
       || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT1)) {
@@ -574,6 +581,54 @@ export class ZappiDevice extends Device {
   }
 
   /**
+   * Set the Zappi phase setting (single phase, three phase or auto).
+   * Requires a three phase Zappi with firmware that supports phase switching.
+   * @param phaseSettingText @type ZappiPhaseSettingText
+   */
+  public async setPhaseSetting(phaseSettingText: ZappiPhaseSettingText): Promise<void> {
+    const phaseSetting = this.getPhaseSetting(phaseSettingText);
+    try {
+      const result = await this.myenergiClient?.setZappiPhaseSetting(this.deviceId, phaseSetting);
+      if (result.status !== 0) {
+        throw new Error(JSON.stringify(result));
+      }
+      this._phaseSetting = phaseSettingText;
+      this.setCapabilityValue('zappi_phase_setting', `${phaseSettingText}`).catch(this.error);
+      this.log(`Zappi phase setting changed to ${phaseSettingText}`);
+    } catch (error) {
+      this.error(`Setting the Zappi phase setting to ${phaseSettingText} failed:\n${error}`);
+      throw new Error(`Setting the phase setting failed. Please check that your Zappi supports phase switching.`, { cause: error });
+    }
+  }
+
+  /**
+   * Convert the phaseSetting status field ("1", "3" or "auto") to the capability text value.
+   */
+  private getPhaseSettingText(value?: string): ZappiPhaseSettingText | null {
+    if (value === '1')
+      return ZappiPhaseSettingText.SinglePhase;
+    else if (value === '3')
+      return ZappiPhaseSettingText.ThreePhase;
+    else if (value === 'auto')
+      return ZappiPhaseSettingText.Auto;
+    return null;
+  }
+
+  /**
+   * Convert the capability text value to the API phase setting.
+   */
+  private getPhaseSetting(value: ZappiPhaseSettingText | string): ZappiPhaseSetting {
+    if (value == ZappiPhaseSettingText.SinglePhase)
+      return ZappiPhaseSetting.SinglePhase;
+    else if (value == ZappiPhaseSettingText.ThreePhase)
+      return ZappiPhaseSetting.ThreePhase;
+    else if (value == ZappiPhaseSettingText.Auto)
+      return ZappiPhaseSetting.Auto;
+    else
+      throw new Error(`Invalid phase setting ${value}`);
+  }
+
+  /**
    * Set Zappi charge mode.
    * @param chargeMode @type ZappiChargeMode
    */
@@ -667,6 +722,16 @@ export class ZappiDevice extends Device {
   private async onCapabilityGreenLevel(value: number, opts: unknown): Promise<void> {
     this.log(`Minimum Green Level: ${value} - ${opts}`);
     await this.setMinimumGreenLevel(value).catch(this.error);
+  }
+
+  /**
+   * Event handler for phase setting capability listener
+   * @param value Phase setting (AUTO, SINGLE_PHASE or THREE_PHASE)
+   * @param opts Options
+   */
+  private async onCapabilityPhaseSetting(value: ZappiPhaseSettingText, opts: unknown): Promise<void> {
+    this.log(`Phase Setting: ${value} - ${opts}`);
+    await this.setPhaseSetting(value);
   }
 
   public getChargeMode(value: ZappiChargeModeText): ZappiChargeMode {

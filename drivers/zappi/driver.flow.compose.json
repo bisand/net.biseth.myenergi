@@ -125,6 +125,78 @@
             ]
         },
         {
+            "id": "set_phase_setting",
+            "title": {
+                "en": "Set phase setting",
+                "no": "Still inn faseinnstilling",
+                "nl": "Fase-instelling instellen",
+                "sv": "Ställ in fasinställning",
+                "de": "Phaseneinstellung einstellen"
+            },
+            "hint": {
+                "en": "Switch the Zappi between single phase, three phase or automatic phase charging. Requires a three phase Zappi with firmware that supports phase switching.",
+                "no": "Bytt Zappi mellom enfase, trefase eller automatisk faselading. Krever en trefase Zappi med fastvare som støtter fasebytte.",
+                "nl": "Schakel de Zappi tussen 1-fase, 3-fase of automatisch laden. Vereist een 3-fase Zappi met firmware die fase-omschakeling ondersteunt.",
+                "sv": "Växla Zappi mellan enfas, trefas eller automatisk fasladdning. Kräver en trefas Zappi med fast programvara som stöder fasbyte.",
+                "de": "Schaltet den Zappi zwischen einphasigem, dreiphasigem oder automatischem Laden um. Erfordert einen dreiphasigen Zappi mit Firmware, die Phasenumschaltung unterstützt."
+            },
+            "titleFormatted": {
+                "en": "Set phase setting to [[phase_setting]]",
+                "no": "Still inn faseinnstilling til [[phase_setting]]",
+                "nl": "Stel fase-instelling in op [[phase_setting]]",
+                "sv": "Ställ in fasinställning till [[phase_setting]]",
+                "de": "Phaseneinstellung auf [[phase_setting]] einstellen"
+            },
+            "args": [
+                {
+                    "type": "dropdown",
+                    "name": "phase_setting",
+                    "title": {
+                        "en": "Phase Setting",
+                        "no": "Faseinnstilling",
+                        "nl": "Fase-instelling",
+                        "sv": "Fasinställning",
+                        "de": "Phaseneinstellung"
+                    },
+                    "placeholder": {
+                        "en": "Select a value"
+                    },
+                    "values": [
+                        {
+                            "id": "AUTO",
+                            "label": {
+                                "en": "Auto",
+                                "no": "Auto",
+                                "nl": "Auto",
+                                "sv": "Auto",
+                                "de": "Auto"
+                            }
+                        },
+                        {
+                            "id": "SINGLE_PHASE",
+                            "label": {
+                                "en": "Single phase",
+                                "no": "Enfase",
+                                "nl": "1-fase",
+                                "sv": "Enfas",
+                                "de": "Einphasig"
+                            }
+                        },
+                        {
+                            "id": "THREE_PHASE",
+                            "label": {
+                                "en": "Three phase",
+                                "no": "Trefase",
+                                "nl": "3-fase",
+                                "sv": "Trefas",
+                                "de": "Dreiphasig"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
             "id": "set_boost_mode",
             "title": {
                 "en": "Set boost mode",
