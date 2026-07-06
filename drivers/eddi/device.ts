@@ -1,5 +1,5 @@
 import { Device } from 'homey';
-import { EddiMode, EddiHeaterStatus, MyEnergi, Eddi } from 'myenergi-api';
+import { EddiBoost, EddiMode, EddiHeaterStatus, MyEnergi, Eddi } from 'myenergi-api';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { EddiSettings } from '../../models/EddiSettings';
@@ -350,6 +350,43 @@ export class EddiDevice extends Device {
     } catch (error) {
       this.error(`Switching the Eddi ${isOn ? 'on' : 'off'} failed!`)
       this.error(error);
+    }
+  }
+
+  /**
+   * Start a manual boost on the given heater.
+   * @param heater Heater number ('1' or '2')
+   * @param minutes Boost duration in minutes
+   */
+  public async startBoost(heater: string, minutes: number): Promise<void> {
+    const boost = heater === '2' ? EddiBoost.ManualHeater2 : EddiBoost.ManualHeater1;
+    try {
+      const result = await this.myenergiClient?.setEddiBoost(this.deviceId, boost, minutes);
+      if (result.status !== 0) {
+        throw new Error(JSON.stringify(result));
+      }
+      this.log(`Eddi boost started on heater ${heater} for ${minutes} minutes`);
+    } catch (error) {
+      this.error(`Starting boost on heater ${heater} failed:\n${error}`);
+      throw new Error(`Starting the boost on heater ${heater} failed. Please check that the heater is connected and boostable.`, { cause: error });
+    }
+  }
+
+  /**
+   * Cancel a running manual boost on the given heater.
+   * @param heater Heater number ('1' or '2')
+   */
+  public async stopBoost(heater: string): Promise<void> {
+    const boost = heater === '2' ? EddiBoost.CancelHeater2 : EddiBoost.CancelHeater1;
+    try {
+      const result = await this.myenergiClient?.setEddiBoost(this.deviceId, boost);
+      if (result.status !== 0) {
+        throw new Error(JSON.stringify(result));
+      }
+      this.log(`Eddi boost stopped on heater ${heater}`);
+    } catch (error) {
+      this.error(`Stopping boost on heater ${heater} failed:\n${error}`);
+      throw new Error(`Stopping the boost on heater ${heater} failed.`, { cause: error });
     }
   }
 

@@ -120,6 +120,135 @@
   "flow": {
     "actions": [
       {
+        "id": "start_eddi_boost",
+        "title": {
+          "en": "Start boost",
+          "no": "Start boost",
+          "nl": "Start boost",
+          "sv": "Starta boost",
+          "de": "Boost starten"
+        },
+        "titleFormatted": {
+          "en": "Boost [[heater]]",
+          "no": "Boost [[heater]]",
+          "nl": "Boost [[heater]]",
+          "sv": "Boosta [[heater]]",
+          "de": "[[heater]] boosten"
+        },
+        "duration": true,
+        "hint": {
+          "en": "Heats at full power for the chosen duration, regardless of solar export. Rounded to whole minutes; 1 hour if no duration is set.",
+          "no": "Varmer med full effekt i valgt varighet, uavhengig av soleksport. Rundes til hele minutter; 1 time hvis ingen varighet er valgt.",
+          "nl": "Verwarmt op vol vermogen gedurende de gekozen tijd, ongeacht zonne-export. Afgerond op hele minuten; 1 uur als geen duur is ingesteld.",
+          "sv": "Värmer med full effekt under vald tid, oavsett solexport. Avrundas till hela minuter; 1 timme om ingen tid har valts.",
+          "de": "Heizt mit voller Leistung für die gewählte Dauer, unabhängig vom Solarexport. Auf ganze Minuten gerundet; 1 Stunde, wenn keine Dauer gewählt ist."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=eddi"
+          },
+          {
+            "name": "heater",
+            "type": "dropdown",
+            "title": {
+              "en": "Heater",
+              "no": "Varmeelement",
+              "nl": "Verwarming",
+              "sv": "Värmare",
+              "de": "Heizung"
+            },
+            "values": [
+              {
+                "id": "1",
+                "label": {
+                  "en": "Heater 1",
+                  "no": "Varmeelement 1",
+                  "nl": "Verwarming 1",
+                  "sv": "Värmare 1",
+                  "de": "Heizung 1"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Heater 2",
+                  "no": "Varmeelement 2",
+                  "nl": "Verwarming 2",
+                  "sv": "Värmare 2",
+                  "de": "Heizung 2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "stop_eddi_boost",
+        "title": {
+          "en": "Stop boost",
+          "no": "Stopp boost",
+          "nl": "Stop boost",
+          "sv": "Stoppa boost",
+          "de": "Boost stoppen"
+        },
+        "titleFormatted": {
+          "en": "Stop boosting [[heater]]",
+          "no": "Stopp boost av [[heater]]",
+          "nl": "Stop boost van [[heater]]",
+          "sv": "Stoppa boost av [[heater]]",
+          "de": "Boost von [[heater]] stoppen"
+        },
+        "hint": {
+          "en": "Cancels a running manual boost.",
+          "no": "Avbryter en pågående manuell boost.",
+          "nl": "Annuleert een lopende handmatige boost.",
+          "sv": "Avbryter en pågående manuell boost.",
+          "de": "Bricht einen laufenden manuellen Boost ab."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=eddi"
+          },
+          {
+            "name": "heater",
+            "type": "dropdown",
+            "title": {
+              "en": "Heater",
+              "no": "Varmeelement",
+              "nl": "Verwarming",
+              "sv": "Värmare",
+              "de": "Heizung"
+            },
+            "values": [
+              {
+                "id": "1",
+                "label": {
+                  "en": "Heater 1",
+                  "no": "Varmeelement 1",
+                  "nl": "Verwarming 1",
+                  "sv": "Värmare 1",
+                  "de": "Heizung 1"
+                }
+              },
+              {
+                "id": "2",
+                "label": {
+                  "en": "Heater 2",
+                  "no": "Varmeelement 2",
+                  "nl": "Verwarming 2",
+                  "sv": "Värmare 2",
+                  "de": "Heizung 2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
         "id": "reset_energy_meter_eddi",
         "title": {
           "en": "Reset energy meter (Total)",
