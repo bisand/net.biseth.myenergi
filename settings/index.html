@@ -39,7 +39,7 @@
         <legend>myenergi API base URI</legend>
 
         <div class="field row">
-            <label for="apiBaseUrl">Hub name</label>
+            <label for="apiBaseUrl">API base URL</label>
             <input id="apiBaseUrl" name="apiBaseUrl" type="text" value="" placeholder="https://s18.myenergi.net" required
                 pattern="/(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g" />
         </div>
@@ -48,6 +48,18 @@
     <fieldset class="fieldset" id="fieldset-1">
         <legend>myenergi Hub</legend>
         <div class="container">
+            <p style="font-size: 0.85em;">
+                <i>
+                    <b>Serial no:</b> the serial number of your myenergi <b>hub</b>. If your Zappi/Eddi
+                    connects to the internet without a separate hub (built-in hub), use the serial
+                    number of that device instead. You can find it under "Live products" on
+                    <a href="https://myaccount.myenergi.com" target="_blank">myaccount.myenergi.com</a>.<br />
+                    <b>API key:</b> generate one on
+                    <a href="https://myaccount.myenergi.com" target="_blank">myaccount.myenergi.com</a>
+                    under your device's <b>Advanced settings</b>. Your myenergi account password will
+                    <b>not</b> work here.
+                </i>
+            </p>
             <div class="field row">
                 <label for="hubname">Hub name</label>
                 <input id="hubname" name="hubname" type="text" value="" required pattern="[a-zA-Z0-9]+" />
@@ -57,7 +69,7 @@
                 <input id="username" name="username" type="text" value="" required pattern="[0-9]*" inputmode="numeric" />
             </div>
             <div class="field row">
-                <label for="password">Hub password</label>
+                <label for="password">API key (hub password)</label>
                 <input id="password" name="password" type="password" value="" />
             </div>
             <div class="field row">
@@ -255,7 +267,7 @@
                         saveHubs.push(res.result === 'ok');
                         if (res.result !== 'ok') {
                             $(`#fieldset-${fieldsetId}`).css({ 'background-color': 'orange' });
-                            Homey.alert(`Failed to authenticate hub ${hub.hubname} with serial ${hub.username}`);
+                            Homey.alert(`Failed to authenticate hub ${hub.hubname} with serial ${hub.username}.\n\nPlease check that:\n- The serial number is that of your hub (or of the Zappi/Eddi itself if it has a built-in hub)\n- The API key was generated under Advanced settings on myaccount.myenergi.com (your account password will not work)`);
                             return;
                         }
                         $(`#fieldset-${fieldsetId}`).css({ 'background-color': '' });

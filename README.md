@@ -9,13 +9,18 @@
 
 Adds support for myenergi products like Zappi, Eddi and Harvy. You will be able to monitor and control your devices using Homey. Start and stop charging of your EV or control your water heater based on energy prices from [Tibber](https://invite.tibber.com/3ea6e31f) or total power consumption in your home. 
 
-To be able to use this Homey app you will need a [hub from myenergi](https://myenergi.com/product/hub/) installed and connected to the internet.
+This app talks to your myenergi devices through the myenergi cloud. Your devices must therefore be connected to the internet, either through a myenergi hub (older installations — the standalone hub is no longer sold) or through the built-in hub functionality of newer Zappi and Eddi devices connected via Wi-Fi/Ethernet.
 
 ## Installation
 Install the [latest version](https://homey.app/no-no/app/net.biseth.myenergi/myenergi/) of myenergi app for Homey from the Homey App Store. (A [beta version](https://homey.app/no-no/app/net.biseth.myenergi/myenergi/test) is also available for those who like to live on the edge.)
 
 ## Usage
-After installing the app on your Homey you will have to register your hub. You can do that in the app settings for the newly installed app (More -> Apps -> myenergi -> Configure app)
+After installing the app on your Homey you will have to register your hub credentials before devices can be added. Open the app settings (More -> Apps -> myenergi -> Configure app) and enter:
+
+- **Hub serial no**: the serial number of your myenergi **hub**. If your Zappi/Eddi connects to the internet without a separate hub (built-in hub), use the serial number of that device instead. You can find it under "Live products" on [myaccount.myenergi.com](https://myaccount.myenergi.com).
+- **API key**: generate one on [myaccount.myenergi.com](https://myaccount.myenergi.com) under your device's **Advanced settings**. Note that your myenergi account password will **not** work.
+
+The hub itself does not appear as a device in Homey — it is only the connection. Once the credentials are saved successfully, add your Zappi, Eddi or Harvi devices via *Devices -> + -> myenergi*.
 
 ## Support
 Feel free to ask questions, suggest new features or bug reports in the [issues section](https://github.com/bisand/net.biseth.myenergi/issues) of this repository.
