@@ -1,0 +1,21 @@
+{
+    "actions": [
+        {
+            "id": "reset_energy_meter_eddi",
+            "title": {
+                "en": "Reset energy meter (Total)",
+                "no": "Tilbakestill strømmåler (Total)",
+                "nl": "Reset energiemeter (Totaal)",
+                "sv": "Återställ energimätaren (Total)",
+                "de": "Energiezähler zurücksetzen (Gesamt)"
+            },
+            "hint": {
+                "en": "Resets the total accumulated energy value (kWh) to zero. Use with a schedule, e.g. every midnight, to get daily energy readings.",
+                "no": "Nullstiller den totale akkumulerte energiverdien (kWh). Brukes gjerne med et tidsskjema, f.eks. hver midnatt, for å få daglige energiavlesninger.",
+                "nl": "Zet de totale geaccumuleerde energiewaarde (kWh) op nul. Gebruik met een schema, bijv. elke middernacht, voor dagelijkse energiewaarden.",
+                "sv": "Nollställer det totala ackumulerade energivärdet (kWh). Använd med ett schema, t.ex. varje midnatt, för dagliga energiavläsningar.",
+                "de": "Setzt den gesamten kumulierten Energiewert (kWh) auf null. Mit einem Zeitplan verwenden, z. B. jede Mitternacht, für tägliche Energiewerte."
+            }
+        }
+    ]
+}

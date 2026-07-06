@@ -62,6 +62,18 @@ export class EddiDriver extends Driver {
   public async onInit() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this.homey.app as MyEnergiApp).registerDataUpdateCallback((data: any) => this.dataUpdated(data));
+
+    const resetEnergyMeterAction = this.homey.flow.getActionCard('reset_energy_meter_eddi');
+    resetEnergyMeterAction.registerRunListener(async (args) => {
+      const dev = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: reset_energy_meter_eddi');
+        return;
+      }
+      dev.log('Resetting energy meter from flow');
+      await dev.setCapabilityValue('meter_power', 0);
+    });
+
     this.log('EddiDriver has been initialized');
   }
 

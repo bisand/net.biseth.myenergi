@@ -123,6 +123,17 @@ export class ZappiDriver extends Driver {
       return dev.chargeMode === dev.getChargeMode(args.charge_mode);
     });
 
+    const resetEnergyMeterAction = this.homey.flow.getActionCard('reset_energy_meter_zappi');
+    resetEnergyMeterAction.registerRunListener(async (args) => {
+      const dev: ZappiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: reset_energy_meter_zappi');
+        return;
+      }
+      dev.log('Resetting energy meter from flow');
+      await dev.setCapabilityValue('meter_power', 0);
+    });
+
     const startChargingAction = this.homey.flow.getActionCard('start_charging');
     startChargingAction.registerRunListener(async (args, state) => {
       const dev: ZappiDevice = args.device;
