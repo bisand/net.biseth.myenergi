@@ -117,6 +117,746 @@
       "path": "/"
     }
   },
+  "flow": {
+    "actions": [
+      {
+        "id": "reset_energy_meter_eddi",
+        "title": {
+          "en": "Reset energy meter (Total)",
+          "no": "Tilbakestill strømmåler (Total)",
+          "nl": "Reset energiemeter (Totaal)",
+          "sv": "Återställ energimätaren (Total)",
+          "de": "Energiezähler zurücksetzen (Gesamt)"
+        },
+        "hint": {
+          "en": "Resets the total accumulated energy value (kWh) to zero. Use with a schedule, e.g. every midnight, to get daily energy readings.",
+          "no": "Nullstiller den totale akkumulerte energiverdien (kWh). Brukes gjerne med et tidsskjema, f.eks. hver midnatt, for å få daglige energiavlesninger.",
+          "nl": "Zet de totale geaccumuleerde energiewaarde (kWh) op nul. Gebruik met een schema, bijv. elke middernacht, voor dagelijkse energiewaarden.",
+          "sv": "Nollställer det totala ackumulerade energivärdet (kWh). Använd med ett schema, t.ex. varje midnatt, för dagliga energiavläsningar.",
+          "de": "Setzt den gesamten kumulierten Energiewert (kWh) auf null. Mit einem Zeitplan verwenden, z. B. jede Mitternacht, für tägliche Energiewerte."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=eddi"
+          }
+        ]
+      },
+      {
+        "id": "reset_energy_meter_harvi",
+        "title": {
+          "en": "Reset energy meter",
+          "no": "Tilbakestill strømmåler",
+          "nl": "Reset energiemeter",
+          "sv": "Återställ energimätaren",
+          "de": "Energiezähler zurücksetzen"
+        },
+        "hint": {
+          "en": "Resets the accumulated energy value (kWh) to zero. Use with a schedule, e.g. every midnight, to get daily energy readings.",
+          "no": "Nullstiller den akkumulerte energiverdien (kWh). Brukes gjerne med et tidsskjema, f.eks. hver midnatt, for å få daglige energiavlesninger.",
+          "nl": "Zet de geaccumuleerde energiewaarde (kWh) op nul. Gebruik met een schema, bijv. elke middernacht, voor dagelijkse energiewaarden.",
+          "sv": "Nollställer det ackumulerade energivärdet (kWh). Använd med ett schema, t.ex. varje midnatt, för dagliga energiavläsningar.",
+          "de": "Setzt den kumulierten Energiewert (kWh) auf null. Mit einem Zeitplan verwenden, z. B. jede Mitternacht, für tägliche Energiewerte."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=harvi"
+          }
+        ]
+      },
+      {
+        "id": "set_libbi_mode",
+        "title": {
+          "en": "Set Libbi mode",
+          "no": "Still inn Libbi-modus",
+          "nl": "Libbi-modus instellen",
+          "sv": "Ställ in Libbi-läge",
+          "de": "Libbi-Modus einstellen"
+        },
+        "titleFormatted": {
+          "en": "Set Libbi mode to [[libbi_mode]]",
+          "no": "Still inn Libbi-modus til [[libbi_mode]]",
+          "nl": "Stel Libbi-modus in op [[libbi_mode]]",
+          "sv": "Ställ in Libbi-läge till [[libbi_mode]]",
+          "de": "Libbi-Modus auf [[libbi_mode]] einstellen"
+        },
+        "hint": {
+          "en": "Change the Libbi operating mode. Only Normal, Stopped and Export can be set through the myenergi API.",
+          "no": "Endre Libbi-driftsmodus. Kun Normal, Stoppet og Eksport kan settes via myenergi-APIet.",
+          "nl": "Wijzig de Libbi-bedrijfsmodus. Alleen Normaal, Gestopt en Exporteren kunnen via de myenergi-API worden ingesteld.",
+          "sv": "Ändra Libbis driftläge. Endast Normal, Stoppad och Export kan ställas in via myenergi-API:et.",
+          "de": "Ändert den Libbi-Betriebsmodus. Nur Normal, Gestoppt und Export können über die myenergi-API eingestellt werden."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=libbi"
+          },
+          {
+            "type": "dropdown",
+            "name": "libbi_mode",
+            "title": {
+              "en": "Libbi Mode",
+              "no": "Libbi-modus",
+              "nl": "Libbi-modus",
+              "sv": "Libbi-läge",
+              "de": "Libbi-Modus"
+            },
+            "placeholder": {
+              "en": "Select a value"
+            },
+            "values": [
+              {
+                "id": "NORMAL",
+                "label": {
+                  "en": "Normal",
+                  "no": "Normal",
+                  "nl": "Normaal",
+                  "sv": "Normal",
+                  "de": "Normal"
+                }
+              },
+              {
+                "id": "STOP",
+                "label": {
+                  "en": "Stopped",
+                  "no": "Stoppet",
+                  "nl": "Gestopt",
+                  "sv": "Stoppad",
+                  "de": "Gestoppt"
+                }
+              },
+              {
+                "id": "EXPORT",
+                "label": {
+                  "en": "Export",
+                  "no": "Eksport",
+                  "nl": "Exporteren",
+                  "sv": "Export",
+                  "de": "Export"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "start_charging",
+        "title": {
+          "en": "Start charging the car",
+          "no": "Start lading av bilen",
+          "nl": "Start laden van EV",
+          "sv": "Börja ladda bilen",
+          "de": "Ladevorgang des EV starten"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "stop_charging",
+        "title": {
+          "en": "Stop charging the car",
+          "no": "Stopp lading av bilen",
+          "nl": "Stop laden van EV",
+          "sv": "Sluta ladda bilen",
+          "de": "Ladevorgang des EV beenden"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "set_charge_mode",
+        "title": {
+          "en": "Set charge mode",
+          "no": "Still inn Lademodus",
+          "nl": "Laadmodus instellen",
+          "sv": "Ställ in laddningsläge",
+          "de": "Lademodus einstellen"
+        },
+        "titleFormatted": {
+          "en": "Set charge mode to [[charge_mode_txt]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "text",
+            "name": "charge_mode_txt",
+            "title": {
+              "en": "Charge Mode"
+            },
+            "placeholder": {
+              "en": "FAST, ECO, ECO_PLUS or OFF"
+            }
+          }
+        ]
+      },
+      {
+        "id": "set_minimum_green_level",
+        "title": {
+          "en": "Set minimum green level",
+          "no": "Still inn minimum grønt niva",
+          "nl": "Minimum groen niveau instellen",
+          "sv": "Ställ in lägsta grönnivå",
+          "de": "Stellen Sie den minimalen Grünwert ein"
+        },
+        "titleFormatted": {
+          "en": "Set minimum green level to [[minimum_green_level]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "number",
+            "name": "minimum_green_level",
+            "title": {
+              "en": "Minimum green level"
+            },
+            "placeholder": {
+              "en": "Min % green power"
+            },
+            "min": 0,
+            "max": 100,
+            "step": 1
+          }
+        ]
+      },
+      {
+        "id": "select_charge_mode",
+        "title": {
+          "en": "Select charge mode",
+          "no": "Velg lademodus",
+          "nl": "Selecteer laadmodus",
+          "sv": "Välj laddningsläge",
+          "de": "Lademodus wählen"
+        },
+        "titleFormatted": {
+          "en": "Select charge mode to [[charge_mode_selector]]"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "dropdown",
+            "name": "charge_mode_selector",
+            "title": {
+              "en": "Select Charge Mode"
+            },
+            "placeholder": {
+              "en": "Select a value"
+            },
+            "values": [
+              {
+                "id": "FAST",
+                "label": {
+                  "en": "Fast"
+                }
+              },
+              {
+                "id": "ECO",
+                "label": {
+                  "en": "Eco"
+                }
+              },
+              {
+                "id": "ECO_PLUS",
+                "label": {
+                  "en": "Eco+"
+                }
+              },
+              {
+                "id": "OFF",
+                "label": {
+                  "en": "Off"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "reset_energy_meter_zappi",
+        "title": {
+          "en": "Reset energy meter",
+          "no": "Tilbakestill strømmåler",
+          "nl": "Reset energiemeter",
+          "sv": "Återställ energimätaren",
+          "de": "Energiezähler zurücksetzen"
+        },
+        "hint": {
+          "en": "Resets the accumulated energy value (kWh) to zero. Use with a schedule, e.g. every midnight, to get daily energy readings.",
+          "no": "Nullstiller den akkumulerte energiverdien (kWh). Brukes gjerne med et tidsskjema, f.eks. hver midnatt, for å få daglige energiavlesninger.",
+          "nl": "Zet de geaccumuleerde energiewaarde (kWh) op nul. Gebruik met een schema, bijv. elke middernacht, voor dagelijkse energiewaarden.",
+          "sv": "Nollställer det ackumulerade energivärdet (kWh). Använd med ett schema, t.ex. varje midnatt, för dagliga energiavläsningar.",
+          "de": "Setzt den kumulierten Energiewert (kWh) auf null. Mit einem Zeitplan verwenden, z. B. jede Mitternacht, für tägliche Energiewerte."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "set_phase_setting",
+        "title": {
+          "en": "Set phase setting",
+          "no": "Still inn faseinnstilling",
+          "nl": "Fase-instelling instellen",
+          "sv": "Ställ in fasinställning",
+          "de": "Phaseneinstellung einstellen"
+        },
+        "hint": {
+          "en": "Switch the Zappi between single phase, three phase or automatic phase charging. Requires a three phase Zappi with firmware that supports phase switching.",
+          "no": "Bytt Zappi mellom enfase, trefase eller automatisk faselading. Krever en trefase Zappi med fastvare som støtter fasebytte.",
+          "nl": "Schakel de Zappi tussen 1-fase, 3-fase of automatisch laden. Vereist een 3-fase Zappi met firmware die fase-omschakeling ondersteunt.",
+          "sv": "Växla Zappi mellan enfas, trefas eller automatisk fasladdning. Kräver en trefas Zappi med fast programvara som stöder fasbyte.",
+          "de": "Schaltet den Zappi zwischen einphasigem, dreiphasigem oder automatischem Laden um. Erfordert einen dreiphasigen Zappi mit Firmware, die Phasenumschaltung unterstützt."
+        },
+        "titleFormatted": {
+          "en": "Set phase setting to [[phase_setting]]",
+          "no": "Still inn faseinnstilling til [[phase_setting]]",
+          "nl": "Stel fase-instelling in op [[phase_setting]]",
+          "sv": "Ställ in fasinställning till [[phase_setting]]",
+          "de": "Phaseneinstellung auf [[phase_setting]] einstellen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "dropdown",
+            "name": "phase_setting",
+            "title": {
+              "en": "Phase Setting",
+              "no": "Faseinnstilling",
+              "nl": "Fase-instelling",
+              "sv": "Fasinställning",
+              "de": "Phaseneinstellung"
+            },
+            "placeholder": {
+              "en": "Select a value"
+            },
+            "values": [
+              {
+                "id": "AUTO",
+                "label": {
+                  "en": "Auto",
+                  "no": "Auto",
+                  "nl": "Auto",
+                  "sv": "Auto",
+                  "de": "Auto"
+                }
+              },
+              {
+                "id": "SINGLE_PHASE",
+                "label": {
+                  "en": "Single phase",
+                  "no": "Enfase",
+                  "nl": "1-fase",
+                  "sv": "Enfas",
+                  "de": "Einphasig"
+                }
+              },
+              {
+                "id": "THREE_PHASE",
+                "label": {
+                  "en": "Three phase",
+                  "no": "Trefase",
+                  "nl": "3-fase",
+                  "sv": "Trefas",
+                  "de": "Dreiphasig"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "set_boost_mode",
+        "title": {
+          "en": "Set boost mode",
+          "no": "Still inn boost-modus",
+          "nl": "Boost-modus instellen",
+          "sv": "Ställ in boost-läge",
+          "de": "Boost-Modus einstellen"
+        },
+        "titleFormatted": {
+          "en": "Set Boost mode to [[boost_mode_txt]]. End boost after [[boost_mode_kwh]] kWh, before [[boost_mode_complete_time]] o'clock for SMART"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "text",
+            "name": "boost_mode_txt",
+            "title": {
+              "en": "Boost Mode"
+            },
+            "placeholder": {
+              "en": "MANUAL, SMART or STOP"
+            }
+          },
+          {
+            "type": "number",
+            "name": "boost_mode_kwh",
+            "required": false,
+            "title": {
+              "en": "kWh"
+            },
+            "placeholder": {
+              "en": "Number of kWh to boost"
+            }
+          },
+          {
+            "type": "text",
+            "name": "boost_mode_complete_time",
+            "required": false,
+            "title": {
+              "en": "Complete time"
+            },
+            "placeholder": {
+              "en": "Until (HHMM) 15 min interval"
+            }
+          }
+        ]
+      }
+    ],
+    "triggers": [
+      {
+        "id": "charging_started",
+        "title": {
+          "en": "Charging started",
+          "no": "Lading startet",
+          "nl": "Laden gestart",
+          "sv": "Laddning startade",
+          "de": "Ladevorgang gestartet"
+        },
+        "hint": {
+          "en": "When Zappi starts charging the connected car",
+          "no": "Når Zappi starter lading av den tilkoblede bilen",
+          "nl": "Wanneer Zappi de verbonden EV begint op te laden",
+          "sv": "När Zappi börjar ladda den uppkopplade bilen",
+          "de": "Wenn Zappi beginnt, das vernetzte EV aufzuladen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "charging_stopped",
+        "title": {
+          "en": "Charging stopped",
+          "no": "Lading stoppet",
+          "nl": "Laden gestopt",
+          "sv": "Laddningen avbröts",
+          "de": "Ladevorgang gestoppt"
+        },
+        "hint": {
+          "en": "When Zappi stops charging the connected car",
+          "no": "Når Zappi stopper ladingen av den tilkoblede bilen",
+          "nl": "Wanneer de Zappi is gestopt met het opladen van de verbonden EV",
+          "sv": "När Zappi slutar ladda den anslutna bilen",
+          "de": "Wenn der Zappi das Aufladen des angeschlossenen EV beendet hat"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "charge_mode_changed",
+        "title": {
+          "en": "Charge mode changed",
+          "no": "Lademodus endret",
+          "nl": "Laadmodus veranderde",
+          "sv": "Laddningsläget ändrats",
+          "de": "Lademodus geändert"
+        },
+        "hint": {
+          "en": "When Zappi changed the charge mode",
+          "no": "Da Zappi endret lademodusen",
+          "nl": "Wanneer Zappi de laadmodus veranderde",
+          "sv": "När Zappi bytte laddningsläge",
+          "de": "Wenn Zappi den Lademodus geändert hat"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "charger_status_changed",
+        "title": {
+          "en": "Charger status changed",
+          "no": "Laderstatus endret",
+          "nl": "Status van oplader gewijzigd",
+          "sv": "Laddarens status har ändrats",
+          "de": "Status des Ladegeräts geändert"
+        },
+        "hint": {
+          "en": "When Zappi changed the charger status",
+          "no": "Da Zappi endret lademodusen",
+          "nl": "Wanneer Zappi de status van de oplader veranderde",
+          "sv": "När Zappi ändrade laddarens status",
+          "de": "Wenn Zappi den Ladezustand geändert hat "
+        },
+        "tokens": [
+          {
+            "name": "charger_status",
+            "type": "string",
+            "title": {
+              "en": "Charger Status",
+              "no": "Ladestatus",
+              "nl": "Laderstatus",
+              "sv": "Laddningsstatus",
+              "de": "Ladegerätstatus"
+            },
+            "example": "CHARGING"
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "boost_mode_changed",
+        "title": {
+          "en": "Boost mode changed",
+          "no": "Boost-modus endret",
+          "nl": "Boost-modus gewijzigd",
+          "sv": "Boost-läge har ändrats",
+          "de": "Boost-modus geändert"
+        },
+        "hint": {
+          "en": "When Zappi changed the boost mode",
+          "no": "Da Zappi endret boost-modus",
+          "nl": "Wanneer Zappi de boost-mode veranderde",
+          "sv": "När Zappi ändrade laddarens boost-läge",
+          "de": "Wenn Zappi den boost-modus geändert hat "
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "ev_connected",
+        "title": {
+          "en": "EV connected",
+          "no": "Elbil tilkoblet",
+          "nl": "EV aangesloten",
+          "sv": "Elbil ansluten",
+          "de": "EV verbunden"
+        },
+        "hint": {
+          "en": "When the EV is connected to Zappi",
+          "no": "Når elbilen blir tilkoblet Zappi",
+          "nl": "Wanneer de EV is aangesloten op Zappi",
+          "sv": "När elbilen är kopplad till Zappi",
+          "de": "Wenn das EV mit Zappi verbunden ist"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "ev_disconnected",
+        "title": {
+          "en": "EV disconnected",
+          "no": "Elbil frakoblet",
+          "nl": "EV losgekoppeld",
+          "sv": "Elbil frånkopplad",
+          "de": "EV getrennt"
+        },
+        "hint": {
+          "en": "When the EV is disconnected from Zappi",
+          "no": "Når elbilen blir frakoblet Zappi",
+          "nl": "Wanneer de EV is losgekoppeld van Zappi",
+          "sv": "När elbilen är frånkopplad Zappi",
+          "de": "Wenn das EV von Zappi getrennt wird"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "is_charging",
+        "title": {
+          "en": "Car !{{is|isn't}} charging",
+          "no": "Bilen !{{lader|lader ikke}}",
+          "nl": "EV !{{is|is niet}} aan het laden",
+          "sv": "Bilen !{{laddar|laddar inte}}",
+          "de": "EV !{{wird geladen|lädt nicht}}"
+        },
+        "hint": {
+          "en": "Checks if the car is currently being charged by Zappi",
+          "no": "Sjekker om bilen blir laded av Zappi",
+          "nl": "Controleert of de EV wordt opgeladen door de Zappi",
+          "sv": "Kontrollerar om bilen för närvarande laddas av Zappi",
+          "de": "Überprüft, ob das EV gerade von Zappi geladen wird"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "ev_is_connected",
+        "title": {
+          "en": "An EV !{{is|isn't}} connected",
+          "no": "En elbil !{{er|er ikke}} tilkoblet",
+          "nl": "Er !{{is|is geen}} EV aangesloten",
+          "sv": "En elbil !{{är|är inte}} ansluten",
+          "de": "Ein EV !{{ist|ist nicht}} verbunden"
+        },
+        "hint": {
+          "en": "Checks if an EV is connected to the Zappi",
+          "no": "Sjekker om en elbil er koblet til Zappi",
+          "nl": "Controleert of er een EV op de Zappi is aangesloten",
+          "sv": "Kontrollerar om en elbil är ansluten till Zappi",
+          "de": "Überprüft, ob ein EV mit dem Zappi verbunden ist"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "charge_mode_is",
+        "title": {
+          "en": "Charge mode !{{is|isn't}}",
+          "no": "Lademodus !{{er|er ikke}}",
+          "nl": "Laadmodus !{{is|is niet}}",
+          "sv": "Laddningsläget !{{är|är inte}}",
+          "de": "Lademodus !{{ist|ist nicht}}"
+        },
+        "titleFormatted": {
+          "en": "Charge mode !{{is|isn't}} [[charge_mode]]",
+          "no": "Lademodus !{{er|er ikke}} [[charge_mode]]",
+          "nl": "Laadmodus !{{is|is niet}} [[charge_mode]]",
+          "sv": "Laddningsläget !{{är|är inte}} [[charge_mode]]",
+          "de": "Lademodus !{{ist|ist nicht}} [[charge_mode]]"
+        },
+        "hint": {
+          "en": "Checks the current charge mode of the Zappi",
+          "no": "Sjekker gjeldende lademodus på Zappi",
+          "nl": "Controleert de huidige laadmodus van de Zappi",
+          "sv": "Kontrollerar Zappis aktuella laddningsläge",
+          "de": "Überprüft den aktuellen Lademodus des Zappi"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "dropdown",
+            "name": "charge_mode",
+            "title": {
+              "en": "Charge Mode",
+              "no": "Lademodus",
+              "nl": "Laadmodus",
+              "sv": "Laddningsläge",
+              "de": "Lademodus"
+            },
+            "placeholder": {
+              "en": "Select a value"
+            },
+            "values": [
+              {
+                "id": "FAST",
+                "label": {
+                  "en": "Fast"
+                }
+              },
+              {
+                "id": "ECO",
+                "label": {
+                  "en": "Eco"
+                }
+              },
+              {
+                "id": "ECO_PLUS",
+                "label": {
+                  "en": "Eco+"
+                }
+              },
+              {
+                "id": "OFF",
+                "label": {
+                  "en": "Off"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
   "drivers": [
     {
       "name": {
@@ -1428,674 +2168,6 @@
       ]
     }
   ],
-  "flow": {
-    "actions": [
-      {
-        "id": "set_libbi_mode",
-        "title": {
-          "en": "Set Libbi mode",
-          "no": "Still inn Libbi-modus",
-          "nl": "Libbi-modus instellen",
-          "sv": "Ställ in Libbi-läge",
-          "de": "Libbi-Modus einstellen"
-        },
-        "titleFormatted": {
-          "en": "Set Libbi mode to [[libbi_mode]]",
-          "no": "Still inn Libbi-modus til [[libbi_mode]]",
-          "nl": "Stel Libbi-modus in op [[libbi_mode]]",
-          "sv": "Ställ in Libbi-läge till [[libbi_mode]]",
-          "de": "Libbi-Modus auf [[libbi_mode]] einstellen"
-        },
-        "hint": {
-          "en": "Change the Libbi operating mode. Only Normal, Stopped and Export can be set through the myenergi API.",
-          "no": "Endre Libbi-driftsmodus. Kun Normal, Stoppet og Eksport kan settes via myenergi-APIet.",
-          "nl": "Wijzig de Libbi-bedrijfsmodus. Alleen Normaal, Gestopt en Exporteren kunnen via de myenergi-API worden ingesteld.",
-          "sv": "Ändra Libbis driftläge. Endast Normal, Stoppad och Export kan ställas in via myenergi-API:et.",
-          "de": "Ändert den Libbi-Betriebsmodus. Nur Normal, Gestoppt und Export können über die myenergi-API eingestellt werden."
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=libbi"
-          },
-          {
-            "type": "dropdown",
-            "name": "libbi_mode",
-            "title": {
-              "en": "Libbi Mode",
-              "no": "Libbi-modus",
-              "nl": "Libbi-modus",
-              "sv": "Libbi-läge",
-              "de": "Libbi-Modus"
-            },
-            "placeholder": {
-              "en": "Select a value"
-            },
-            "values": [
-              {
-                "id": "NORMAL",
-                "label": {
-                  "en": "Normal",
-                  "no": "Normal",
-                  "nl": "Normaal",
-                  "sv": "Normal",
-                  "de": "Normal"
-                }
-              },
-              {
-                "id": "STOP",
-                "label": {
-                  "en": "Stopped",
-                  "no": "Stoppet",
-                  "nl": "Gestopt",
-                  "sv": "Stoppad",
-                  "de": "Gestoppt"
-                }
-              },
-              {
-                "id": "EXPORT",
-                "label": {
-                  "en": "Export",
-                  "no": "Eksport",
-                  "nl": "Exporteren",
-                  "sv": "Export",
-                  "de": "Export"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "start_charging",
-        "title": {
-          "en": "Start charging the car",
-          "no": "Start lading av bilen",
-          "nl": "Start laden van EV",
-          "sv": "Börja ladda bilen",
-          "de": "Ladevorgang des EV starten"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          }
-        ]
-      },
-      {
-        "id": "stop_charging",
-        "title": {
-          "en": "Stop charging the car",
-          "no": "Stopp lading av bilen",
-          "nl": "Stop laden van EV",
-          "sv": "Sluta ladda bilen",
-          "de": "Ladevorgang des EV beenden"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          }
-        ]
-      },
-      {
-        "id": "set_charge_mode",
-        "title": {
-          "en": "Set charge mode",
-          "no": "Still inn Lademodus",
-          "nl": "Laadmodus instellen",
-          "sv": "Ställ in laddningsläge",
-          "de": "Lademodus einstellen"
-        },
-        "titleFormatted": {
-          "en": "Set charge mode to [[charge_mode_txt]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          },
-          {
-            "type": "text",
-            "name": "charge_mode_txt",
-            "title": {
-              "en": "Charge Mode"
-            },
-            "placeholder": {
-              "en": "FAST, ECO, ECO_PLUS or OFF"
-            }
-          }
-        ]
-      },
-      {
-        "id": "set_minimum_green_level",
-        "title": {
-          "en": "Set minimum green level",
-          "no": "Still inn minimum grønt niva",
-          "nl": "Minimum groen niveau instellen",
-          "sv": "Ställ in lägsta grönnivå",
-          "de": "Stellen Sie den minimalen Grünwert ein"
-        },
-        "titleFormatted": {
-          "en": "Set minimum green level to [[minimum_green_level]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          },
-          {
-            "type": "number",
-            "name": "minimum_green_level",
-            "title": {
-              "en": "Minimum green level"
-            },
-            "placeholder": {
-              "en": "Min % green power"
-            },
-            "min": 0,
-            "max": 100,
-            "step": 1
-          }
-        ]
-      },
-      {
-        "id": "select_charge_mode",
-        "title": {
-          "en": "Select charge mode",
-          "no": "Velg lademodus",
-          "nl": "Selecteer laadmodus",
-          "sv": "Välj laddningsläge",
-          "de": "Lademodus wählen"
-        },
-        "titleFormatted": {
-          "en": "Select charge mode to [[charge_mode_selector]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          },
-          {
-            "type": "dropdown",
-            "name": "charge_mode_selector",
-            "title": {
-              "en": "Select Charge Mode"
-            },
-            "placeholder": {
-              "en": "Select a value"
-            },
-            "values": [
-              {
-                "id": "FAST",
-                "label": {
-                  "en": "Fast"
-                }
-              },
-              {
-                "id": "ECO",
-                "label": {
-                  "en": "Eco"
-                }
-              },
-              {
-                "id": "ECO_PLUS",
-                "label": {
-                  "en": "Eco+"
-                }
-              },
-              {
-                "id": "OFF",
-                "label": {
-                  "en": "Off"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "set_phase_setting",
-        "title": {
-          "en": "Set phase setting",
-          "no": "Still inn faseinnstilling",
-          "nl": "Fase-instelling instellen",
-          "sv": "Ställ in fasinställning",
-          "de": "Phaseneinstellung einstellen"
-        },
-        "hint": {
-          "en": "Switch the Zappi between single phase, three phase or automatic phase charging. Requires a three phase Zappi with firmware that supports phase switching.",
-          "no": "Bytt Zappi mellom enfase, trefase eller automatisk faselading. Krever en trefase Zappi med fastvare som støtter fasebytte.",
-          "nl": "Schakel de Zappi tussen 1-fase, 3-fase of automatisch laden. Vereist een 3-fase Zappi met firmware die fase-omschakeling ondersteunt.",
-          "sv": "Växla Zappi mellan enfas, trefas eller automatisk fasladdning. Kräver en trefas Zappi med fast programvara som stöder fasbyte.",
-          "de": "Schaltet den Zappi zwischen einphasigem, dreiphasigem oder automatischem Laden um. Erfordert einen dreiphasigen Zappi mit Firmware, die Phasenumschaltung unterstützt."
-        },
-        "titleFormatted": {
-          "en": "Set phase setting to [[phase_setting]]",
-          "no": "Still inn faseinnstilling til [[phase_setting]]",
-          "nl": "Stel fase-instelling in op [[phase_setting]]",
-          "sv": "Ställ in fasinställning till [[phase_setting]]",
-          "de": "Phaseneinstellung auf [[phase_setting]] einstellen"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          },
-          {
-            "type": "dropdown",
-            "name": "phase_setting",
-            "title": {
-              "en": "Phase Setting",
-              "no": "Faseinnstilling",
-              "nl": "Fase-instelling",
-              "sv": "Fasinställning",
-              "de": "Phaseneinstellung"
-            },
-            "placeholder": {
-              "en": "Select a value"
-            },
-            "values": [
-              {
-                "id": "AUTO",
-                "label": {
-                  "en": "Auto",
-                  "no": "Auto",
-                  "nl": "Auto",
-                  "sv": "Auto",
-                  "de": "Auto"
-                }
-              },
-              {
-                "id": "SINGLE_PHASE",
-                "label": {
-                  "en": "Single phase",
-                  "no": "Enfase",
-                  "nl": "1-fase",
-                  "sv": "Enfas",
-                  "de": "Einphasig"
-                }
-              },
-              {
-                "id": "THREE_PHASE",
-                "label": {
-                  "en": "Three phase",
-                  "no": "Trefase",
-                  "nl": "3-fase",
-                  "sv": "Trefas",
-                  "de": "Dreiphasig"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "set_boost_mode",
-        "title": {
-          "en": "Set boost mode",
-          "no": "Still inn boost-modus",
-          "nl": "Boost-modus instellen",
-          "sv": "Ställ in boost-läge",
-          "de": "Boost-Modus einstellen"
-        },
-        "titleFormatted": {
-          "en": "Set Boost mode to [[boost_mode_txt]]. End boost after [[boost_mode_kwh]] kWh, before [[boost_mode_complete_time]] o'clock for SMART"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          },
-          {
-            "type": "text",
-            "name": "boost_mode_txt",
-            "title": {
-              "en": "Boost Mode"
-            },
-            "placeholder": {
-              "en": "MANUAL, SMART or STOP"
-            }
-          },
-          {
-            "type": "number",
-            "name": "boost_mode_kwh",
-            "required": false,
-            "title": {
-              "en": "kWh"
-            },
-            "placeholder": {
-              "en": "Number of kWh to boost"
-            }
-          },
-          {
-            "type": "text",
-            "name": "boost_mode_complete_time",
-            "required": false,
-            "title": {
-              "en": "Complete time"
-            },
-            "placeholder": {
-              "en": "Until (HHMM) 15 min interval"
-            }
-          }
-        ]
-      }
-    ],
-    "triggers": [
-      {
-        "id": "charging_started",
-        "title": {
-          "en": "Charging started",
-          "no": "Lading startet",
-          "nl": "Laden gestart",
-          "sv": "Laddning startade",
-          "de": "Ladevorgang gestartet"
-        },
-        "hint": {
-          "en": "When Zappi starts charging the connected car",
-          "no": "Når Zappi starter lading av den tilkoblede bilen",
-          "nl": "Wanneer Zappi de verbonden EV begint op te laden",
-          "sv": "När Zappi börjar ladda den uppkopplade bilen",
-          "de": "Wenn Zappi beginnt, das vernetzte EV aufzuladen"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          }
-        ]
-      },
-      {
-        "id": "charging_stopped",
-        "title": {
-          "en": "Charging stopped",
-          "no": "Lading stoppet",
-          "nl": "Laden gestopt",
-          "sv": "Laddningen avbröts",
-          "de": "Ladevorgang gestoppt"
-        },
-        "hint": {
-          "en": "When Zappi stops charging the connected car",
-          "no": "Når Zappi stopper ladingen av den tilkoblede bilen",
-          "nl": "Wanneer de Zappi is gestopt met het opladen van de verbonden EV",
-          "sv": "När Zappi slutar ladda den anslutna bilen",
-          "de": "Wenn der Zappi das Aufladen des angeschlossenen EV beendet hat"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          }
-        ]
-      },
-      {
-        "id": "charge_mode_changed",
-        "title": {
-          "en": "Charge mode changed",
-          "no": "Lademodus endret",
-          "nl": "Laadmodus veranderde",
-          "sv": "Laddningsläget ändrats",
-          "de": "Lademodus geändert"
-        },
-        "hint": {
-          "en": "When Zappi changed the charge mode",
-          "no": "Da Zappi endret lademodusen",
-          "nl": "Wanneer Zappi de laadmodus veranderde",
-          "sv": "När Zappi bytte laddningsläge",
-          "de": "Wenn Zappi den Lademodus geändert hat"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          }
-        ]
-      },
-      {
-        "id": "charger_status_changed",
-        "title": {
-          "en": "Charger status changed",
-          "no": "Laderstatus endret",
-          "nl": "Status van oplader gewijzigd",
-          "sv": "Laddarens status har ändrats",
-          "de": "Status des Ladegeräts geändert"
-        },
-        "hint": {
-          "en": "When Zappi changed the charger status",
-          "no": "Da Zappi endret lademodusen",
-          "nl": "Wanneer Zappi de status van de oplader veranderde",
-          "sv": "När Zappi ändrade laddarens status",
-          "de": "Wenn Zappi den Ladezustand geändert hat "
-        },
-        "tokens": [
-          {
-            "name": "charger_status",
-            "type": "string",
-            "title": {
-              "en": "Charger Status",
-              "no": "Ladestatus",
-              "nl": "Laderstatus",
-              "sv": "Laddningsstatus",
-              "de": "Ladegerätstatus"
-            },
-            "example": "CHARGING"
-          }
-        ],
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          }
-        ]
-      },
-      {
-        "id": "boost_mode_changed",
-        "title": {
-          "en": "Boost mode changed",
-          "no": "Boost-modus endret",
-          "nl": "Boost-modus gewijzigd",
-          "sv": "Boost-läge har ändrats",
-          "de": "Boost-modus geändert"
-        },
-        "hint": {
-          "en": "When Zappi changed the boost mode",
-          "no": "Da Zappi endret boost-modus",
-          "nl": "Wanneer Zappi de boost-mode veranderde",
-          "sv": "När Zappi ändrade laddarens boost-läge",
-          "de": "Wenn Zappi den boost-modus geändert hat "
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          }
-        ]
-      },
-      {
-        "id": "ev_connected",
-        "title": {
-          "en": "EV connected",
-          "no": "Elbil tilkoblet",
-          "nl": "EV aangesloten",
-          "sv": "Elbil ansluten",
-          "de": "EV verbunden"
-        },
-        "hint": {
-          "en": "When the EV is connected to Zappi",
-          "no": "Når elbilen blir tilkoblet Zappi",
-          "nl": "Wanneer de EV is aangesloten op Zappi",
-          "sv": "När elbilen är kopplad till Zappi",
-          "de": "Wenn das EV mit Zappi verbunden ist"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          }
-        ]
-      },
-      {
-        "id": "ev_disconnected",
-        "title": {
-          "en": "EV disconnected",
-          "no": "Elbil frakoblet",
-          "nl": "EV losgekoppeld",
-          "sv": "Elbil frånkopplad",
-          "de": "EV getrennt"
-        },
-        "hint": {
-          "en": "When the EV is disconnected from Zappi",
-          "no": "Når elbilen blir frakoblet Zappi",
-          "nl": "Wanneer de EV is losgekoppeld van Zappi",
-          "sv": "När elbilen är frånkopplad Zappi",
-          "de": "Wenn das EV von Zappi getrennt wird"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          }
-        ]
-      }
-    ],
-    "conditions": [
-      {
-        "id": "is_charging",
-        "title": {
-          "en": "Car !{{is|isn't}} charging",
-          "no": "Bilen !{{lader|lader ikke}}",
-          "nl": "EV !{{is|is niet}} aan het laden",
-          "sv": "Bilen !{{laddar|laddar inte}}",
-          "de": "EV !{{wird geladen|lädt nicht}}"
-        },
-        "hint": {
-          "en": "Checks if the car is currently being charged by Zappi",
-          "no": "Sjekker om bilen blir laded av Zappi",
-          "nl": "Controleert of de EV wordt opgeladen door de Zappi",
-          "sv": "Kontrollerar om bilen för närvarande laddas av Zappi",
-          "de": "Überprüft, ob das EV gerade von Zappi geladen wird"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          }
-        ]
-      },
-      {
-        "id": "ev_is_connected",
-        "title": {
-          "en": "An EV !{{is|isn't}} connected",
-          "no": "En elbil !{{er|er ikke}} tilkoblet",
-          "nl": "Er !{{is|is geen}} EV aangesloten",
-          "sv": "En elbil !{{är|är inte}} ansluten",
-          "de": "Ein EV !{{ist|ist nicht}} verbunden"
-        },
-        "hint": {
-          "en": "Checks if an EV is connected to the Zappi",
-          "no": "Sjekker om en elbil er koblet til Zappi",
-          "nl": "Controleert of er een EV op de Zappi is aangesloten",
-          "sv": "Kontrollerar om en elbil är ansluten till Zappi",
-          "de": "Überprüft, ob ein EV mit dem Zappi verbunden ist"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          }
-        ]
-      },
-      {
-        "id": "charge_mode_is",
-        "title": {
-          "en": "Charge mode !{{is|isn't}}",
-          "no": "Lademodus !{{er|er ikke}}",
-          "nl": "Laadmodus !{{is|is niet}}",
-          "sv": "Laddningsläget !{{är|är inte}}",
-          "de": "Lademodus !{{ist|ist nicht}}"
-        },
-        "titleFormatted": {
-          "en": "Charge mode !{{is|isn't}} [[charge_mode]]",
-          "no": "Lademodus !{{er|er ikke}} [[charge_mode]]",
-          "nl": "Laadmodus !{{is|is niet}} [[charge_mode]]",
-          "sv": "Laddningsläget !{{är|är inte}} [[charge_mode]]",
-          "de": "Lademodus !{{ist|ist nicht}} [[charge_mode]]"
-        },
-        "hint": {
-          "en": "Checks the current charge mode of the Zappi",
-          "no": "Sjekker gjeldende lademodus på Zappi",
-          "nl": "Controleert de huidige laadmodus van de Zappi",
-          "sv": "Kontrollerar Zappis aktuella laddningsläge",
-          "de": "Überprüft den aktuellen Lademodus des Zappi"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=zappi"
-          },
-          {
-            "type": "dropdown",
-            "name": "charge_mode",
-            "title": {
-              "en": "Charge Mode",
-              "no": "Lademodus",
-              "nl": "Laadmodus",
-              "sv": "Laddningsläge",
-              "de": "Lademodus"
-            },
-            "placeholder": {
-              "en": "Select a value"
-            },
-            "values": [
-              {
-                "id": "FAST",
-                "label": {
-                  "en": "Fast"
-                }
-              },
-              {
-                "id": "ECO",
-                "label": {
-                  "en": "Eco"
-                }
-              },
-              {
-                "id": "ECO_PLUS",
-                "label": {
-                  "en": "Eco+"
-                }
-              },
-              {
-                "id": "OFF",
-                "label": {
-                  "en": "Off"
-                }
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
   "capabilities": {
     "charge_energy_today": {
       "type": "number",

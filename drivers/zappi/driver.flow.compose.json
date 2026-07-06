@@ -125,6 +125,23 @@
             ]
         },
         {
+            "id": "reset_energy_meter_zappi",
+            "title": {
+                "en": "Reset energy meter",
+                "no": "Tilbakestill strømmåler",
+                "nl": "Reset energiemeter",
+                "sv": "Återställ energimätaren",
+                "de": "Energiezähler zurücksetzen"
+            },
+            "hint": {
+                "en": "Resets the accumulated energy value (kWh) to zero. Use with a schedule, e.g. every midnight, to get daily energy readings.",
+                "no": "Nullstiller den akkumulerte energiverdien (kWh). Brukes gjerne med et tidsskjema, f.eks. hver midnatt, for å få daglige energiavlesninger.",
+                "nl": "Zet de geaccumuleerde energiewaarde (kWh) op nul. Gebruik met een schema, bijv. elke middernacht, voor dagelijkse energiewaarden.",
+                "sv": "Nollställer det ackumulerade energivärdet (kWh). Använd med ett schema, t.ex. varje midnatt, för dagliga energiavläsningar.",
+                "de": "Setzt den kumulierten Energiewert (kWh) auf null. Mit einem Zeitplan verwenden, z. B. jede Mitternacht, für tägliche Energiewerte."
+            }
+        },
+        {
             "id": "set_phase_setting",
             "title": {
                 "en": "Set phase setting",
