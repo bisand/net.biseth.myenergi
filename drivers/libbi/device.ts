@@ -107,7 +107,7 @@ export class LibbiDevice extends Device {
         if (this.hasCapability(cap))
           continue;
         await this.addCapability(cap).catch(this.error);
-        if (tmpCaps[cap])
+        if (tmpCaps[cap] !== undefined && tmpCaps[cap] !== null)
           this.setCapabilityValue(cap, tmpCaps[cap]);
         this.log(`*** ${cap} - Added`);
       } catch (error) {
@@ -134,6 +134,15 @@ export class LibbiDevice extends Device {
     for (const cap of (this.driver as LibbiDriver).capabilities) {
       if (!this.hasCapability(cap)) {
         this.log(`Libbi capability ${cap} was added.`);
+        result = true;
+      }
+    }
+    if (!result) {
+      // The Homey app derives the default picker from the capability order,
+      // so an order change must also trigger a rebuild.
+      const driverCaps = (this.driver as LibbiDriver).capabilities;
+      if (caps.some((cap, i) => cap !== driverCaps[i])) {
+        this.log('Libbi capability order changed.');
         result = true;
       }
     }
