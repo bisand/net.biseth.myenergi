@@ -383,7 +383,11 @@ export class ZappiDevice extends Device {
 
     const evConnected = this._chargerStatus !== ZappiStatus.EvDisconnected;
     if (!initializing && evConnected !== this._lastEvConnected) {
-      evConnected ? this.triggerEvConnectedFlow(evConnected) : this.triggerEvDisconnectedFlow(evConnected)
+      if (evConnected) {
+        this.triggerEvConnectedFlow(evConnected);
+      } else {
+        this.triggerEvDisconnectedFlow(evConnected);
+      }
     }
     this._lastEvConnected = evConnected;
 

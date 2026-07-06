@@ -145,7 +145,7 @@ export class HarviDriver extends Driver {
       const devs = await this.getHarviDevices();
       return devs ? devs : [];
     } catch (error) {
-      throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`);
+      throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`, { cause: error });
     }
   }
 

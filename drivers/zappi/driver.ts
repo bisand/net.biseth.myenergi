@@ -348,7 +348,7 @@ export class ZappiDriver extends Driver {
       const devs = await this.getZappiDevices();
       return devs ? devs : [];
     } catch (error) {
-      throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`);
+      throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`, { cause: error });
     }
   }
 }

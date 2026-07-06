@@ -2,7 +2,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: 
+    branches:
       - '**'
   pull_request:
     branches: [ master ]
@@ -14,23 +14,22 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [12.x, 16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        # CI runs build tooling only; the app itself targets the Node
+        # versions provided by Homey firmware (16 on older 2016-2019
+        # firmware, 22 as of Homey v12.9.0).
+        node-version: [22.x]
 
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: package-lock.json # Ensure this file exists in your repo
-
-    - name: Debug Cache
-      run: npm config get cache # Debugging step to inspect cache directory
+        cache-dependency-path: package-lock.json
 
     - run: npm ci
-      continue-on-error: true # Allow the workflow to proceed even if this step fails
 
     - run: npm run build --if-present
+    - run: npm run lint
     - run: npm test
