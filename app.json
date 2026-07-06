@@ -147,6 +147,8 @@
         "heater_2_name",
         "measure_voltage",
         "measure_frequency",
+        "measure_temperature.tp1",
+        "measure_temperature.tp2",
         "button.reset_meter",
         "button.reset_meter_ct1",
         "button.reset_meter_ct2",
@@ -161,6 +163,24 @@
         "cumulativeExportedCapability": "meter_power"
       },
       "capabilitiesOptions": {
+        "measure_temperature.tp1": {
+          "title": {
+            "en": "Temperature probe 1",
+            "no": "Temperaturføler 1",
+            "nl": "Temperatuursensor 1",
+            "sv": "Temperatursond 1",
+            "de": "Temperaturfühler 1"
+          }
+        },
+        "measure_temperature.tp2": {
+          "title": {
+            "en": "Temperature probe 2",
+            "no": "Temperaturføler 2",
+            "nl": "Temperatuursensor 2",
+            "sv": "Temperatursond 2",
+            "de": "Temperaturfühler 2"
+          }
+        },
         "button.reset_meter": {
           "maintenanceAction": true,
           "title": {

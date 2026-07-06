@@ -29,6 +29,8 @@ export class EddiDevice extends Device {
   private _gridPower = 0;
   private _generatedPower = 0;
   private _divertedPower = 0;
+  private _tp1: number | null = null;
+  private _tp2: number | null = null;
   private _settings!: EddiSettings;
   private _powerCalculationModeSetToAuto!: boolean;
 
@@ -191,6 +193,8 @@ export class EddiDevice extends Device {
     this._ct1Current = (this._systemVoltage > 0) ? (this._ct1Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
     this._ct2Current = (this._systemVoltage > 0) ? (this._ct2Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
     this._ct3Current = (this._systemVoltage > 0) ? (this._ct3Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
+    this._tp1 = this.getValidTemperature(eddi.tp1);
+    this._tp2 = this.getValidTemperature(eddi.tp2);
 
     if (this._powerCalculationModeSetToAuto) {
       this._powerCalculationModeSetToAuto = false;
@@ -204,8 +208,19 @@ export class EddiDevice extends Device {
     }
   }
 
+  /**
+   * Temperature probes report -1 when no probe is connected and 127 when
+   * the reading is invalid. Return null for those so the sensor shows as
+   * unknown instead of a bogus temperature.
+   */
+  private getValidTemperature(value?: number): number | null {
+    return (value === undefined || value === null || value <= -1 || value >= 127) ? null : value;
+  }
+
   private setCapabilityValues() {
     this.setCapabilityValue('onoff', this._onOff !== EddiMode.Off).catch(this.error);
+    this.setCapabilityValue('measure_temperature.tp1', this._tp1).catch(this.error);
+    this.setCapabilityValue('measure_temperature.tp2', this._tp2).catch(this.error);
     this.setCapabilityValue('heater_status', `${this._heaterStatus}`).catch(this.error);
     this.setCapabilityValue('heater_1_name', `${this._heater1Name}`).catch(this.error);
     this.setCapabilityValue('heater_2_name', `${this._heater2Name}`).catch(this.error);
