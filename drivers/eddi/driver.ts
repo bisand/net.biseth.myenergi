@@ -7,6 +7,7 @@ import { DataCallbackFunction } from '../../dataCallbackFunction';
 import { Capability } from '../../models/Capability';
 import { CapabilityType } from '../../models/CapabilityType';
 import { PairDevice } from '../../models/PairDevice';
+import type { EddiDevice } from './device';
 import { EddiData } from './EddiData';
 
 export class EddiDriver extends Driver {
@@ -72,6 +73,30 @@ export class EddiDriver extends Driver {
       }
       dev.log('Resetting energy meter from flow');
       await dev.setCapabilityValue('meter_power', 0);
+    });
+
+    const startBoostAction = this.homey.flow.getActionCard('start_eddi_boost');
+    startBoostAction.registerRunListener(async (args) => {
+      const dev: EddiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: start_eddi_boost');
+        return;
+      }
+      // The card's duration is given in milliseconds and is optional.
+      const minutes = args.duration ? Math.max(1, Math.round(args.duration / 60000)) : 60;
+      dev.log(`Starting boost on heater ${args.heater} for ${minutes} minutes from flow`);
+      await dev.startBoost(args.heater, minutes);
+    });
+
+    const stopBoostAction = this.homey.flow.getActionCard('stop_eddi_boost');
+    stopBoostAction.registerRunListener(async (args) => {
+      const dev: EddiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: stop_eddi_boost');
+        return;
+      }
+      dev.log(`Stopping boost on heater ${args.heater} from flow`);
+      await dev.stopBoost(args.heater);
     });
 
     this.log('EddiDriver has been initialized');
