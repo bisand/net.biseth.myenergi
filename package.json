@@ -23,6 +23,6 @@
     "typescript-eslint": "^8.62.1"
   },
   "dependencies": {
-    "myenergi-api": "^2.7.1"
+    "myenergi-api": "^2.8.0"
   }
 }

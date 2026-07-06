@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Eddi, EddiBoost, EddiMode, Harvi, HistoryRecord, MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiPhaseSetting } from 'myenergi-api';
+import { Eddi, EddiBoost, EddiMode, Harvi, HistoryRecord, Libbi, LibbiMode, MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiPhaseSetting } from 'myenergi-api';
 import { AppKeyValues } from 'myenergi-api/dist/src/models/AppKeyValues';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
-import { getFakeEddiData, getFakeHarviData, getFakeZappiData } from '../tools';
+import { getFakeEddiData, getFakeHarviData, getFakeLibbiData, getFakeZappiData } from '../tools';
 
 export class MyEnergiFake extends MyEnergi {
     private _fakeEddiMode: EddiMode;
     private _fakePhaseSetting = 'auto';
+    private _fakeLibbiMode: string | number = 'BALANCE';
     constructor(username: string, password: string, apiBaseUrl?: string) {
         super(username, password, apiBaseUrl);
         this._fakeEddiMode = EddiMode.On;
@@ -18,6 +19,7 @@ export class MyEnergiFake extends MyEnergi {
             result.push({ eddi: Array(1).fill(getFakeEddiData(99999997, this._fakeEddiMode)) });
             result.push({ zappi: Array(1).fill(getFakeZappiData(undefined, this._fakePhaseSetting)) });
             result.push({ harvi: Array(1).fill(getFakeHarviData()) });
+            result.push({ libbi: Array(1).fill(getFakeLibbiData(undefined, this._fakeLibbiMode)) });
             resolve(result);
         });
     }
@@ -77,6 +79,25 @@ export class MyEnergiFake extends MyEnergi {
                 });
             }
             resolve(records);
+        });
+    }
+    public override getStatusLibbiAll(): Promise<Libbi[]> {
+        return new Promise<any>((resolve) => {
+            console.log(`MyEnergiFake->getStatusLibbiAll()`);
+            resolve([getFakeLibbiData(undefined, this._fakeLibbiMode)]);
+        });
+    }
+    public override getStatusLibbi(serialNumber: string): Promise<Libbi | null> {
+        return new Promise<any>((resolve) => {
+            console.log(`MyEnergiFake->getStatusLibbi(${serialNumber})`);
+            resolve(getFakeLibbiData(Number(serialNumber), this._fakeLibbiMode));
+        });
+    }
+    public override setLibbiMode(serialNo: string, mode: LibbiMode): Promise<any> {
+        return new Promise<any>((resolve) => {
+            console.log(`MyEnergiFake->setLibbiMode(${serialNo}, ${mode})`);
+            this._fakeLibbiMode = mode === LibbiMode.Stop ? 'STOP' : (mode === LibbiMode.Export ? 'DRAIN' : 'BALANCE');
+            resolve({ status: 0, statustext: "" });
         });
     }
     public override getStatusEddiAll(): Promise<Eddi[]> {
