@@ -110,8 +110,8 @@ export function includeFakeData(data: any) {
     return result;
 }
 
-export function getFakeZappiData(serialNumber = 99999999) {
-    return { "sno": serialNumber, "dat": getDate(), "tim": getTime(), "ectp2": -3, "ectt1": "Internal Load", "ectt2": "None", "ectt3": "None", "bsm": 0, "bst": 0, "cmt": 255, "dst": 1, "div": 0, "frq": getRandom(51, 49), "fwv": "3300S0.000", "grd": getRandomInt(10000), "pha": 1, "pri": 1, "sta": 1, "tz": 0, "vol": getRandomInt(2400, 2200), "che": 59.91, "bss": 0, "lck": 0, "pst": "A", "zmo": 1, "zs": 20, "rdc": 3, "rac": 1, "rrac": 2, "zsl": 20, "ectt4": "None", "ectt5": "None", "ectt6": "None", "newAppAvailable": false, "newBootloaderAvailable": false, "beingTamperedWith": false, "batteryDischargeEnabled": false, "mgl": 32, "sbh": 6, "sbk": 22, "sbm": 15 };
+export function getFakeZappiData(serialNumber = 99999999, phaseSetting = "auto") {
+    return { "sno": serialNumber, "dat": getDate(), "tim": getTime(), "ectp2": -3, "ectt1": "Internal Load", "ectt2": "None", "ectt3": "None", "bsm": 0, "bst": 0, "cmt": 255, "dst": 1, "div": 0, "frq": getRandom(51, 49), "fwv": "3300S0.000", "grd": getRandomInt(10000), "pha": 1, "pri": 1, "sta": 1, "tz": 0, "vol": getRandomInt(2400, 2200), "che": 59.91, "bss": 0, "lck": 0, "pst": "A", "zmo": 1, "zs": 20, "rdc": 3, "rac": 1, "rrac": 2, "zsl": 20, "ectt4": "None", "ectt5": "None", "ectt6": "None", "newAppAvailable": false, "newBootloaderAvailable": false, "beingTamperedWith": false, "batteryDischargeEnabled": false, "mgl": 32, "sbh": 6, "sbk": 22, "sbm": 15, "phaseSetting": phaseSetting };
 }
 
 export function getFakeHarviData(serialNumber = 99999998) {
