@@ -92,7 +92,7 @@
   "1.11.0": {
     "en": "Support for contribution to the Energy Hub"
   },
-  "1.12.0": {
-    "en": "New: Zappi phase switching (1/3/auto, Zappi V2), separate House Power CT group, per-CT power sensors, Charged Today sensor from myenergi history, improved charger status (Paused/Boosting/Charge Complete). Fixes device initialization crashes."
+  "2.0.0": {
+    "en": "Major release! New: Libbi home battery support, full Homey Energy integration for Zappi (charging state, car in Energy view), Zappi phase switching (V2), separate House Power CT group, per-CT power sensors, Charged Today from myenergi history, improved charger status (Paused/Boosting/Charge Complete), new flow conditions, credential validation with clearer setup help. Note: requires Homey v12.4.5+; charger status values in flows have changed."
   }
 }
