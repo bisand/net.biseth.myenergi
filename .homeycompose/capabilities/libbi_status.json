@@ -1,0 +1,14 @@
+{
+    "type": "string",
+    "title": {
+        "en": "Libbi Status",
+        "no": "Libbi-status",
+        "nl": "Libbi-status",
+        "sv": "Libbi-status",
+        "de": "Libbi-Status"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "icon": "/assets/accessories.svg"
+}

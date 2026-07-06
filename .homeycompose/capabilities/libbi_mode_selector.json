@@ -1,0 +1,76 @@
+{
+    "type": "enum",
+    "title": {
+        "en": "Libbi Mode",
+        "no": "Libbi-modus",
+        "nl": "Libbi-modus",
+        "sv": "Libbi-läge",
+        "de": "Libbi-Modus"
+    },
+    "getable": true,
+    "setable": true,
+    "uiComponent": "picker",
+    "icon": "/assets/charge_mode.svg",
+    "values": [
+        {
+            "id": "NORMAL",
+            "title": {
+                "en": "Normal",
+                "no": "Normal",
+                "nl": "Normaal",
+                "sv": "Normal",
+                "de": "Normal"
+            }
+        },
+        {
+            "id": "STOP",
+            "title": {
+                "en": "Stopped",
+                "no": "Stoppet",
+                "nl": "Gestopt",
+                "sv": "Stoppad",
+                "de": "Gestoppt"
+            }
+        },
+        {
+            "id": "EXPORT",
+            "title": {
+                "en": "Export",
+                "no": "Eksport",
+                "nl": "Exporteren",
+                "sv": "Export",
+                "de": "Export"
+            }
+        },
+        {
+            "id": "CAPTURE",
+            "title": {
+                "en": "Capture (read only)",
+                "no": "Fangst (kun visning)",
+                "nl": "Vastleggen (alleen-lezen)",
+                "sv": "Fånga (skrivskyddad)",
+                "de": "Erfassen (schreibgeschützt)"
+            }
+        },
+        {
+            "id": "MATCH",
+            "title": {
+                "en": "Match (read only)",
+                "no": "Tilpass (kun visning)",
+                "nl": "Matchen (alleen-lezen)",
+                "sv": "Matcha (skrivskyddad)",
+                "de": "Angleichen (schreibgeschützt)"
+            }
+        },
+        {
+            "id": "CHARGE",
+            "title": {
+                "en": "Charge (read only)",
+                "no": "Lading (kun visning)",
+                "nl": "Opladen (alleen-lezen)",
+                "sv": "Laddning (skrivskyddad)",
+                "de": "Laden (schreibgeschützt)"
+            }
+        }
+    ]
+}

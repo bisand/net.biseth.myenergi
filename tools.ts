@@ -171,3 +171,7 @@ function getTime(): string {
     const d = new Date();
     return `${d.getHours()}:${d.getMinutes() + 1}:${d.getSeconds()}`
 }
+
+export function getFakeLibbiData(serialNumber = 99999996, mode: string | number = "BALANCE") {
+    return { "sno": serialNumber, "dat": getDate(), "tim": getTime(), "soc": getRandomInt(100, 20), "sta": getRandomInt(6, 4), "lmo": mode, "gen": getRandomInt(4000), "grd": getRandomInt(2000), "frq": getRandom(51, 49), "vol": getRandomInt(2400, 2200), "che": 12.34, "pri": 1, "cmt": 254, "mbc": 10200, "mic": 5000, "pha": 1, "fwv": "3702S5.010", "ectt1": "Internal Load", "ectt2": "Grid", "ectt3": "None", "ectt4": "None", "ectt5": "None", "ectt6": "None", "newAppAvailable": false, "newBootloaderAvailable": false, "batteryDischargeEnabled": true };
+}

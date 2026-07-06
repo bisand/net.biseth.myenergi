@@ -1,0 +1,59 @@
+{
+  "name": {
+    "en": "Libbi"
+  },
+  "class": "battery",
+  "capabilities": [
+    "measure_battery",
+    "battery_charging_state",
+    "libbi_mode_selector",
+    "libbi_status",
+    "measure_power_generated",
+    "measure_voltage",
+    "measure_frequency",
+    "charge_session_consumption",
+    "button.reload_capabilities"
+  ],
+  "energy": {
+    "homeBattery": true
+  },
+  "capabilitiesOptions": {
+    "libbi_mode_selector": {
+      "preventTag": true,
+      "preventInsights": true
+    },
+    "button.reload_capabilities": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reload capabilities"
+      },
+      "desc": {
+        "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
+      }
+    }
+  },
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [],
+  "pair": [
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      },
+      "options": {
+        "singular": true
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png"
+  }
+}

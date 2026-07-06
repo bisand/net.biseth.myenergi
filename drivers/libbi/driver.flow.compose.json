@@ -1,0 +1,76 @@
+{
+    "actions": [
+        {
+            "id": "set_libbi_mode",
+            "title": {
+                "en": "Set Libbi mode",
+                "no": "Still inn Libbi-modus",
+                "nl": "Libbi-modus instellen",
+                "sv": "Ställ in Libbi-läge",
+                "de": "Libbi-Modus einstellen"
+            },
+            "titleFormatted": {
+                "en": "Set Libbi mode to [[libbi_mode]]",
+                "no": "Still inn Libbi-modus til [[libbi_mode]]",
+                "nl": "Stel Libbi-modus in op [[libbi_mode]]",
+                "sv": "Ställ in Libbi-läge till [[libbi_mode]]",
+                "de": "Libbi-Modus auf [[libbi_mode]] einstellen"
+            },
+            "hint": {
+                "en": "Change the Libbi operating mode. Only Normal, Stopped and Export can be set through the myenergi API.",
+                "no": "Endre Libbi-driftsmodus. Kun Normal, Stoppet og Eksport kan settes via myenergi-APIet.",
+                "nl": "Wijzig de Libbi-bedrijfsmodus. Alleen Normaal, Gestopt en Exporteren kunnen via de myenergi-API worden ingesteld.",
+                "sv": "Ändra Libbis driftläge. Endast Normal, Stoppad och Export kan ställas in via myenergi-API:et.",
+                "de": "Ändert den Libbi-Betriebsmodus. Nur Normal, Gestoppt und Export können über die myenergi-API eingestellt werden."
+            },
+            "args": [
+                {
+                    "type": "dropdown",
+                    "name": "libbi_mode",
+                    "title": {
+                        "en": "Libbi Mode",
+                        "no": "Libbi-modus",
+                        "nl": "Libbi-modus",
+                        "sv": "Libbi-läge",
+                        "de": "Libbi-Modus"
+                    },
+                    "placeholder": {
+                        "en": "Select a value"
+                    },
+                    "values": [
+                        {
+                            "id": "NORMAL",
+                            "label": {
+                                "en": "Normal",
+                                "no": "Normal",
+                                "nl": "Normaal",
+                                "sv": "Normal",
+                                "de": "Normal"
+                            }
+                        },
+                        {
+                            "id": "STOP",
+                            "label": {
+                                "en": "Stopped",
+                                "no": "Stoppet",
+                                "nl": "Gestopt",
+                                "sv": "Stoppad",
+                                "de": "Gestoppt"
+                            }
+                        },
+                        {
+                            "id": "EXPORT",
+                            "label": {
+                                "en": "Export",
+                                "no": "Eksport",
+                                "nl": "Exporteren",
+                                "sv": "Export",
+                                "de": "Export"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
