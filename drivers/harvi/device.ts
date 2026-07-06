@@ -3,7 +3,7 @@ import { Harvi, MyEnergi } from 'myenergi-api';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { HarviSettings } from '../../models/HarviSettings';
-import { calculateEnergy } from '../../tools';
+import { calculateEnergy, isDataStale } from '../../tools';
 import { HarviDriver } from './driver';
 import { HarviData } from "./HarviData";
 
@@ -13,6 +13,7 @@ class HarviDevice extends Device {
   private _ectp1 = 0;
   private _ectp2 = 0;
   private _ectp3 = 0;
+  private _dataIsStale = false;
   private _ectt1 = '';
   private _ectt2 = '';
   private _ectt3 = '';
@@ -150,6 +151,25 @@ class HarviDevice extends Device {
   }
 
   private calculateValues(harvi: Harvi) {
+    // A Harvi is powered by the current in its CT clamps. When it measures
+    // solar panels only, it goes offline at night and the server keeps
+    // reporting its last (non-zero) values. Treat stale reports as zero,
+    // like the myenergi app does.
+    if (isDataStale(harvi.dat, harvi.tim)) {
+      if (!this._dataIsStale) {
+        this._dataIsStale = true;
+        this.log(`Harvi data is stale (last report ${harvi.dat} ${harvi.tim} UTC), reporting zero power.`);
+      }
+      this._ectp1 = 0;
+      this._ectp2 = 0;
+      this._ectp3 = 0;
+      this._power = 0;
+      return;
+    }
+    if (this._dataIsStale) {
+      this._dataIsStale = false;
+      this.log('Harvi data is fresh again.');
+    }
     this._ectp1 = harvi.ectp1;
     this._ectp2 = harvi.ectp2;
     this._ectp3 = harvi.ectp3;
