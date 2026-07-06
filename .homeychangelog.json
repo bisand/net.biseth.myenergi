@@ -97,5 +97,8 @@
   },
   "2.0.1": {
     "en": "Fixed a crash that could occur when changing the power calculation mode to automatic in device settings."
+  },
+  "2.0.2": {
+    "en": "Charge mode is now the default selector on the Zappi device again, and the current phase setting is read from the hub more reliably."
   }
 }
