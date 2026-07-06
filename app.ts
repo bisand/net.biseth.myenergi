@@ -88,7 +88,10 @@ export class MyEnergiApp extends Homey.App {
       const client = new MyEnergi(username, password, apiBaseUrl);
       const data = await client.getStatusAll().catch(this.error);
       this.log(`Credential check: ${JSON.stringify(data)}`);
-      if (data && Array.isArray(data)) {
+      // The API client returns an empty array when authentication fails,
+      // while a successful request always contains at least one entry
+      // (the active server name). An empty result means bad credentials.
+      if (data && Array.isArray(data) && data.length > 0) {
         return true;
       }
     } catch (error) {
