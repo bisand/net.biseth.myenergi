@@ -1288,6 +1288,20 @@
           "sv": "När Zappi ändrade laddarens status",
           "de": "Wenn Zappi den Ladezustand geändert hat "
         },
+        "tokens": [
+          {
+            "name": "charger_status",
+            "type": "string",
+            "title": {
+              "en": "Charger Status",
+              "no": "Ladestatus",
+              "nl": "Laderstatus",
+              "sv": "Laddningsstatus",
+              "de": "Ladegerätstatus"
+            },
+            "example": "CHARGING"
+          }
+        ],
         "args": [
           {
             "type": "device",
@@ -1929,6 +1943,36 @@
             "nl": "Laden",
             "sv": "Laddar",
             "de": "Aufladen"
+          }
+        },
+        {
+          "id": "BOOSTING",
+          "title": {
+            "en": "Boosting",
+            "no": "Booster",
+            "nl": "Boost actief",
+            "sv": "Boost aktiv",
+            "de": "Boost aktiv"
+          }
+        },
+        {
+          "id": "PAUSED",
+          "title": {
+            "en": "Paused",
+            "no": "Pauset",
+            "nl": "Gepauzeerd",
+            "sv": "Pausad",
+            "de": "Pausiert"
+          }
+        },
+        {
+          "id": "CHARGE_COMPLETE",
+          "title": {
+            "en": "Charge Complete",
+            "no": "Lading Fullført",
+            "nl": "Opladen voltooid",
+            "sv": "Laddning klar",
+            "de": "Ladevorgang abgeschlossen"
           }
         },
         {

@@ -102,12 +102,14 @@ export class MyEnergiApp extends Homey.App {
  */
   public async onInit() {
 
-    // Start debuger
+    // Start debugger, unless one is already listening (homey app run
+    // starts the container with the inspector active).
     if (process.env.DEBUG === '1') {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('inspector').open(9229, '0.0.0.0', false);
+      const inspector = await import('node:inspector');
+      if (!inspector.url()) {
+        inspector.open(9229, '0.0.0.0', false);
+      }
       // debugger;
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
     }
 
     const myenergiHubs = this.homey.settings.get('myenergiHubs');

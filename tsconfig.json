@@ -1,7 +1,15 @@
 {
-  "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
-    "outDir": "build/",
+    "target": "ES2021",
+    "lib": ["ES2021", "ES2022.Error"],
+    "module": "node16",
+    "moduleResolution": "node16",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
     "sourceMap": true,
-  }
+    "outDir": "./.homeybuild"
+  },
+  "exclude": [".homeybuild", "build", "node_modules"]
 }

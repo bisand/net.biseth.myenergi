@@ -1,6 +1,6 @@
 import { Driver, FlowCardTriggerDevice } from 'homey';
 import { Device } from 'homey/lib/FlowCardTriggerDevice';
-import { MyEnergi, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
+import { MyEnergi, ZappiChargeMode } from 'myenergi-api';
 import { AppKeyValues } from 'myenergi-api/dist/src/models/AppKeyValues';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
@@ -10,6 +10,7 @@ import { CapabilityType } from '../../models/CapabilityType';
 import { PairDevice } from '../../models/PairDevice';
 import { ZappiDevice } from './device';
 import { ZappiData } from './ZappiData';
+import { ZappiStatusText } from './ZappiStatusText';
 
 export class ZappiDriver extends Driver {
 
@@ -17,6 +18,7 @@ export class ZappiDriver extends Driver {
   private _chargingStarted!: FlowCardTriggerDevice;
   private _chargingStopped!: FlowCardTriggerDevice;
   private _chargeModeChanged!: FlowCardTriggerDevice;
+  private _chargerStatusChanged!: FlowCardTriggerDevice;
   private _boostModeChanged!: FlowCardTriggerDevice;
   private _evConnected!: FlowCardTriggerDevice;
   private _evDisconnected!: FlowCardTriggerDevice;
@@ -63,6 +65,7 @@ export class ZappiDriver extends Driver {
     this._chargingStarted = this.homey.flow.getDeviceTriggerCard('charging_started');
     this._chargingStopped = this.homey.flow.getDeviceTriggerCard('charging_stopped');
     this._chargeModeChanged = this.homey.flow.getDeviceTriggerCard('charge_mode_changed');
+    this._chargerStatusChanged = this.homey.flow.getDeviceTriggerCard('charger_status_changed');
     this._boostModeChanged = this.homey.flow.getDeviceTriggerCard('boost_mode_changed');
     this._evConnected = this.homey.flow.getDeviceTriggerCard('ev_connected');
     this._evDisconnected = this.homey.flow.getDeviceTriggerCard('ev_disconnected');
@@ -76,7 +79,8 @@ export class ZappiDriver extends Driver {
         return;
       }
       dev.log(`Is Charging: ${args} - ${state}`);
-      const charging = dev.chargerStatus === ZappiStatus.Charging; // true or false
+      const statusText = dev.getChargerStatusText(dev.chargerStatus, dev.deviceState);
+      const charging = statusText === ZappiStatusText.Charging || statusText === ZappiStatusText.Boosting; // true or false
       return charging;
     });
 
@@ -212,6 +216,13 @@ export class ZappiDriver extends Driver {
       .catch(this.error);
   }
 
+  public triggerChargerStatusFlow(device: Device, tokens?: object | undefined, state?: object | undefined) {
+    this._chargerStatusChanged
+      .trigger(device, tokens, state)
+      .then((x: unknown) => this.log(`triggerChargerStatusFlow: ${x}`))
+      .catch(this.error);
+  }
+
   public triggerBoostModeFlow(device: Device, tokens?: object | undefined, state?: object | undefined) {
     this._boostModeChanged
       .trigger(device, tokens, state)
@@ -337,7 +348,7 @@ export class ZappiDriver extends Driver {
       const devs = await this.getZappiDevices();
       return devs ? devs : [];
     } catch (error) {
-      throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`);
+      throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`, { cause: error });
     }
   }
 }
