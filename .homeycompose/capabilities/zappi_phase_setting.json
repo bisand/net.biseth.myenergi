@@ -1,0 +1,46 @@
+{
+    "type": "enum",
+    "title": {
+        "en": "Phase Setting",
+        "no": "Faseinnstilling",
+        "nl": "Fase-instelling",
+        "sv": "Fasinställning",
+        "de": "Phaseneinstellung"
+    },
+    "getable": true,
+    "setable": true,
+    "uiComponent": "picker",
+    "icon": "/assets/accessories.svg",
+    "values": [
+        {
+            "id": "AUTO",
+            "title": {
+                "en": "Auto",
+                "no": "Auto",
+                "nl": "Auto",
+                "sv": "Auto",
+                "de": "Auto"
+            }
+        },
+        {
+            "id": "SINGLE_PHASE",
+            "title": {
+                "en": "Single phase",
+                "no": "Enfase",
+                "nl": "1-fase",
+                "sv": "Enfas",
+                "de": "Einphasig"
+            }
+        },
+        {
+            "id": "THREE_PHASE",
+            "title": {
+                "en": "Three phase",
+                "no": "Trefase",
+                "nl": "3-fase",
+                "sv": "Trefas",
+                "de": "Dreiphasig"
+            }
+        }
+    ]
+}

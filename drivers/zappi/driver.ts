@@ -45,6 +45,7 @@ export class ZappiDriver extends Driver {
     new Capability('zappi_boost_time', CapabilityType.Sensor, 19),
     new Capability('zappi_boost_kwh_remaining', CapabilityType.Sensor, 20),
     new Capability('ev_connected', CapabilityType.Sensor, 21),
+    new Capability('zappi_phase_setting', CapabilityType.Control, 22),
   ];
 
   public zappiDevices: ZappiData[] = [];
@@ -173,6 +174,18 @@ export class ZappiDriver extends Driver {
       } catch (error) {
         dev.error(error);
       }
+    });
+
+    const setPhaseSettingAction = this.homey.flow.getActionCard('set_phase_setting');
+    setPhaseSettingAction.registerRunListener(async (args, state) => {
+      const dev: ZappiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: set_phase_setting');
+        return;
+      }
+      dev.log(`Phase Setting: ${args.phase_setting}`);
+      dev.log(`State: ${state}`);
+      await dev.setPhaseSetting(args.phase_setting);
     });
 
     const setMinimumGreenLevelAction = this.homey.flow.getActionCard('set_minimum_green_level');

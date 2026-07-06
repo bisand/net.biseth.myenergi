@@ -23,6 +23,6 @@
     "typescript-eslint": "^8.62.1"
   },
   "dependencies": {
-    "myenergi-api": "^2.5.0"
+    "myenergi-api": "github:bisand/myenergi-api#add-zappi-phase-setting"
   }
 }
