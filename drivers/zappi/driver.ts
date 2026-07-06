@@ -1,6 +1,6 @@
 import { Driver, FlowCardTriggerDevice } from 'homey';
 import { Device } from 'homey/lib/FlowCardTriggerDevice';
-import { MyEnergi, ZappiChargeMode } from 'myenergi-api';
+import { MyEnergi, ZappiChargeMode, ZappiStatus } from 'myenergi-api';
 import { AppKeyValues } from 'myenergi-api/dist/src/models/AppKeyValues';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
@@ -99,6 +99,28 @@ export class ZappiDriver extends Driver {
       const statusText = dev.getChargerStatusText(dev.chargerStatus, dev.deviceState);
       const charging = statusText === ZappiStatusText.Charging || statusText === ZappiStatusText.Boosting; // true or false
       return charging;
+    });
+
+    const evConnectedCondition = this.homey.flow.getConditionCard('ev_is_connected');
+    evConnectedCondition.registerRunListener(async (args, state) => {
+      const dev: ZappiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: ev_is_connected');
+        return;
+      }
+      dev.log(`EV Is Connected: ${args} - ${state}`);
+      return dev.chargerStatus !== ZappiStatus.EvDisconnected;
+    });
+
+    const chargeModeCondition = this.homey.flow.getConditionCard('charge_mode_is');
+    chargeModeCondition.registerRunListener(async (args, state) => {
+      const dev: ZappiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: charge_mode_is');
+        return;
+      }
+      dev.log(`Charge Mode Is: ${args.charge_mode} - ${state}`);
+      return dev.chargeMode === dev.getChargeMode(args.charge_mode);
     });
 
     const startChargingAction = this.homey.flow.getActionCard('start_charging');
