@@ -175,3 +175,27 @@ function getTime(): string {
 export function getFakeLibbiData(serialNumber = 99999996, mode: string | number = "BALANCE") {
     return { "sno": serialNumber, "dat": getDate(), "tim": getTime(), "soc": getRandomInt(100, 20), "sta": getRandomInt(6, 4), "lmo": mode, "gen": getRandomInt(4000), "grd": getRandomInt(2000), "frq": getRandom(51, 49), "vol": getRandomInt(2400, 2200), "che": 12.34, "pri": 1, "cmt": 254, "mbc": 10200, "mic": 5000, "pha": 1, "fwv": "3702S5.010", "ectt1": "Internal Load", "ectt2": "Grid", "ectt3": "None", "ectt4": "None", "ectt5": "None", "ectt6": "None", "newAppAvailable": false, "newBootloaderAvailable": false, "batteryDischargeEnabled": true };
 }
+
+/**
+ * Check whether a device's telemetry timestamp is stale. The myenergi
+ * server keeps returning the last received report when a device stops
+ * sending telemetry (e.g. a CT-powered Harvi on solar panels going dark
+ * at night), so old data must be detected by its timestamp.
+ * @param dat Date of data as reported by the API (dd-mm-yyyy, UTC)
+ * @param tim Time of data as reported by the API (hh:mm or hh:mm:ss, UTC)
+ * @param maxAgeMinutes Data older than this is considered stale
+ */
+export function isDataStale(dat?: string, tim?: string, maxAgeMinutes = 15): boolean {
+    if (!dat || !tim)
+        return false;
+    try {
+        const [day, month, year] = dat.split('-').map(Number);
+        const [hour, minute, second] = tim.split(':').map(Number);
+        if (!year || !month || !day)
+            return false;
+        const timestamp = Date.UTC(year, month - 1, day, hour || 0, minute || 0, second || 0);
+        return (Date.now() - timestamp) > maxAgeMinutes * 60 * 1000;
+    } catch {
+        return false;
+    }
+}
