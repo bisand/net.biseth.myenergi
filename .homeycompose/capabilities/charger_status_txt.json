@@ -63,6 +63,36 @@
             }
         },
         {
+            "id": "BOOSTING",
+            "title": {
+                "en": "Boosting",
+                "no": "Booster",
+                "nl": "Boost actief",
+                "sv": "Boost aktiv",
+                "de": "Boost aktiv"
+            }
+        },
+        {
+            "id": "PAUSED",
+            "title": {
+                "en": "Paused",
+                "no": "Pauset",
+                "nl": "Gepauzeerd",
+                "sv": "Pausad",
+                "de": "Pausiert"
+            }
+        },
+        {
+            "id": "CHARGE_COMPLETE",
+            "title": {
+                "en": "Charge Complete",
+                "no": "Lading Fullført",
+                "nl": "Opladen voltooid",
+                "sv": "Laddning klar",
+                "de": "Ladevorgang abgeschlossen"
+            }
+        },
+        {
             "id": "FAULT",
             "title": {
                 "en": "Fault",

@@ -8,6 +8,7 @@ import { ZappiDriver } from './driver';
 import { ZappiBoostModeText } from './ZappiBoostModeText';
 import { ZappiChargeModeText } from './ZappiChargeModeText';
 import { ZappiData } from "./ZappiData";
+import { ZappiDeviceState } from './ZappiDeviceState';
 import { ZappiStatusText } from './ZappiStatusText';
 
 export class ZappiDevice extends Device {
@@ -37,6 +38,11 @@ export class ZappiDevice extends Device {
   public set chargerStatus(value: ZappiStatus) {
     this._chargerStatus = value;
   }
+  private _deviceState: ZappiDeviceState = ZappiDeviceState.Unknown;
+  public get deviceState(): ZappiDeviceState {
+    return this._deviceState;
+  }
+  private _lastChargerStatusText: ZappiStatusText | null = null;
   private _boostMode: ZappiBoostMode = ZappiBoostMode.Stop;
   public get boostMode(): ZappiBoostMode {
     return this._boostMode;
@@ -242,7 +248,7 @@ export class ZappiDevice extends Device {
     this.setCapabilityValue('charge_mode_txt', `${this.getChargeModeText(this._chargeMode)}`).catch(this.error);
     this.setCapabilityValue('charge_mode_selector', `${this._chargeMode}`).catch(this.error);
     this.setCapabilityValue('charger_status', `${this._chargerStatus}`).catch(this.error);
-    this.setCapabilityValue('charger_status_txt', `${this.getChargerStatusText(this._chargerStatus)}`).catch(this.error);
+    this.setCapabilityValue('charger_status_txt', `${this.getChargerStatusText(this._chargerStatus, this._deviceState)}`).catch(this.error);
     this.setCapabilityValue('measure_power', this._chargingPower ? this._chargingPower : 0).catch(this.error);
     this.setCapabilityValue('measure_voltage', this._chargingVoltage ? this._chargingVoltage : 0).catch(this.error);
     this.setCapabilityValue('measure_current', this._chargingCurrent ? this._chargingCurrent : 0).catch(this.error);
@@ -316,6 +322,7 @@ export class ZappiDevice extends Device {
   private async calculateValues(zappi: Zappi, initializing = false): Promise<void> {
     this._chargeMode = zappi.zmo;
     this._chargerStatus = zappi.pst as ZappiStatus;
+    this._deviceState = (zappi.sta !== undefined && zappi.sta !== null) ? zappi.sta as ZappiDeviceState : ZappiDeviceState.Unknown;
     this._chargingPower = 0;
     if ((this._settings.powerCalculationMode === 'automatic' && zappi.ectt1 === 'Internal Load')
       || (this._settings.powerCalculationMode === 'manual' && this._settings.includeCT1)) {
@@ -379,6 +386,12 @@ export class ZappiDevice extends Device {
       evConnected ? this.triggerEvConnectedFlow(evConnected) : this.triggerEvDisconnectedFlow(evConnected)
     }
     this._lastEvConnected = evConnected;
+
+    const chargerStatusText = this.getChargerStatusText(this._chargerStatus, this._deviceState);
+    if (!initializing && this._lastChargerStatusText !== null && chargerStatusText !== this._lastChargerStatusText) {
+      this.triggerChargerStatusFlow(chargerStatusText);
+    }
+    this._lastChargerStatusText = chargerStatusText;
   }
 
   /**
@@ -462,6 +475,20 @@ export class ZappiDevice extends Device {
 
     this.driver.ready().then(() => {
       (this.driver as ZappiDriver).triggerEvConnectedFlow(this, tokens, state);
+    });
+  }
+
+  /**
+  * Trigger charger status changed flows.
+  * @param statusText the new combined charger status
+  * @returns void
+  */
+  private async triggerChargerStatusFlow(statusText: ZappiStatusText): Promise<void> {
+    const tokens = { charger_status: `${statusText}` };
+    const state = {};
+
+    this.driver.ready().then(() => {
+      (this.driver as ZappiDriver).triggerChargerStatusFlow(this, tokens, state);
     });
   }
 
@@ -686,17 +713,35 @@ export class ZappiDevice extends Device {
       throw new Error(`Invalid boost mode ${value}`);
   }
 
-  public getChargerStatusText(value: ZappiStatus): ZappiStatusText {
+  /**
+   * Combine the pilot state (pst) with the device state (sta) to provide a
+   * more accurate charger status such as Paused, Boosting or Charge Complete.
+   * The device state only refines the status while an EV is connected.
+   */
+  public getChargerStatusText(value: ZappiStatus, state: ZappiDeviceState = ZappiDeviceState.Unknown): ZappiStatusText {
+    if (value == ZappiStatus.EvDisconnected)
+      return ZappiStatusText.EvDisconnected;
+    if (value == ZappiStatus.Fault)
+      return ZappiStatusText.Fault;
+
+    switch (state) {
+      case ZappiDeviceState.Boosting:
+        return ZappiStatusText.Boosting;
+      case ZappiDeviceState.Complete:
+        return ZappiStatusText.ChargeComplete;
+      case ZappiDeviceState.WaitingForExport:
+      case ZappiDeviceState.DSR:
+        return ZappiStatusText.Paused;
+      case ZappiDeviceState.Diverting:
+        return ZappiStatusText.Charging;
+    }
+
     if (value == ZappiStatus.Charging)
       return ZappiStatusText.Charging;
     else if (value == ZappiStatus.EvConnected)
       return ZappiStatusText.EvConnected;
-    else if (value == ZappiStatus.EvDisconnected)
-      return ZappiStatusText.EvDisconnected;
     else if (value == ZappiStatus.EvReadyToCharge)
       return ZappiStatusText.EvReadyToCharge;
-    else if (value == ZappiStatus.Fault)
-      return ZappiStatusText.Fault;
     else if (value == ZappiStatus.WaitingForEv)
       return ZappiStatusText.WaitingForEv;
     else

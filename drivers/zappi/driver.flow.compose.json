@@ -258,7 +258,21 @@
                 "nl": "Wanneer Zappi de status van de oplader veranderde",
                 "sv": "När Zappi ändrade laddarens status",
                 "de": "Wenn Zappi den Ladezustand geändert hat "
-            }
+            },
+            "tokens": [
+                {
+                    "name": "charger_status",
+                    "type": "string",
+                    "title": {
+                        "en": "Charger Status",
+                        "no": "Ladestatus",
+                        "nl": "Laderstatus",
+                        "sv": "Laddningsstatus",
+                        "de": "Ladegerätstatus"
+                    },
+                    "example": "CHARGING"
+                }
+            ]
         },
         {
             "id": "boost_mode_changed",
