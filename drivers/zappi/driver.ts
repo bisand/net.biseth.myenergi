@@ -46,6 +46,19 @@ export class ZappiDriver extends Driver {
     new Capability('zappi_boost_kwh_remaining', CapabilityType.Sensor, 20),
     new Capability('ev_connected', CapabilityType.Sensor, 21),
     new Capability('zappi_phase_setting', CapabilityType.Control, 22),
+    new Capability('measure_power_house', CapabilityType.Sensor, 23),
+    new Capability('ct1_type', CapabilityType.Sensor, 24),
+    new Capability('measure_power_ct1', CapabilityType.Sensor, 25),
+    new Capability('ct2_type', CapabilityType.Sensor, 26),
+    new Capability('measure_power_ct2', CapabilityType.Sensor, 27),
+    new Capability('ct3_type', CapabilityType.Sensor, 28),
+    new Capability('measure_power_ct3', CapabilityType.Sensor, 29),
+    new Capability('ct4_type', CapabilityType.Sensor, 30),
+    new Capability('measure_power_ct4', CapabilityType.Sensor, 31),
+    new Capability('ct5_type', CapabilityType.Sensor, 32),
+    new Capability('measure_power_ct5', CapabilityType.Sensor, 33),
+    new Capability('ct6_type', CapabilityType.Sensor, 34),
+    new Capability('measure_power_ct6', CapabilityType.Sensor, 35),
   ];
 
   public zappiDevices: ZappiData[] = [];

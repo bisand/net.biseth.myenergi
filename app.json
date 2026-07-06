@@ -1174,6 +1174,139 @@
         {
           "type": "group",
           "label": {
+            "en": "House power (second CT group)",
+            "no": "Huseffekt (andre CT-gruppe)",
+            "nl": "Huisvermogen (tweede CT-groep)",
+            "de": "Hausleistung (zweite CT-Gruppe)",
+            "sv": "Huseffekt (andra CT-gruppen)"
+          },
+          "hint": {
+            "en": "Combine a second group of CT clamps into the separate House Power value, independent of the charger power calculation. Useful when house or grid CT clamps are connected to the Zappi.",
+            "no": "Kombiner en ekstra gruppe CT-klemmer til den separate Huseffekt-verdien, uavhengig av ladeeffektberegningen. Nyttig når hus- eller nett-CT-klemmer er koblet til Zappi.",
+            "nl": "Combineer een tweede groep CT-klemmen tot de aparte Huisvermogen-waarde, onafhankelijk van de laadvermogenberekening. Handig wanneer huis- of net-CT-klemmen op de Zappi zijn aangesloten.",
+            "de": "Kombinieren Sie eine zweite Gruppe von CT-Klemmen zum separaten Hausleistungswert, unabhängig von der Ladeleistungsberechnung. Nützlich, wenn Haus- oder Netz-CT-Klemmen an den Zappi angeschlossen sind.",
+            "sv": "Kombinera en andra grupp CT-klämmor till det separata Huseffekt-värdet, oberoende av laddningseffektberäkningen. Användbart när hus- eller nät-CT-klämmor är anslutna till Zappi."
+          },
+          "children": [
+            {
+              "id": "includeHouseCT1",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 1",
+                "no": "Inkludere CT 1",
+                "nl": "CT 1 meenemen",
+                "de": "Inklusive CT 1",
+                "sv": "Inkludera CT 1"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 1 in the house power calculation.",
+                "no": "Inkludere CT 1 i beregningen av huseffekt.",
+                "nl": "CT 1 meenemen in de berekening van het huisvermogen.",
+                "de": "Beziehen Sie CT 1 in die Berechnung der Hausleistung ein.",
+                "sv": "Inkludera CT 1 i beräkningen av huseffekt."
+              }
+            },
+            {
+              "id": "includeHouseCT2",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 2",
+                "no": "Inkludere CT 2",
+                "nl": "CT 2 meenemen",
+                "de": "Inklusive CT 2",
+                "sv": "Inkludera CT 2"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 2 in the house power calculation.",
+                "no": "Inkludere CT 2 i beregningen av huseffekt.",
+                "nl": "CT 2 meenemen in de berekening van het huisvermogen.",
+                "de": "Beziehen Sie CT 2 in die Berechnung der Hausleistung ein.",
+                "sv": "Inkludera CT 2 i beräkningen av huseffekt."
+              }
+            },
+            {
+              "id": "includeHouseCT3",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 3",
+                "no": "Inkludere CT 3",
+                "nl": "CT 3 meenemen",
+                "de": "Inklusive CT 3",
+                "sv": "Inkludera CT 3"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 3 in the house power calculation.",
+                "no": "Inkludere CT 3 i beregningen av huseffekt.",
+                "nl": "CT 3 meenemen in de berekening van het huisvermogen.",
+                "de": "Beziehen Sie CT 3 in die Berechnung der Hausleistung ein.",
+                "sv": "Inkludera CT 3 i beräkningen av huseffekt."
+              }
+            },
+            {
+              "id": "includeHouseCT4",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 4",
+                "no": "Inkludere CT 4",
+                "nl": "CT 4 meenemen",
+                "de": "Inklusive CT 4",
+                "sv": "Inkludera CT 4"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 4 in the house power calculation.",
+                "no": "Inkludere CT 4 i beregningen av huseffekt.",
+                "nl": "CT 4 meenemen in de berekening van het huisvermogen.",
+                "de": "Beziehen Sie CT 4 in die Berechnung der Hausleistung ein.",
+                "sv": "Inkludera CT 4 i beräkningen av huseffekt."
+              }
+            },
+            {
+              "id": "includeHouseCT5",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 5",
+                "no": "Inkludere CT 5",
+                "nl": "CT 5 meenemen",
+                "de": "Inklusive CT 5",
+                "sv": "Inkludera CT 5"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 5 in the house power calculation.",
+                "no": "Inkludere CT 5 i beregningen av huseffekt.",
+                "nl": "CT 5 meenemen in de berekening van het huisvermogen.",
+                "de": "Beziehen Sie CT 5 in die Berechnung der Hausleistung ein.",
+                "sv": "Inkludera CT 5 i beräkningen av huseffekt."
+              }
+            },
+            {
+              "id": "includeHouseCT6",
+              "type": "checkbox",
+              "label": {
+                "en": "Include CT 6",
+                "no": "Inkludere CT 6",
+                "nl": "CT 6 meenemen",
+                "de": "Inklusive CT 6",
+                "sv": "Inkludera CT 6"
+              },
+              "value": false,
+              "hint": {
+                "en": "Include CT 6 in the house power calculation.",
+                "no": "Inkludere CT 6 i beregningen av huseffekt.",
+                "nl": "CT 6 meenemen in de berekening van het huisvermogen.",
+                "de": "Beziehen Sie CT 6 in die Berechnung der Hausleistung ein.",
+                "sv": "Inkludera CT 6 i beräkningen av huseffekt."
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
             "en": "Other",
             "no": "Annen",
             "nl": "Ander",
@@ -2094,6 +2227,36 @@
       "uiComponent": "sensor",
       "icon": "/assets/ct_clamp1.svg"
     },
+    "ct4_type": {
+      "type": "string",
+      "title": {
+        "en": "CT4"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/ct_clamp1.svg"
+    },
+    "ct5_type": {
+      "type": "string",
+      "title": {
+        "en": "CT5"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/ct_clamp1.svg"
+    },
+    "ct6_type": {
+      "type": "string",
+      "title": {
+        "en": "CT6"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/ct_clamp1.svg"
+    },
     "ev_connected": {
       "type": "boolean",
       "title": {
@@ -2514,6 +2677,138 @@
       "setable": false,
       "uiComponent": "sensor"
     },
+    "measure_power_ct4": {
+      "type": "number",
+      "title": {
+        "en": "Power CT4",
+        "nl": "Vermogen CT4",
+        "de": "Leistung CT4",
+        "fr": "Puissance CT4",
+        "it": "Potenza CT4",
+        "sv": "Effekt CT4",
+        "no": "Effekt CT4",
+        "es": "Potencia CT4",
+        "da": "Effekt CT4"
+      },
+      "units": {
+        "en": "W"
+      },
+      "icon": "/assets/ct_clamp2.svg",
+      "insights": true,
+      "desc": {
+        "en": "Power in Watt (W)",
+        "nl": "Vermogen in Watt (W)",
+        "de": "Leistung in Watt (W)",
+        "fr": "Puissance  en Watt (W)",
+        "it": "Potenza in Watt (W)",
+        "sv": "Effekt i watt (W)",
+        "no": "Effekt i watt (W)",
+        "es": "Potencia en vatios (W)",
+        "da": "Effekt i Watt (W)"
+      },
+      "options": {
+        "isApproximated": {
+          "type": "boolean",
+          "default": false,
+          "desc": {
+            "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+          }
+        }
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "measure_power_ct5": {
+      "type": "number",
+      "title": {
+        "en": "Power CT5",
+        "nl": "Vermogen CT5",
+        "de": "Leistung CT5",
+        "fr": "Puissance CT5",
+        "it": "Potenza CT5",
+        "sv": "Effekt CT5",
+        "no": "Effekt CT5",
+        "es": "Potencia CT5",
+        "da": "Effekt CT5"
+      },
+      "units": {
+        "en": "W"
+      },
+      "icon": "/assets/ct_clamp2.svg",
+      "insights": true,
+      "desc": {
+        "en": "Power in Watt (W)",
+        "nl": "Vermogen in Watt (W)",
+        "de": "Leistung in Watt (W)",
+        "fr": "Puissance  en Watt (W)",
+        "it": "Potenza in Watt (W)",
+        "sv": "Effekt i watt (W)",
+        "no": "Effekt i watt (W)",
+        "es": "Potencia en vatios (W)",
+        "da": "Effekt i Watt (W)"
+      },
+      "options": {
+        "isApproximated": {
+          "type": "boolean",
+          "default": false,
+          "desc": {
+            "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+          }
+        }
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
+    "measure_power_ct6": {
+      "type": "number",
+      "title": {
+        "en": "Power CT6",
+        "nl": "Vermogen CT6",
+        "de": "Leistung CT6",
+        "fr": "Puissance CT6",
+        "it": "Potenza CT6",
+        "sv": "Effekt CT6",
+        "no": "Effekt CT6",
+        "es": "Potencia CT6",
+        "da": "Effekt CT6"
+      },
+      "units": {
+        "en": "W"
+      },
+      "icon": "/assets/ct_clamp2.svg",
+      "insights": true,
+      "desc": {
+        "en": "Power in Watt (W)",
+        "nl": "Vermogen in Watt (W)",
+        "de": "Leistung in Watt (W)",
+        "fr": "Puissance  en Watt (W)",
+        "it": "Potenza in Watt (W)",
+        "sv": "Effekt i watt (W)",
+        "no": "Effekt i watt (W)",
+        "es": "Potencia en vatios (W)",
+        "da": "Effekt i Watt (W)"
+      },
+      "options": {
+        "isApproximated": {
+          "type": "boolean",
+          "default": false,
+          "desc": {
+            "en": "This flag is used to determine that the device itself has no power measurement functionality, but that the driver calculates the energy use."
+          }
+        }
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
+    },
     "measure_power_diverted": {
       "type": "number",
       "title": {
@@ -2551,6 +2846,33 @@
       "icon": "/assets/solar_wind_power.svg",
       "min": 0,
       "decimals": 2
+    },
+    "measure_power_house": {
+      "type": "number",
+      "title": {
+        "en": "House Power",
+        "nl": "Huisvermogen",
+        "de": "Hausleistung",
+        "sv": "Huseffekt",
+        "no": "Huseffekt"
+      },
+      "units": {
+        "en": "W"
+      },
+      "icon": "/assets/ct_clamp2.svg",
+      "insights": true,
+      "desc": {
+        "en": "Combined power of the CT clamps selected in the House consumption settings",
+        "nl": "Gecombineerd vermogen van de CT-klemmen geselecteerd in de instellingen voor huisverbruik",
+        "de": "Kombinierte Leistung der in den Hausverbrauchseinstellungen ausgewählten CT-Klemmen",
+        "sv": "Kombinerad effekt för de CT-klämmor som valts i inställningarna för husförbrukning",
+        "no": "Kombinert effekt for CT-klemmene valgt i innstillingene for husforbruk"
+      },
+      "chartType": "stepLine",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor"
     },
     "meter_power_ct1": {
       "type": "number",

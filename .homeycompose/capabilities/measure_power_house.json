@@ -1,0 +1,55 @@
+{
+    "type": "number",
+    "title": {
+      "en": "House Power",
+      "nl": "Huisvermogen",
+      "de": "Hausleistung",
+      "sv": "Huseffekt",
+      "no": "Huseffekt"
+    },
+    "units": {
+      "en": "W"
+    },
+    "icon": "/assets/ct_clamp2.svg",
+    "insights": true,
+    "desc": {
+      "en": "Combined power of the CT clamps selected in the House consumption settings",
+      "nl": "Gecombineerd vermogen van de CT-klemmen geselecteerd in de instellingen voor huisverbruik",
+      "de": "Kombinierte Leistung der in den Hausverbrauchseinstellungen ausgewählten CT-Klemmen",
+      "sv": "Kombinerad effekt för de CT-klämmor som valts i inställningarna för husförbrukning",
+      "no": "Kombinert effekt for CT-klemmene valgt i innstillingene for husforbruk"
+    },
+    "chartType": "stepLine",
+    "decimals": 2,
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "$flow": {
+      "triggers": [
+        {
+          "id": "measure_power_house_changed",
+          "title": {
+            "en": "The house power changed",
+            "nl": "Het huisvermogen is veranderd",
+            "de": "Die Hausleistung hat sich geändert",
+            "sv": "Huseffekten ändrades",
+            "no": "Huseffekten ble endret"
+          },
+          "tokens": [
+            {
+              "name": "measure_power_house",
+              "title": {
+                "en": "House Power",
+                "nl": "Huisvermogen",
+                "de": "Hausleistung",
+                "sv": "Huseffekt",
+                "no": "Huseffekt"
+              },
+              "type": "number",
+              "example": 750
+            }
+          ]
+        }
+      ]
+    }
+  }

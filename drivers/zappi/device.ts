@@ -60,6 +60,9 @@ export class ZappiDevice extends Device {
     this._lastBoostState = value;
   }
   private _lastEvConnected = false;
+  private _ctPowers: number[] = [0, 0, 0, 0, 0, 0];
+  private _ctTypes: string[] = ['None', 'None', 'None', 'None', 'None', 'None'];
+  private _housePower = 0;
   private _boostManualKwh = 0;
   private _boostSmartKwh = 0;
   private _boostManualKwhRemaining = 0;
@@ -267,6 +270,11 @@ export class ZappiDevice extends Device {
     if (this._phaseSetting !== null) {
       this.setCapabilityValue('zappi_phase_setting', `${this._phaseSetting}`).catch(this.error);
     }
+    this.setCapabilityValue('measure_power_house', this._housePower).catch(this.error);
+    for (let i = 0; i < 6; i++) {
+      this.setCapabilityValue(`ct${i + 1}_type`, this._ctTypes[i]).catch(this.error);
+      this.setCapabilityValue(`measure_power_ct${i + 1}`, this._ctPowers[i]).catch(this.error);
+    }
 
     const meter_power = calculateEnergy(this._lastEnergyCalculation, this._lastChargingPower, this._chargingPower, this.getCapabilityValue('meter_power'));
     this._lastChargingPower = this._chargingPower;
@@ -358,6 +366,20 @@ export class ZappiDevice extends Device {
 
     if (this._settings.showNegativeValues === false) {
       this._chargingPower = this._chargingPower > 0 ? this._chargingPower : 0;
+    }
+
+    this._ctPowers = [zappi.ectp1, zappi.ectp2, zappi.ectp3, zappi.ectp4, zappi.ectp5, zappi.ectp6].map(power => power ? power : 0);
+    this._ctTypes = [zappi.ectt1, zappi.ectt2, zappi.ectt3, zappi.ectt4, zappi.ectt5, zappi.ectt6].map(type => type ? type : 'None');
+
+    this._housePower = 0;
+    if (this._settings.includeHouseCT1) this._housePower += this._ctPowers[0];
+    if (this._settings.includeHouseCT2) this._housePower += this._ctPowers[1];
+    if (this._settings.includeHouseCT3) this._housePower += this._ctPowers[2];
+    if (this._settings.includeHouseCT4) this._housePower += this._ctPowers[3];
+    if (this._settings.includeHouseCT5) this._housePower += this._ctPowers[4];
+    if (this._settings.includeHouseCT6) this._housePower += this._ctPowers[5];
+    if (this._settings.showNegativeValues === false) {
+      this._housePower = this._housePower > 0 ? this._housePower : 0;
     }
 
     this._chargingVoltage = zappi.vol ? (zappi.vol / 10) : 0;
@@ -841,6 +863,24 @@ export class ZappiDevice extends Device {
     this.log(`ZappiDevice settings where changed: ${changedKeys}`);
     if (changedKeys.includes('showNegativeValues')) {
       this._settings.showNegativeValues = newSettings.showNegativeValues;
+    }
+    if (changedKeys.includes('includeHouseCT1')) {
+      this._settings.includeHouseCT1 = newSettings.includeHouseCT1;
+    }
+    if (changedKeys.includes('includeHouseCT2')) {
+      this._settings.includeHouseCT2 = newSettings.includeHouseCT2;
+    }
+    if (changedKeys.includes('includeHouseCT3')) {
+      this._settings.includeHouseCT3 = newSettings.includeHouseCT3;
+    }
+    if (changedKeys.includes('includeHouseCT4')) {
+      this._settings.includeHouseCT4 = newSettings.includeHouseCT4;
+    }
+    if (changedKeys.includes('includeHouseCT5')) {
+      this._settings.includeHouseCT5 = newSettings.includeHouseCT5;
+    }
+    if (changedKeys.includes('includeHouseCT6')) {
+      this._settings.includeHouseCT6 = newSettings.includeHouseCT6;
     }
     if (changedKeys.includes('powerCalculationMode')) {
       this._settings.powerCalculationMode = newSettings.powerCalculationMode;
