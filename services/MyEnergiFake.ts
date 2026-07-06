@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Eddi, EddiBoost, EddiMode, Harvi, MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode } from 'myenergi-api';
+import { Eddi, EddiBoost, EddiMode, Harvi, HistoryRecord, MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiPhaseSetting } from 'myenergi-api';
 import { AppKeyValues } from 'myenergi-api/dist/src/models/AppKeyValues';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { getFakeEddiData, getFakeHarviData, getFakeZappiData } from '../tools';
 
 export class MyEnergiFake extends MyEnergi {
     private _fakeEddiMode: EddiMode;
+    private _fakePhaseSetting = 'auto';
     constructor(username: string, password: string, apiBaseUrl?: string) {
         super(username, password, apiBaseUrl);
         this._fakeEddiMode = EddiMode.On;
@@ -15,7 +16,7 @@ export class MyEnergiFake extends MyEnergi {
             console.log(`MyEnergiFake->getStatusAll()`);
             const result = [];
             result.push({ eddi: Array(1).fill(getFakeEddiData(99999997, this._fakeEddiMode)) });
-            result.push({ zappi: Array(1).fill(getFakeZappiData()) });
+            result.push({ zappi: Array(1).fill(getFakeZappiData(undefined, this._fakePhaseSetting)) });
             result.push({ harvi: Array(1).fill(getFakeHarviData()) });
             resolve(result);
         });
@@ -24,14 +25,14 @@ export class MyEnergiFake extends MyEnergi {
         return new Promise<any>((resolve) => {
             console.log(`MyEnergiFake->getStatusZappiAll()`);
             const result = [];
-            result.push(getFakeZappiData());
+            result.push(getFakeZappiData(undefined, this._fakePhaseSetting));
             resolve(result);
         });
     }
     public override getStatusZappi(serialNumber: string): Promise<Zappi | null> {
         return new Promise<any>((resolve) => {
             console.log(`MyEnergiFake->getStatusZappi(${serialNumber})`);
-            resolve(getFakeZappiData(Number(serialNumber)));
+            resolve(getFakeZappiData(Number(serialNumber), this._fakePhaseSetting));
         });
     }
     public override setZappiChargeMode(serialNo: string, chargeMode: ZappiChargeMode): Promise<any> {
@@ -50,6 +51,32 @@ export class MyEnergiFake extends MyEnergi {
         return new Promise<any>((resolve) => {
             console.log(`MyEnergiFake->setZappiGreenLevel(${serialNo}, ${percentage})`);
             resolve({ status: 0, statustext: "" });
+        });
+    }
+    public override setZappiPhaseSetting(serialNo: string, phaseSetting: ZappiPhaseSetting): Promise<any> {
+        return new Promise<any>((resolve) => {
+            console.log(`MyEnergiFake->setZappiPhaseSetting(${serialNo}, ${phaseSetting})`);
+            this._fakePhaseSetting = phaseSetting === ZappiPhaseSetting.SinglePhase ? '1' : (phaseSetting === ZappiPhaseSetting.ThreePhase ? '3' : 'auto');
+            resolve({ status: 0, statustext: "" });
+        });
+    }
+    public override getDayHourHistory(id: string, year: number, month: number, day: number, startHour?: number, noHours?: number): Promise<HistoryRecord[]> {
+        return new Promise<HistoryRecord[]>((resolve) => {
+            console.log(`MyEnergiFake->getDayHourHistory(${id}, ${year}-${month}-${day}, ${startHour}, ${noHours})`);
+            const hours = noHours ?? 24;
+            const records: HistoryRecord[] = [];
+            for (let i = 0; i < hours; i++) {
+                records.push({
+                    hr: ((startHour ?? 0) + i) % 24,
+                    dom: day,
+                    mon: month,
+                    yr: year,
+                    imp: 3600000,
+                    h1d: 1800000,
+                    h1b: 900000,
+                });
+            }
+            resolve(records);
         });
     }
     public override getStatusEddiAll(): Promise<Eddi[]> {

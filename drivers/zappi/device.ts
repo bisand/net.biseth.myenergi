@@ -60,6 +60,7 @@ export class ZappiDevice extends Device {
     this._lastBoostState = value;
   }
   private _lastEvConnected = false;
+  private _lastChargedTodayFetch: Date | null = null;
   private _ctPowers: number[] = [0, 0, 0, 0, 0, 0];
   private _ctTypes: string[] = ['None', 'None', 'None', 'None', 'None', 'None'];
   private _housePower = 0;
@@ -565,6 +566,45 @@ export class ZappiDevice extends Device {
           }
         }
       });
+      this.updateChargedToday().catch(this.error);
+    }
+  }
+
+  /**
+   * Update the "Charged Today" value from myenergi historic data.
+   * Sums the diverted and boosted energy since midnight in Homey's time
+   * zone. Historic data lags a few minutes behind live data and is
+   * cached by the server, so the value is refreshed at most every 15
+   * minutes.
+   */
+  private async updateChargedToday(): Promise<void> {
+    const now = new Date();
+    if (this._lastChargedTodayFetch && (now.getTime() - this._lastChargedTodayFetch.getTime()) < 15 * 60 * 1000)
+      return;
+    this._lastChargedTodayFetch = now;
+    try {
+      const timeZone = this.homey.clock.getTimezone();
+      const localNow = new Date(now.toLocaleString('en-US', { timeZone }));
+      const msSinceLocalMidnight = ((localNow.getHours() * 60 + localNow.getMinutes()) * 60 + localNow.getSeconds()) * 1000;
+      const utcStartOfLocalDay = new Date(now.getTime() - msSinceLocalMidnight);
+      const noHours = Math.min(24, Math.ceil(msSinceLocalMidnight / 3600000) + 1);
+      const records = await this.myenergiClient?.getDayHourHistory(
+        `Z${this.deviceId}`,
+        utcStartOfLocalDay.getUTCFullYear(),
+        utcStartOfLocalDay.getUTCMonth() + 1,
+        utcStartOfLocalDay.getUTCDate(),
+        utcStartOfLocalDay.getUTCHours(),
+        noHours);
+      if (records && records.length > 0) {
+        const joules = records.reduce((sum, record) =>
+          sum + (record.h1d ?? 0) + (record.h1b ?? 0) + (record.h2d ?? 0) + (record.h2b ?? 0) + (record.h3d ?? 0) + (record.h3b ?? 0), 0);
+        const chargedToday = joules / 3600000;
+        this.setCapabilityValue('charge_energy_today', Math.round(chargedToday * 100) / 100).catch(this.error);
+      } else {
+        this.setCapabilityValue('charge_energy_today', 0).catch(this.error);
+      }
+    } catch (error) {
+      this.error(`Updating charged today failed:\n${error}`);
     }
   }
 
@@ -609,17 +649,22 @@ export class ZappiDevice extends Device {
    */
   public async setPhaseSetting(phaseSettingText: ZappiPhaseSettingText): Promise<void> {
     const phaseSetting = this.getPhaseSetting(phaseSettingText);
+    let serverReason = '';
     try {
       const result = await this.myenergiClient?.setZappiPhaseSetting(this.deviceId, phaseSetting);
       if (result.status !== 0) {
-        throw new Error(JSON.stringify(result));
+        // Failed requests may carry the server's reason, e.g. "Only Zappi 2 supported"
+        if (typeof result?.body === 'string' && result.body.length > 0) {
+          serverReason = result.body;
+        }
+        throw new Error(serverReason || JSON.stringify(result));
       }
       this._phaseSetting = phaseSettingText;
       this.setCapabilityValue('zappi_phase_setting', `${phaseSettingText}`).catch(this.error);
       this.log(`Zappi phase setting changed to ${phaseSettingText}`);
     } catch (error) {
       this.error(`Setting the Zappi phase setting to ${phaseSettingText} failed:\n${error}`);
-      throw new Error(`Setting the phase setting failed. Please check that your Zappi supports phase switching.`, { cause: error });
+      throw new Error(`Setting the phase setting failed${serverReason ? ` (${serverReason})` : ''}. Please check that your Zappi supports phase switching.`, { cause: error });
     }
   }
 

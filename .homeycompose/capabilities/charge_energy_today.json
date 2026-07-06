@@ -1,0 +1,27 @@
+{
+    "type": "number",
+    "title": {
+      "en": "Charged Today",
+      "no": "Ladet i dag",
+      "nl": "Vandaag geladen",
+      "sv": "Laddat idag",
+      "de": "Heute geladen"
+    },
+    "units": {
+      "en": "kWh"
+    },
+    "icon": "/assets/charge_session_consumption.svg",
+    "insights": true,
+    "desc": {
+      "en": "Energy delivered by the charger today, from myenergi historic data. Resets at midnight (Homey's time zone).",
+      "no": "Energi levert av laderen i dag, fra myenergi historiske data. Nullstilles ved midnatt (Homeys tidssone).",
+      "nl": "Energie die de lader vandaag heeft geleverd, uit historische myenergi-gegevens. Reset om middernacht (tijdzone van Homey).",
+      "sv": "Energi som laddaren levererat idag, från myenergi historiska data. Nollställs vid midnatt (Homeys tidszon).",
+      "de": "Heute vom Ladegerät gelieferte Energie, aus historischen myenergi-Daten. Wird um Mitternacht zurückgesetzt (Zeitzone von Homey)."
+    },
+    "chartType": "spline",
+    "decimals": 2,
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor"
+  }
