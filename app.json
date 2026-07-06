@@ -1998,6 +1998,101 @@
             "filter": "driver_id=zappi"
           }
         ]
+      },
+      {
+        "id": "ev_is_connected",
+        "title": {
+          "en": "An EV !{{is|isn't}} connected",
+          "no": "En elbil !{{er|er ikke}} tilkoblet",
+          "nl": "Er !{{is|is geen}} EV aangesloten",
+          "sv": "En elbil !{{är|är inte}} ansluten",
+          "de": "Ein EV !{{ist|ist nicht}} verbunden"
+        },
+        "hint": {
+          "en": "Checks if an EV is connected to the Zappi",
+          "no": "Sjekker om en elbil er koblet til Zappi",
+          "nl": "Controleert of er een EV op de Zappi is aangesloten",
+          "sv": "Kontrollerar om en elbil är ansluten till Zappi",
+          "de": "Überprüft, ob ein EV mit dem Zappi verbunden ist"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          }
+        ]
+      },
+      {
+        "id": "charge_mode_is",
+        "title": {
+          "en": "Charge mode !{{is|isn't}}",
+          "no": "Lademodus !{{er|er ikke}}",
+          "nl": "Laadmodus !{{is|is niet}}",
+          "sv": "Laddningsläget !{{är|är inte}}",
+          "de": "Lademodus !{{ist|ist nicht}}"
+        },
+        "titleFormatted": {
+          "en": "Charge mode !{{is|isn't}} [[charge_mode]]",
+          "no": "Lademodus !{{er|er ikke}} [[charge_mode]]",
+          "nl": "Laadmodus !{{is|is niet}} [[charge_mode]]",
+          "sv": "Laddningsläget !{{är|är inte}} [[charge_mode]]",
+          "de": "Lademodus !{{ist|ist nicht}} [[charge_mode]]"
+        },
+        "hint": {
+          "en": "Checks the current charge mode of the Zappi",
+          "no": "Sjekker gjeldende lademodus på Zappi",
+          "nl": "Controleert de huidige laadmodus van de Zappi",
+          "sv": "Kontrollerar Zappis aktuella laddningsläge",
+          "de": "Überprüft den aktuellen Lademodus des Zappi"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "dropdown",
+            "name": "charge_mode",
+            "title": {
+              "en": "Charge Mode",
+              "no": "Lademodus",
+              "nl": "Laadmodus",
+              "sv": "Laddningsläge",
+              "de": "Lademodus"
+            },
+            "placeholder": {
+              "en": "Select a value"
+            },
+            "values": [
+              {
+                "id": "FAST",
+                "label": {
+                  "en": "Fast"
+                }
+              },
+              {
+                "id": "ECO",
+                "label": {
+                  "en": "Eco"
+                }
+              },
+              {
+                "id": "ECO_PLUS",
+                "label": {
+                  "en": "Eco+"
+                }
+              },
+              {
+                "id": "OFF",
+                "label": {
+                  "en": "Off"
+                }
+              }
+            ]
+          }
+        ]
       }
     ]
   },
