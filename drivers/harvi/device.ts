@@ -203,7 +203,13 @@ class HarviDevice extends Device {
         includeCT2: true,
         includeCT3: true,
       };
-      this.setSettings(tmpSettings);
+      // setSettings throws while onSettings is still pending (the settings
+      // dialog that triggered auto mode awaits a cloud call), so retry on
+      // the next data update instead of crashing.
+      this.setSettings(tmpSettings).catch((error: unknown) => {
+        this._powerCalculationModeSetToAuto = true;
+        this.error(error);
+      });
     }
 
   }
@@ -309,7 +315,7 @@ class HarviDevice extends Device {
       this._settings.totalEnergyOffset = 0;
       // Reset the total energy offset after one second
       this._settingsTimeoutHandle = setTimeout(() => {
-        this.setSettings({ totalEnergyOffset: 0 });
+        this.setSettings({ totalEnergyOffset: 0 }).catch(this.error);
         clearTimeout(this._settingsTimeoutHandle);
       }, 1000);
     }

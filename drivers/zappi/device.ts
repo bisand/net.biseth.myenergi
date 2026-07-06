@@ -412,7 +412,13 @@ export class ZappiDevice extends Device {
         includeCT6: zappi.ectt6 === 'Internal Load',
       };
 
-      this.setSettings(tmpSettings);
+      // setSettings throws while onSettings is still pending (the settings
+      // dialog that triggered auto mode awaits a cloud call), so retry on
+      // the next data update instead of crashing.
+      this.setSettings(tmpSettings).catch((error: unknown) => {
+        this._powerCalculationModeSetToAuto = true;
+        this.error(error);
+      });
     }
 
     const evConnected = this._chargerStatus !== ZappiStatus.EvDisconnected;
@@ -980,7 +986,7 @@ export class ZappiDevice extends Device {
       this._settings.totalEnergyOffset = 0;
       // Reset the total energy offset after one second
       this._settingsTimeoutHandle = setTimeout(() => {
-        this.setSettings({ totalEnergyOffset: 0 });
+        this.setSettings({ totalEnergyOffset: 0 }).catch(this.error);
         clearTimeout(this._settingsTimeoutHandle);
       }, 1000);
     }

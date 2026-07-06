@@ -204,7 +204,13 @@ export class EddiDevice extends Device {
         includeCT2: eddi.ectt2 === 'Internal Load',
         includeCT3: eddi.ectt3 === 'Internal Load',
       };
-      this.setSettings(tmpSettings);
+      // setSettings throws while onSettings is still pending (the settings
+      // dialog that triggered auto mode awaits a cloud call), so retry on
+      // the next data update instead of crashing.
+      this.setSettings(tmpSettings).catch((error: unknown) => {
+        this._powerCalculationModeSetToAuto = true;
+        this.error(error);
+      });
     }
   }
 
@@ -423,7 +429,7 @@ export class EddiDevice extends Device {
 
     // Reset energy offset settings after one second to prevent potential conflicts.
     this._settingsTimeoutHandle = setTimeout(() => {
-      this.setSettings({ energyOffsetTotal: 0, energyOffsetCT1: 0, energyOffsetCT2: 0, energyOffsetCT3: 0, energyOffsetGenerated: 0 });
+      this.setSettings({ energyOffsetTotal: 0, energyOffsetCT1: 0, energyOffsetCT2: 0, energyOffsetCT3: 0, energyOffsetGenerated: 0 }).catch(this.error);
       clearTimeout(this._settingsTimeoutHandle);
     }, 1000);
   }
