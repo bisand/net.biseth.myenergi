@@ -100,5 +100,8 @@
   },
   "2.0.2": {
     "en": "Charge mode is now the default selector on the Zappi device again, and the current phase setting is read from the hub more reliably."
+  },
+  "2.1.0": {
+    "en": "New flow actions for Eddi: start a manual boost on heater 1 or 2 for a chosen duration, and stop a running boost."
   }
 }
