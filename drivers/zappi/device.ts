@@ -109,7 +109,7 @@ export class ZappiDevice extends Device {
 
 
     // If energyConfig is not defined or requires an update, request the manifest definition and set the Energy object
-    const energyConfig = this.getEnergy();
+    const energyConfig = this.getEnergy() ?? {};
     const driverManifestEnergyObj = this.driver?.manifest.energy;
     if (driverManifestEnergyObj && Object.keys(energyConfig).length !== Object.keys(driverManifestEnergyObj).length) {
       this.log('updating ENERGY object to', driverManifestEnergyObj);

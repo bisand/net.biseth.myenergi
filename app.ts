@@ -102,10 +102,13 @@ export class MyEnergiApp extends Homey.App {
  */
   public async onInit() {
 
-    // Start debuger
+    // Start debugger, unless one is already listening (homey app run
+    // starts the container with the inspector active).
     if (process.env.DEBUG === '1') {
       const inspector = await import('node:inspector');
-      inspector.open(9229, '0.0.0.0', false);
+      if (!inspector.url()) {
+        inspector.open(9229, '0.0.0.0', false);
+      }
       // debugger;
     }
 
