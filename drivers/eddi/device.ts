@@ -200,12 +200,24 @@ export class EddiDevice extends Device {
       this._powerCalculationModeSetToAuto = false;
       const tmpSettings =
       {
-        includeCT1: true,
-        includeCT2: true,
-        includeCT3: true,
+        includeCT1: eddi.ectt1 === 'Internal Load',
+        includeCT2: eddi.ectt2 === 'Internal Load',
+        includeCT3: eddi.ectt3 === 'Internal Load',
       };
       this.setSettings(tmpSettings);
     }
+  }
+
+  /**
+   * Whether a CT should be included in the total energy calculation.
+   * Automatic mode includes CTs reported as "Internal Load"; manual mode
+   * follows the checkboxes in the advanced settings.
+   */
+  private includeCT(ctType: string, includeSetting?: boolean): boolean {
+    if (this._settings.powerCalculationMode === 'manual') {
+      return includeSetting === true;
+    }
+    return ctType === 'Internal Load';
   }
 
   /**
@@ -258,7 +270,15 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('meter_power_ct2', meter_power_ct2_prev + meter_power_ct2).catch(this.error);
     this.setCapabilityValue('meter_power_ct3', meter_power_ct3_prev + meter_power_ct3).catch(this.error);
     this.setCapabilityValue('meter_power_generated', meter_power_gen_prev + meter_power_gen).catch(this.error);
-    this.setCapabilityValue('meter_power', meter_power_prev + ((meter_power_ct1 + meter_power_ct2 + meter_power_ct3) - meter_power_gen)).catch(this.error);
+
+    // Only CTs selected for the power calculation contribute to the total
+    // energy (the per-CT meters above always accumulate for reference).
+    const meter_power_total =
+      (this.includeCT(this._ct1Type, this._settings.includeCT1) ? meter_power_ct1 : 0)
+      + (this.includeCT(this._ct2Type, this._settings.includeCT2) ? meter_power_ct2 : 0)
+      + (this.includeCT(this._ct3Type, this._settings.includeCT3) ? meter_power_ct3 : 0)
+      - meter_power_gen;
+    this.setCapabilityValue('meter_power', meter_power_prev + meter_power_total).catch(this.error);
   }
 
   private validateCapabilities() {
