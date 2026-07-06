@@ -59,6 +59,7 @@ export class ZappiDriver extends Driver {
     new Capability('measure_power_ct5', CapabilityType.Sensor, 33),
     new Capability('ct6_type', CapabilityType.Sensor, 34),
     new Capability('measure_power_ct6', CapabilityType.Sensor, 35),
+    new Capability('charge_energy_today', CapabilityType.Sensor, 36),
   ];
 
   public zappiDevices: ZappiData[] = [];
