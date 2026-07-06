@@ -42,6 +42,8 @@ export class EddiDriver extends Driver {
     new Capability('button.reset_meter_ct3', CapabilityType.Control, 27),
     new Capability('button.reset_meter_generated', CapabilityType.Control, 28),
     new Capability('button.reload_capabilities', CapabilityType.Control, 29),
+    new Capability('measure_temperature.tp1', CapabilityType.Sensor, 30),
+    new Capability('measure_temperature.tp2', CapabilityType.Sensor, 31),
   ];
 
   public eddiDevices: EddiData[] = [];
