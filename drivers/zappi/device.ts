@@ -649,17 +649,22 @@ export class ZappiDevice extends Device {
    */
   public async setPhaseSetting(phaseSettingText: ZappiPhaseSettingText): Promise<void> {
     const phaseSetting = this.getPhaseSetting(phaseSettingText);
+    let serverReason = '';
     try {
       const result = await this.myenergiClient?.setZappiPhaseSetting(this.deviceId, phaseSetting);
       if (result.status !== 0) {
-        throw new Error(JSON.stringify(result));
+        // Failed requests may carry the server's reason, e.g. "Only Zappi 2 supported"
+        if (typeof result?.body === 'string' && result.body.length > 0) {
+          serverReason = result.body;
+        }
+        throw new Error(serverReason || JSON.stringify(result));
       }
       this._phaseSetting = phaseSettingText;
       this.setCapabilityValue('zappi_phase_setting', `${phaseSettingText}`).catch(this.error);
       this.log(`Zappi phase setting changed to ${phaseSettingText}`);
     } catch (error) {
       this.error(`Setting the Zappi phase setting to ${phaseSettingText} failed:\n${error}`);
-      throw new Error(`Setting the phase setting failed. Please check that your Zappi supports phase switching.`, { cause: error });
+      throw new Error(`Setting the phase setting failed${serverReason ? ` (${serverReason})` : ''}. Please check that your Zappi supports phase switching.`, { cause: error });
     }
   }
 
