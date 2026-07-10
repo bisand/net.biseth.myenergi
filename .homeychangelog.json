@@ -106,5 +106,8 @@
   },
   "2.1.1": {
     "en": "Fixed Zappi phase switching showing an error and reverting even though the change succeeded. Fixed Eddi heater status labels growing repeated ON/OFF suffixes."
+  },
+  "2.1.2": {
+    "en": "The Eddi heater labels now show ON only while the tank is actually being heated, matching the myenergi app."
   }
 }
