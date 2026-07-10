@@ -196,8 +196,11 @@ export class EddiDevice extends Device {
     this._ct3Type = eddi.ectt3;
     if (eddi.ht1) this._heater1BaseName = eddi.ht1;
     if (eddi.ht2) this._heater2BaseName = eddi.ht2;
-    this._heater1Name = this._heater1BaseName + (eddi.hno === 1 ? ': ON' : ': OFF');
-    this._heater2Name = this._heater2BaseName + (eddi.hno === 2 ? ': ON' : ': OFF');
+    // hno is only the *selected* heater; it is actually heating only while
+    // the Eddi is diverting or boosting.
+    const heating = eddi.sta === EddiHeaterStatus.Diverting || eddi.sta === EddiHeaterStatus.Boost;
+    this._heater1Name = this._heater1BaseName + (heating && eddi.hno === 1 ? ': ON' : ': OFF');
+    this._heater2Name = this._heater2BaseName + (heating && eddi.hno === 2 ? ': ON' : ': OFF');
     this._systemVoltage = eddi.vol ? (eddi.vol / 10) : 0;
     this._systemFrequency = eddi.frq;
     this._generatedPower = eddi.gen ? eddi.gen : 0;
