@@ -55,6 +55,7 @@ Translations: this app maintains en, no, nl, sv, de. Every new user-visible stri
 - Enum capability values are string IDs; adding new enum values to an existing capability is backward compatible, removing/renaming breaks users' flows.
 - `energy` objects (per driver or device class `evcharger`, cumulative, etc.) power the Homey Energy tab — see `the-basics/devices/energy.md`.
 - Device class changes (e.g. to `evcharger`) need a `setClass` migration in `onInit`.
+- **Energy tab visuals are Homey's, not the app's (verified empirically July 2026):** apps only publish `evcharger_charging_state` (`plugged_out`/`plugged_in`/`plugged_in_charging`/`plugged_in_paused`); the garage/door/car scene does not react to it (door stays open with a car shown even while the charger reports `plugged_out`). Requests to animate it are Athom feature requests, not app issues.
 - **Multiple picker capabilities (undocumented, verified empirically July 2026 on the iOS app):** the device view shows ONE picker widget with a dropdown menu to switch between picker capabilities. The menu lists them in capability order, but the DEFAULT selection is the LAST picker capability in the device's capability order — so put the picker you want as default last among the pickers. Not sticky: the app recomputes the default every time the device view opens. Order changes on existing devices require a capability rebuild (remove+re-add all in the new order) in `onInit`, since set-based change detection won't fire.
 
 ## CLI (npx homey ...)
