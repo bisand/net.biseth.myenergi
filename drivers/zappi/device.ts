@@ -769,9 +769,13 @@ export class ZappiDevice extends Device {
    * @param value Charge mode
    * @param opts Options
    */
-  private async onCapabilityChargeMode(value: ZappiChargeMode, opts: unknown): Promise<void> {
+  private async onCapabilityChargeMode(value: ZappiChargeMode | string, opts: unknown): Promise<void> {
     this.log(`Charge Mode: ${value} - ${opts}`);
-    this._chargeMode = value;
+    // Homey delivers enum capability values as strings ('1'..'4'), so
+    // normalize before comparing with the numeric ZappiChargeMode values.
+    // Comparing the raw string made Off ('4' !== 4) behave as "on", which
+    // re-sent the last active mode instead of stopping the charger.
+    this._chargeMode = Number(value) as ZappiChargeMode;
     if (this._chargeMode !== ZappiChargeMode.Off) {
       this._lastOnState = this._chargeMode;
     }
