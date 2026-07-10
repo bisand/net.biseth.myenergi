@@ -103,5 +103,8 @@
   },
   "2.1.0": {
     "en": "New flow actions for Eddi: start a manual boost on heater 1 or 2 for a chosen duration, and stop a running boost."
+  },
+  "2.1.1": {
+    "en": "Fixed Zappi phase switching showing an error and reverting even though the change succeeded. Fixed Eddi heater status labels growing repeated ON/OFF suffixes."
   }
 }
