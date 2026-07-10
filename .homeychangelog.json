@@ -109,5 +109,8 @@
   },
   "2.1.2": {
     "en": "The Eddi heater labels now show ON only while the tank is actually being heated, matching the myenergi app."
+  },
+  "2.1.3": {
+    "en": "Selecting Off in the Zappi charge mode selector now actually stops the charger, and opening the phase settings picker no longer changes the charge mode."
   }
 }
