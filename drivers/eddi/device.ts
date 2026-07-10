@@ -3,7 +3,7 @@ import { EddiBoost, EddiMode, EddiHeaterStatus, MyEnergi, Eddi } from 'myenergi-
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { EddiSettings } from '../../models/EddiSettings';
-import { calculateEnergy } from '../../tools';
+import { calculateEnergy, isCommandSuccessful } from '../../tools';
 import { EddiDriver } from './driver';
 import { EddiData } from "./EddiData";
 
@@ -21,6 +21,8 @@ export class EddiDevice extends Device {
   private _ct1Power = 0;
   private _ct2Power = 0;
   private _ct3Power = 0;
+  private _heater1BaseName = 'Heater 1';
+  private _heater2BaseName = 'Heater 2';
   private _heater1Name = 'Heater 1';
   private _heater2Name = 'Heater 2';
   private _ct1Current = 0;
@@ -192,8 +194,10 @@ export class EddiDevice extends Device {
     this._ct1Type = eddi.ectt1;
     this._ct2Type = eddi.ectt2;
     this._ct3Type = eddi.ectt3;
-    this._heater1Name = (eddi.ht1 ? eddi.ht1 : this._heater1Name) + (eddi.hno === 1 ? ': ON' : ': OFF');
-    this._heater2Name = (eddi.ht2 ? eddi.ht2 : this._heater2Name) + (eddi.hno === 2 ? ': ON' : ': OFF');
+    if (eddi.ht1) this._heater1BaseName = eddi.ht1;
+    if (eddi.ht2) this._heater2BaseName = eddi.ht2;
+    this._heater1Name = this._heater1BaseName + (eddi.hno === 1 ? ': ON' : ': OFF');
+    this._heater2Name = this._heater2BaseName + (eddi.hno === 2 ? ': ON' : ': OFF');
     this._systemVoltage = eddi.vol ? (eddi.vol / 10) : 0;
     this._systemFrequency = eddi.frq;
     this._generatedPower = eddi.gen ? eddi.gen : 0;
@@ -343,7 +347,7 @@ export class EddiDevice extends Device {
   private async setEddiMode(isOn: boolean) {
     try {
       const result = await this.myenergiClient.setEddiMode(this.deviceId, isOn ? EddiMode.On : EddiMode.Off);
-      if (result.status !== 0) {
+      if (!isCommandSuccessful(result)) {
         throw new Error(result);
       }
       this.log(`Eddi was switched ${isOn ? 'on' : 'off'}`);
@@ -362,7 +366,7 @@ export class EddiDevice extends Device {
     const boost = heater === '2' ? EddiBoost.ManualHeater2 : EddiBoost.ManualHeater1;
     try {
       const result = await this.myenergiClient?.setEddiBoost(this.deviceId, boost, minutes);
-      if (result.status !== 0) {
+      if (!isCommandSuccessful(result)) {
         throw new Error(JSON.stringify(result));
       }
       this.log(`Eddi boost started on heater ${heater} for ${minutes} minutes`);
@@ -380,7 +384,7 @@ export class EddiDevice extends Device {
     const boost = heater === '2' ? EddiBoost.CancelHeater2 : EddiBoost.CancelHeater1;
     try {
       const result = await this.myenergiClient?.setEddiBoost(this.deviceId, boost);
-      if (result.status !== 0) {
+      if (!isCommandSuccessful(result)) {
         throw new Error(JSON.stringify(result));
       }
       this.log(`Eddi boost stopped on heater ${heater}`);

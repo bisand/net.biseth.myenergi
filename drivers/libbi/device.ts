@@ -1,6 +1,7 @@
 import { Device } from 'homey';
 import { Libbi, LibbiMode, MyEnergi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
+import { isCommandSuccessful } from '../../tools';
 import { LibbiDriver } from './driver';
 import { LibbiData } from './LibbiData';
 import { LibbiModeText } from './LibbiModeText';
@@ -235,7 +236,7 @@ export class LibbiDevice extends Device {
     }
     try {
       const result = await this.myenergiClient?.setLibbiMode(this.deviceId, mode);
-      if (result.status !== 0) {
+      if (!isCommandSuccessful(result)) {
         throw new Error(JSON.stringify(result));
       }
       this._mode = modeText as LibbiModeText;

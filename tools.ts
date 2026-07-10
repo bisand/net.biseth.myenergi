@@ -177,6 +177,19 @@ export function getFakeLibbiData(serialNumber = 99999996, mode: string | number 
 }
 
 /**
+ * Check whether a myenergi control command succeeded. The server reports
+ * status 0 for success, but some endpoints (e.g. the Zappi phase setting)
+ * return it as the string "0" instead of a number, so compare numerically.
+ * @param result Response object from a myenergi cgi command
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isCommandSuccessful(result: any): boolean {
+    if (result === null || result === undefined || result.status === null || result.status === undefined || result.status === '')
+        return false;
+    return Number(result.status) === 0;
+}
+
+/**
  * Check whether a device's telemetry timestamp is stale. The myenergi
  * server keeps returning the last received report when a device stops
  * sending telemetry (e.g. a CT-powered Harvi on solar panels going dark
