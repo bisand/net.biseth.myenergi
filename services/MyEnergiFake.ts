@@ -59,7 +59,8 @@ export class MyEnergiFake extends MyEnergi {
         return new Promise<any>((resolve) => {
             console.log(`MyEnergiFake->setZappiPhaseSetting(${serialNo}, ${phaseSetting})`);
             this._fakePhaseSetting = phaseSetting === ZappiPhaseSetting.SinglePhase ? '1' : (phaseSetting === ZappiPhaseSetting.ThreePhase ? '3' : 'auto');
-            resolve({ status: 0, statustext: "" });
+            // The real server returns the status as a string for this endpoint.
+            resolve({ status: "0", statustext: "" });
         });
     }
     public override getDayHourHistory(id: string, year: number, month: number, day: number, startHour?: number, noHours?: number): Promise<HistoryRecord[]> {

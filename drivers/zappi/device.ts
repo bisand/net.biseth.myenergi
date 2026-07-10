@@ -3,7 +3,7 @@ import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiPhaseSetting, Za
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { ZappiSettings } from '../../models/ZappiSettings';
-import { calculateEnergy } from '../../tools';
+import { calculateEnergy, isCommandSuccessful } from '../../tools';
 import { ZappiDriver } from './driver';
 import { ZappiBoostModeText } from './ZappiBoostModeText';
 import { ZappiChargeModeText } from './ZappiChargeModeText';
@@ -634,7 +634,7 @@ export class ZappiDevice extends Device {
   public async setChargerState(isOn: boolean): Promise<void> {
     try {
       const result = await this.myenergiClient?.setZappiChargeMode(this.deviceId, isOn ? this._lastOnState : ZappiChargeMode.Off);
-      if (result.status !== 0) {
+      if (!isCommandSuccessful(result)) {
         throw new Error(result);
       }
       this.triggerChargingFlow(isOn);
@@ -671,7 +671,7 @@ export class ZappiDevice extends Device {
     let serverReason = '';
     try {
       const result = await this.myenergiClient?.setZappiPhaseSetting(this.deviceId, phaseSetting);
-      if (result.status !== 0) {
+      if (!isCommandSuccessful(result)) {
         // Failed requests may carry the server's reason, e.g. "Only Zappi 2 supported"
         if (typeof result?.body === 'string' && result.body.length > 0) {
           serverReason = result.body;
@@ -729,7 +729,7 @@ export class ZappiDevice extends Device {
       this.setCapabilityValue('charge_mode_txt', `${this.getChargeModeText(chargeMode)}`).catch(this.error);
 
       const result = await this.myenergiClient?.setZappiChargeMode(this.deviceId, chargeMode);
-      if (result.status !== 0) {
+      if (!isCommandSuccessful(result)) {
         throw new Error(result);
       }
 
@@ -753,7 +753,7 @@ export class ZappiDevice extends Device {
       this.setCapabilityValue('zappi_boost_time', `${this.getBoostModeTime(completeTime ? completeTime : '0000')}`).catch(this.error);
 
       const result = await this.myenergiClient?.setZappiBoostMode(this.deviceId, boostMode, kWh, completeTime);
-      if (result.status !== 0) {
+      if (!isCommandSuccessful(result)) {
         throw new Error(JSON.stringify(result));
       }
 
