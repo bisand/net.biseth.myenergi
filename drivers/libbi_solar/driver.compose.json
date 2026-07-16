@@ -1,0 +1,64 @@
+{
+  "name": {
+    "en": "Libbi Solar"
+  },
+  "class": "solarpanel",
+  "capabilities": [
+    "measure_power",
+    "meter_power",
+    "button.reset_meter",
+    "button.reload_capabilities"
+  ],
+  "capabilitiesOptions": {
+    "button.reset_meter": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reset energy meter",
+        "no": "Tilbakestill strømmåler",
+        "nl": "Reset energiemeter",
+        "sv": "Återställ energimätaren",
+        "de": "Energiezähler zurücksetzen"
+      },
+      "desc": {
+        "en": "Reset the accumulated generated energy (kWh), this can not be restored.",
+        "no": "Tilbakestill akkumulert produsert energi (kWh), dette kan ikke gjenopprettes.",
+        "nl": "Reset de geaccumuleerde opgewekte energie (kWh), dit kan niet worden hersteld.",
+        "sv": "Återställ den ackumulerade producerade energin (kWh), detta kan inte återställas.",
+        "de": "Setzt die kumulierte erzeugte Energie zurück (kWh), diese kann nicht wiederhergestellt werden."
+      }
+    },
+    "button.reload_capabilities": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reload capabilities"
+      },
+      "desc": {
+        "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
+      }
+    }
+  },
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [],
+  "pair": [
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "add_devices"
+      },
+      "options": {
+        "singular": true
+      }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png"
+  }
+}

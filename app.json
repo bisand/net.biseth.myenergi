@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "net.biseth.myenergi",
-  "version": "2.1.3",
+  "version": "2.2.0",
   "compatibility": ">=12.4.5",
   "sdk": 3,
   "brandColor": "#2bcc64",
@@ -1738,21 +1738,62 @@
       "capabilities": [
         "measure_battery",
         "battery_charging_state",
+        "measure_power",
         "libbi_mode_selector",
         "libbi_status",
         "measure_power_generated",
         "measure_voltage",
         "measure_frequency",
         "charge_session_consumption",
+        "meter_power.charged",
+        "meter_power.discharged",
+        "button.reset_meter",
         "button.reload_capabilities"
       ],
       "energy": {
-        "homeBattery": true
+        "homeBattery": true,
+        "meterPowerImportedCapability": "meter_power.charged",
+        "meterPowerExportedCapability": "meter_power.discharged"
       },
       "capabilitiesOptions": {
         "libbi_mode_selector": {
           "preventTag": true,
           "preventInsights": true
+        },
+        "meter_power.charged": {
+          "title": {
+            "en": "Energy charged",
+            "no": "Energi ladet",
+            "nl": "Geladen energie",
+            "sv": "Laddad energi",
+            "de": "Geladene Energie"
+          }
+        },
+        "meter_power.discharged": {
+          "title": {
+            "en": "Energy discharged",
+            "no": "Energi utladet",
+            "nl": "Ontladen energie",
+            "sv": "Urladdad energi",
+            "de": "Entladene Energie"
+          }
+        },
+        "button.reset_meter": {
+          "maintenanceAction": true,
+          "title": {
+            "en": "Reset energy meters",
+            "no": "Tilbakestill strømmålere",
+            "nl": "Reset energiemeters",
+            "sv": "Återställ energimätarna",
+            "de": "Energiezähler zurücksetzen"
+          },
+          "desc": {
+            "en": "Reset the accumulated charged and discharged energy (kWh), this can not be restored.",
+            "no": "Tilbakestill akkumulert ladet og utladet energi (kWh), dette kan ikke gjenopprettes.",
+            "nl": "Reset de geaccumuleerde geladen en ontladen energie (kWh), dit kan niet worden hersteld.",
+            "sv": "Återställ den ackumulerade laddade och urladdade energin (kWh), detta kan inte återställas.",
+            "de": "Setzt die kumulierte geladene und entladene Energie zurück (kWh), diese kann nicht wiederhergestellt werden."
+          }
         },
         "button.reload_capabilities": {
           "maintenanceAction": true,
@@ -1789,6 +1830,71 @@
         "large": "/drivers/libbi/assets/images/large.png"
       },
       "id": "libbi"
+    },
+    {
+      "name": {
+        "en": "Libbi Solar"
+      },
+      "class": "solarpanel",
+      "capabilities": [
+        "measure_power",
+        "meter_power",
+        "button.reset_meter",
+        "button.reload_capabilities"
+      ],
+      "capabilitiesOptions": {
+        "button.reset_meter": {
+          "maintenanceAction": true,
+          "title": {
+            "en": "Reset energy meter",
+            "no": "Tilbakestill strømmåler",
+            "nl": "Reset energiemeter",
+            "sv": "Återställ energimätaren",
+            "de": "Energiezähler zurücksetzen"
+          },
+          "desc": {
+            "en": "Reset the accumulated generated energy (kWh), this can not be restored.",
+            "no": "Tilbakestill akkumulert produsert energi (kWh), dette kan ikke gjenopprettes.",
+            "nl": "Reset de geaccumuleerde opgewekte energie (kWh), dit kan niet worden hersteld.",
+            "sv": "Återställ den ackumulerade producerade energin (kWh), detta kan inte återställas.",
+            "de": "Setzt die kumulierte erzeugte Energie zurück (kWh), diese kann nicht wiederhergestellt werden."
+          }
+        },
+        "button.reload_capabilities": {
+          "maintenanceAction": true,
+          "title": {
+            "en": "Reload capabilities"
+          },
+          "desc": {
+            "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
+          }
+        }
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [],
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          },
+          "options": {
+            "singular": true
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "images": {
+        "small": "/drivers/libbi_solar/assets/images/small.png",
+        "large": "/drivers/libbi_solar/assets/images/large.png"
+      },
+      "id": "libbi_solar"
     },
     {
       "name": {

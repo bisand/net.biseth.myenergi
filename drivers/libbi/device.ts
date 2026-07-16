@@ -1,7 +1,7 @@
 import { Device } from 'homey';
 import { Libbi, LibbiMode, MyEnergi } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
-import { isCommandSuccessful } from '../../tools';
+import { calculateEnergy, isCommandSuccessful } from '../../tools';
 import { LibbiDriver } from './driver';
 import { LibbiData } from './LibbiData';
 import { LibbiModeText } from './LibbiModeText';
@@ -43,10 +43,14 @@ export class LibbiDevice extends Device {
   private _stateOfCharge = 0;
   private _state = 0;
   private _mode: LibbiModeText = LibbiModeText.Normal;
+  private _batteryPower = 0;
   private _generatedPower = 0;
   private _voltage = 0;
   private _frequency = 0;
   private _sessionEnergy = 0;
+
+  private _lastPowerMeasurement = 0;
+  private _lastEnergyCalculation: Date = new Date();
 
   public deviceId!: string;
   public myenergiClientId!: string;
@@ -77,6 +81,10 @@ export class LibbiDevice extends Device {
     }
 
     this.registerCapabilityListener('libbi_mode_selector', this.onCapabilityMode.bind(this));
+    this.registerCapabilityListener('button.reset_meter', async () => {
+      this.setCapabilityValue('meter_power.charged', 0).catch(this.error);
+      this.setCapabilityValue('meter_power.discharged', 0).catch(this.error);
+    });
     this.registerCapabilityListener('button.reload_capabilities', async () => {
       this.InitializeCapabilities();
     });
@@ -156,6 +164,10 @@ export class LibbiDevice extends Device {
     this._stateOfCharge = libbi.soc ? libbi.soc : 0;
     this._state = libbi.sta ? libbi.sta : 0;
     this._mode = this.getModeText(libbi.lmo);
+    // The div field is the live battery power: positive while charging,
+    // negative while discharging — the same convention Homey Energy
+    // expects from a home battery's measure_power.
+    this._batteryPower = libbi.div ? libbi.div : 0;
     this._generatedPower = libbi.gen ? libbi.gen : 0;
     this._voltage = libbi.vol ? (libbi.vol / 10) : 0;
     this._frequency = libbi.frq ? libbi.frq : 0;
@@ -167,10 +179,26 @@ export class LibbiDevice extends Device {
     this.setCapabilityValue('battery_charging_state', this.getBatteryChargingState()).catch(this.error);
     this.setCapabilityValue('libbi_mode_selector', `${this._mode}`).catch(this.error);
     this.setCapabilityValue('libbi_status', this.getStateText()).catch(this.error);
+    this.setCapabilityValue('measure_power', this._batteryPower).catch(this.error);
     this.setCapabilityValue('measure_power_generated', this._generatedPower).catch(this.error);
     this.setCapabilityValue('measure_voltage', this._voltage).catch(this.error);
     this.setCapabilityValue('measure_frequency', this._frequency).catch(this.error);
     this.setCapabilityValue('charge_session_consumption', this._sessionEnergy).catch(this.error);
+
+    // Accumulate charged/discharged energy for the Homey Energy tab.
+    if (this.hasCapability('meter_power.charged') && this.hasCapability('meter_power.discharged')) {
+      if (this._batteryPower >= 0) {
+        const lastChargedPower = Math.max(0, this._lastPowerMeasurement);
+        const charged = calculateEnergy(this._lastEnergyCalculation, lastChargedPower, this._batteryPower, this.getCapabilityValue('meter_power.charged') || 0);
+        this.setCapabilityValue('meter_power.charged', charged).catch(this.error);
+      } else {
+        const lastDischargedPower = Math.abs(Math.min(0, this._lastPowerMeasurement));
+        const discharged = calculateEnergy(this._lastEnergyCalculation, lastDischargedPower, Math.abs(this._batteryPower), this.getCapabilityValue('meter_power.discharged') || 0);
+        this.setCapabilityValue('meter_power.discharged', discharged).catch(this.error);
+      }
+    }
+    this._lastPowerMeasurement = this._batteryPower;
+    this._lastEnergyCalculation = new Date();
   }
 
   private getBatteryChargingState(): string {

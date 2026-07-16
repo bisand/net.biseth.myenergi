@@ -7,26 +7,16 @@ import { DataCallbackFunction } from '../../dataCallbackFunction';
 import { Capability } from '../../models/Capability';
 import { CapabilityType } from '../../models/CapabilityType';
 import { PairDevice } from '../../models/PairDevice';
-import { LibbiDevice } from './device';
-import { LibbiData } from './LibbiData';
+import { LibbiData } from '../libbi/LibbiData';
 
-export class LibbiDriver extends Driver {
+export class LibbiSolarDriver extends Driver {
 
   private _dataUpdateCallbacks: DataCallbackFunction[] = [];
   private readonly _capabilities: Capability[] = [
-    new Capability('libbi_mode_selector', CapabilityType.Control, 1),
-    new Capability('button.reset_meter', CapabilityType.Control, 2),
-    new Capability('button.reload_capabilities', CapabilityType.Control, 3),
-    new Capability('measure_battery', CapabilityType.Sensor, 4),
-    new Capability('battery_charging_state', CapabilityType.Sensor, 5),
-    new Capability('measure_power', CapabilityType.Sensor, 6),
-    new Capability('libbi_status', CapabilityType.Sensor, 7),
-    new Capability('measure_power_generated', CapabilityType.Sensor, 8),
-    new Capability('measure_voltage', CapabilityType.Sensor, 9),
-    new Capability('measure_frequency', CapabilityType.Sensor, 10),
-    new Capability('charge_session_consumption', CapabilityType.Sensor, 11),
-    new Capability('meter_power.charged', CapabilityType.Sensor, 12),
-    new Capability('meter_power.discharged', CapabilityType.Sensor, 13),
+    new Capability('button.reset_meter', CapabilityType.Control, 1),
+    new Capability('button.reload_capabilities', CapabilityType.Control, 2),
+    new Capability('measure_power', CapabilityType.Sensor, 3),
+    new Capability('meter_power', CapabilityType.Sensor, 4),
   ];
 
   public libbiDevices: LibbiData[] = [];
@@ -44,20 +34,7 @@ export class LibbiDriver extends Driver {
   public async onInit() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (this.homey.app as MyEnergiApp).registerDataUpdateCallback((data: any) => this.dataUpdated(data));
-
-    const setLibbiModeAction = this.homey.flow.getActionCard('set_libbi_mode');
-    setLibbiModeAction.registerRunListener(async (args, state) => {
-      const dev: LibbiDevice = args.device;
-      if (!dev) {
-        this.error('Unable to detect device on flow: set_libbi_mode');
-        return;
-      }
-      dev.log(`Libbi Mode: ${args.libbi_mode}`);
-      dev.log(`State: ${state}`);
-      await dev.setMode(args.libbi_mode);
-    });
-
-    this.log('LibbiDriver has been initialized');
+    this.log('LibbiSolarDriver has been initialized');
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,7 +89,7 @@ export class LibbiDriver extends Driver {
     return [];
   }
 
-  private async getLibbiDevices(): Promise<PairDevice[]> {
+  private async getLibbiSolarDevices(): Promise<PairDevice[]> {
     const libbiDevices = await this.loadLibbiDevices().catch(this.error) as LibbiData[];
     return await Promise.all(libbiDevices.map(async (v: LibbiData): Promise<PairDevice> => {
       let deviceName = `Libbi ${v.sno}`;
@@ -129,6 +106,7 @@ export class LibbiDriver extends Driver {
       } catch (error) {
         this.error(error);
       }
+      deviceName = `${deviceName} Solar`;
       this.log(`Found: ${deviceName}`)
       return {
         name: deviceName,
@@ -159,7 +137,7 @@ export class LibbiDriver extends Driver {
       throw new Error("Can not find any myenergi hubs. Please add the hub credentials under myenergi app settings.");
 
     try {
-      const devs = await this.getLibbiDevices();
+      const devs = await this.getLibbiSolarDevices();
       return devs ? devs : [];
     } catch (error) {
       throw new Error(`An error occurred while trying to fetch devices. Please check your credentials in the app settings. (${JSON.stringify(error)})`, { cause: error });
@@ -167,4 +145,4 @@ export class LibbiDriver extends Driver {
   }
 }
 
-module.exports = LibbiDriver;
+module.exports = LibbiSolarDriver;

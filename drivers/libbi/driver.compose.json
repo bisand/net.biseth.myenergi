@@ -6,21 +6,62 @@
   "capabilities": [
     "measure_battery",
     "battery_charging_state",
+    "measure_power",
     "libbi_mode_selector",
     "libbi_status",
     "measure_power_generated",
     "measure_voltage",
     "measure_frequency",
     "charge_session_consumption",
+    "meter_power.charged",
+    "meter_power.discharged",
+    "button.reset_meter",
     "button.reload_capabilities"
   ],
   "energy": {
-    "homeBattery": true
+    "homeBattery": true,
+    "meterPowerImportedCapability": "meter_power.charged",
+    "meterPowerExportedCapability": "meter_power.discharged"
   },
   "capabilitiesOptions": {
     "libbi_mode_selector": {
       "preventTag": true,
       "preventInsights": true
+    },
+    "meter_power.charged": {
+      "title": {
+        "en": "Energy charged",
+        "no": "Energi ladet",
+        "nl": "Geladen energie",
+        "sv": "Laddad energi",
+        "de": "Geladene Energie"
+      }
+    },
+    "meter_power.discharged": {
+      "title": {
+        "en": "Energy discharged",
+        "no": "Energi utladet",
+        "nl": "Ontladen energie",
+        "sv": "Urladdad energi",
+        "de": "Entladene Energie"
+      }
+    },
+    "button.reset_meter": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reset energy meters",
+        "no": "Tilbakestill strømmålere",
+        "nl": "Reset energiemeters",
+        "sv": "Återställ energimätarna",
+        "de": "Energiezähler zurücksetzen"
+      },
+      "desc": {
+        "en": "Reset the accumulated charged and discharged energy (kWh), this can not be restored.",
+        "no": "Tilbakestill akkumulert ladet og utladet energi (kWh), dette kan ikke gjenopprettes.",
+        "nl": "Reset de geaccumuleerde geladen en ontladen energie (kWh), dit kan niet worden hersteld.",
+        "sv": "Återställ den ackumulerade laddade och urladdade energin (kWh), detta kan inte återställas.",
+        "de": "Setzt die kumulierte geladene und entladene Energie zurück (kWh), diese kann nicht wiederhergestellt werden."
+      }
     },
     "button.reload_capabilities": {
       "maintenanceAction": true,
