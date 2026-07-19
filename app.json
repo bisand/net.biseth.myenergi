@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "net.biseth.myenergi",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "compatibility": ">=12.4.5",
   "sdk": 3,
   "brandColor": "#2bcc64",
@@ -1010,6 +1010,7 @@
         "measure_current_ct3",
         "measure_power",
         "measure_power_diverted",
+        "meter_power_diverted",
         "measure_power_generated",
         "meter_power_generated",
         "heater_1_name",
@@ -1023,6 +1024,7 @@
         "button.reset_meter_ct2",
         "button.reset_meter_ct3",
         "button.reset_meter_generated",
+        "button.reset_meter_diverted",
         "button.reload_capabilities"
       ],
       "energy": {
@@ -1135,6 +1137,23 @@
             "se": "Återställ den ackumulerade genererade energin (kWh), denna kan inte återställas."
           }
         },
+        "button.reset_meter_diverted": {
+          "maintenanceAction": true,
+          "title": {
+            "en": "Reset energy meter (Diverted)",
+            "no": "Tilbakestill energimåler (Avledet)",
+            "nl": "Energiemeter resetten (Omgeleid)",
+            "sv": "Återställ energimätare (Avledd)",
+            "de": "Energiezähler zurücksetzen (Umgeleitet)"
+          },
+          "desc": {
+            "en": "Reset the accumulated diverted heating energy (kWh), this can not be restored.",
+            "no": "Tilbakestill den akkumulerte avledede varmeenergien (kWh), denne kan ikke gjenopprettes.",
+            "nl": "Reset de opgebouwde omgeleide verwarmingsenergie (kWh), dit kan niet worden hersteld.",
+            "sv": "Återställ den ackumulerade avledda värmeenergin (kWh), denna kan inte återställas.",
+            "de": "Setzen Sie die akkumulierte umgeleitete Heizenergie (kWh) zurück, diese kann nicht wiederhergestellt werden."
+          }
+        },
         "button.reload_capabilities": {
           "maintenanceAction": true,
           "title": {
@@ -1243,6 +1262,55 @@
               },
               "hint": {
                 "en": "Eddi serial number."
+              }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Homey Energy",
+            "no": "Homey Energy",
+            "nl": "Homey Energy",
+            "de": "Homey Energy",
+            "sv": "Homey Energy"
+          },
+          "children": [
+            {
+              "id": "energyRole",
+              "type": "dropdown",
+              "value": "house_meter",
+              "label": {
+                "en": "Role in Homey Energy",
+                "no": "Rolle i Homey Energy",
+                "nl": "Rol in Homey Energy",
+                "de": "Rolle in Homey Energy",
+                "sv": "Roll i Homey Energy"
+              },
+              "values": [
+                {
+                  "id": "house_meter",
+                  "label": {
+                    "en": "House meter (grid power, current behavior)",
+                    "no": "Husmåler (netteffekt, nåværende oppførsel)",
+                    "nl": "Huismeter (netvermogen, huidig gedrag)",
+                    "de": "Hauszähler (Netzleistung, aktuelles Verhalten)",
+                    "sv": "Husmätare (näteffekt, nuvarande beteende)"
+                  }
+                },
+                {
+                  "id": "heater",
+                  "label": {
+                    "en": "Heater (diverted heating power)",
+                    "no": "Varmer (avledet varmeeffekt)",
+                    "nl": "Verwarming (omgeleid verwarmingsvermogen)",
+                    "de": "Heizung (umgeleitete Heizleistung)",
+                    "sv": "Värmare (avledd värmeeffekt)"
+                  }
+                }
+              ],
+              "hint": {
+                "en": "House meter: the Eddi reports the grid flow and its total meter counts as the home's cumulative meter in Homey Energy (the behavior since 2023). Heater: the Eddi reports its own consumption (the diverted heating power) like a regular appliance. Note: switching changes what the Power value means, so flows and Insights based on it will reflect the new meaning."
               }
             }
           ]
@@ -3711,6 +3779,25 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor"
+    },
+    "meter_power_diverted": {
+      "type": "number",
+      "title": {
+        "en": "Diverted energy",
+        "no": "Avledet energi",
+        "nl": "Omgeleide energie",
+        "sv": "Avledd energi",
+        "de": "Umgeleitete Energie"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "units": {
+        "en": "kWh"
+      },
+      "icon": "/assets/power_fire.svg",
+      "min": 0,
+      "decimals": 2
     },
     "meter_power_generated": {
       "type": "number",

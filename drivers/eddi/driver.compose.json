@@ -21,6 +21,7 @@
     "measure_current_ct3",
     "measure_power",
     "measure_power_diverted",
+    "meter_power_diverted",
     "measure_power_generated",
     "meter_power_generated",
     "heater_1_name",
@@ -34,6 +35,7 @@
     "button.reset_meter_ct2",
     "button.reset_meter_ct3",
     "button.reset_meter_generated",
+    "button.reset_meter_diverted",
     "button.reload_capabilities"
   ],
   "energy": {
@@ -144,6 +146,23 @@
         "nl": "Reset de opgebouwde opgewekte energie (kWh), dit kan niet worden hersteld.",
         "de": "Setzen Sie die akkumulierte erzeugte Energie (kWh) zurück, diese kann nicht wiederhergestellt werden.",
         "se": "Återställ den ackumulerade genererade energin (kWh), denna kan inte återställas."
+      }
+    },
+    "button.reset_meter_diverted": {
+      "maintenanceAction": true,
+      "title": {
+        "en": "Reset energy meter (Diverted)",
+        "no": "Tilbakestill energimåler (Avledet)",
+        "nl": "Energiemeter resetten (Omgeleid)",
+        "sv": "Återställ energimätare (Avledd)",
+        "de": "Energiezähler zurücksetzen (Umgeleitet)"
+      },
+      "desc": {
+        "en": "Reset the accumulated diverted heating energy (kWh), this can not be restored.",
+        "no": "Tilbakestill den akkumulerte avledede varmeenergien (kWh), denne kan ikke gjenopprettes.",
+        "nl": "Reset de opgebouwde omgeleide verwarmingsenergie (kWh), dit kan niet worden hersteld.",
+        "sv": "Återställ den ackumulerade avledda värmeenergin (kWh), denna kan inte återställas.",
+        "de": "Setzen Sie die akkumulierte umgeleitete Heizenergie (kWh) zurück, diese kann nicht wiederhergestellt werden."
       }
     },
     "button.reload_capabilities": {

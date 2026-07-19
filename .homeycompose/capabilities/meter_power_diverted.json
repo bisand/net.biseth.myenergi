@@ -1,0 +1,19 @@
+{
+    "type": "number",
+    "title": {
+        "en": "Diverted energy",
+        "no": "Avledet energi",
+        "nl": "Omgeleide energie",
+        "sv": "Avledd energi",
+        "de": "Umgeleitete Energie"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "units": {
+        "en": "kWh"
+    },
+    "icon": "/assets/power_fire.svg",
+    "min": 0,
+    "decimals": 2
+}

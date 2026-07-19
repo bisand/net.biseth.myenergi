@@ -41,6 +41,7 @@ export class EddiDevice extends Device {
   private _lastCT2Power = 0;
   private _lastCT3Power = 0;
   private _lastGeneratedPower = 0;
+  private _lastDivertedPower = 0;
 
   private _settingsTimeoutHandle?: NodeJS.Timeout;
 
@@ -58,6 +59,7 @@ export class EddiDevice extends Device {
     }
 
     this._settings = this.getSettings();
+    await this.applyEnergyRole();
     this._callbackId = (this.driver as EddiDriver).registerDataUpdateCallback((data: EddiData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.myenergiClientId = this.getStoreValue('myenergiClientId');
@@ -109,6 +111,9 @@ export class EddiDevice extends Device {
     });
     this.registerCapabilityListener('button.reset_meter_generated', async () => {
       this.setCapabilityValue('meter_power_generated', 0);
+    });
+    this.registerCapabilityListener('button.reset_meter_diverted', async () => {
+      this.setCapabilityValue('meter_power_diverted', 0);
     });
     this.registerCapabilityListener('button.reload_capabilities', async () => {
       this.InitializeCapabilities();
@@ -231,6 +236,44 @@ export class EddiDevice extends Device {
   }
 
   /**
+   * Apply the Homey Energy role from the device settings. In the default
+   * "house_meter" role the Eddi keeps its historic behavior: measure_power
+   * is the grid flow and meter_power acts as the home's cumulative meter.
+   * In the opt-in "heater" role the device reports its own consumption
+   * (the diverted heating power) instead, like a regular appliance.
+   */
+  private async applyEnergyRole(): Promise<void> {
+    try {
+      if (this.isHeaterRole()) {
+        await this.setEnergy({ cumulative: false });
+        await this.setCapabilityOptions('measure_power', {
+          title: {
+            en: 'Heating power', no: 'Varmeeffekt', nl: 'Verwarmingsvermogen', sv: 'Värmeeffekt', de: 'Heizleistung',
+          },
+        });
+      } else {
+        await this.setEnergy({
+          cumulative: true,
+          cumulativeCapability: 'meter_power',
+          cumulativeImportedCapability: 'meter_power',
+          cumulativeExportedCapability: 'meter_power',
+        });
+        await this.setCapabilityOptions('measure_power', {
+          title: {
+            en: 'Grid power', no: 'Netteffekt', nl: 'Netvermogen', sv: 'Näteffekt', de: 'Netzleistung',
+          },
+        });
+      }
+    } catch (error) {
+      this.error(error);
+    }
+  }
+
+  private isHeaterRole(): boolean {
+    return this._settings.energyRole === 'heater';
+  }
+
+  /**
    * Whether a CT should be included in the total energy calculation.
    * Automatic mode includes CTs reported as "Internal Load"; manual mode
    * follows the checkboxes in the advanced settings.
@@ -269,7 +312,7 @@ export class EddiDevice extends Device {
     this.setCapabilityValue('measure_current_ct1', this._ct1Current).catch(this.error);
     this.setCapabilityValue('measure_current_ct2', this._ct2Current).catch(this.error);
     this.setCapabilityValue('measure_current_ct3', this._ct3Current).catch(this.error);
-    this.setCapabilityValue('measure_power', this._gridPower).catch(this.error);
+    this.setCapabilityValue('measure_power', this.isHeaterRole() ? this._divertedPower : this._gridPower).catch(this.error);
     this.setCapabilityValue('measure_power_generated', this._generatedPower).catch(this.error);
     this.setCapabilityValue('measure_power_diverted', this._divertedPower).catch(this.error);
 
@@ -286,12 +329,16 @@ export class EddiDevice extends Device {
     const meter_power_gen_prev = this.getCapabilityValue('meter_power_generated');
     const meter_power_gen = calculateEnergy(this._lastEnergyCalculation, this._lastGeneratedPower, this._generatedPower, 0);
     this._lastGeneratedPower = this._generatedPower;
+    const meter_power_div_prev = this.getCapabilityValue('meter_power_diverted') || 0;
+    const meter_power_div = calculateEnergy(this._lastEnergyCalculation, this._lastDivertedPower, this._divertedPower, 0);
+    this._lastDivertedPower = this._divertedPower;
     this._lastEnergyCalculation = new Date();
 
     this.setCapabilityValue('meter_power_ct1', meter_power_ct1_prev + meter_power_ct1).catch(this.error);
     this.setCapabilityValue('meter_power_ct2', meter_power_ct2_prev + meter_power_ct2).catch(this.error);
     this.setCapabilityValue('meter_power_ct3', meter_power_ct3_prev + meter_power_ct3).catch(this.error);
     this.setCapabilityValue('meter_power_generated', meter_power_gen_prev + meter_power_gen).catch(this.error);
+    this.setCapabilityValue('meter_power_diverted', meter_power_div_prev + meter_power_div).catch(this.error);
 
     // Only CTs selected for the power calculation contribute to the total
     // energy (the per-CT meters above always accumulate for reference).
@@ -474,6 +521,11 @@ export class EddiDevice extends Device {
       const prevEnergy: number = this.getCapabilityValue('meter_power_generated');
       this.setCapabilityValue('meter_power_generated', prevEnergy + (newSettings.energyOffsetGenerated ? newSettings.energyOffsetGenerated : 0));
       this._settings.energyOffsetGenerated = 0;
+    }
+    if (changedKeys.includes('energyRole')) {
+      this._settings.energyRole = newSettings.energyRole;
+      await this.applyEnergyRole();
+      this.setCapabilityValue('measure_power', this.isHeaterRole() ? this._divertedPower : this._gridPower).catch(this.error);
     }
     if (changedKeys.includes('siteName')) {
       this._settings.siteName = newSettings.siteName;

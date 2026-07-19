@@ -59,6 +59,55 @@
     {
         "type": "group",
         "label": {
+            "en": "Homey Energy",
+            "no": "Homey Energy",
+            "nl": "Homey Energy",
+            "de": "Homey Energy",
+            "sv": "Homey Energy"
+        },
+        "children": [
+            {
+                "id": "energyRole",
+                "type": "dropdown",
+                "value": "house_meter",
+                "label": {
+                    "en": "Role in Homey Energy",
+                    "no": "Rolle i Homey Energy",
+                    "nl": "Rol in Homey Energy",
+                    "de": "Rolle in Homey Energy",
+                    "sv": "Roll i Homey Energy"
+                },
+                "values": [
+                    {
+                        "id": "house_meter",
+                        "label": {
+                            "en": "House meter (grid power, current behavior)",
+                            "no": "Husmåler (netteffekt, nåværende oppførsel)",
+                            "nl": "Huismeter (netvermogen, huidig gedrag)",
+                            "de": "Hauszähler (Netzleistung, aktuelles Verhalten)",
+                            "sv": "Husmätare (näteffekt, nuvarande beteende)"
+                        }
+                    },
+                    {
+                        "id": "heater",
+                        "label": {
+                            "en": "Heater (diverted heating power)",
+                            "no": "Varmer (avledet varmeeffekt)",
+                            "nl": "Verwarming (omgeleid verwarmingsvermogen)",
+                            "de": "Heizung (umgeleitete Heizleistung)",
+                            "sv": "Värmare (avledd värmeeffekt)"
+                        }
+                    }
+                ],
+                "hint": {
+                    "en": "House meter: the Eddi reports the grid flow and its total meter counts as the home's cumulative meter in Homey Energy (the behavior since 2023). Heater: the Eddi reports its own consumption (the diverted heating power) like a regular appliance. Note: switching changes what the Power value means, so flows and Insights based on it will reflect the new meaning."
+                }
+            }
+        ]
+    },
+    {
+        "type": "group",
+        "label": {
             "en": "Power calculations",
             "no": "Effektberegninger",
             "nl": "Vermogen berekenen",

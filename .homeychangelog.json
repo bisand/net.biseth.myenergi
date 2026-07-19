@@ -118,5 +118,8 @@
   },
   "2.3.0": {
     "en": "The Libbi's solar generation is now paired from the Libbi entry (pick the Solar device while pairing) instead of a separate listing. Power and energy values now have distinct names per device type (charging power, battery power, solar power, ...), making flow tags easier to tell apart."
+  },
+  "2.4.0": {
+    "en": "Eddi: new cumulative Diverted energy meter showing how much energy went into heating, and an optional Homey Energy role setting to report the Eddi as a heater (its own consumption) instead of a house meter."
   }
 }

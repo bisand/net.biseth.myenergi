@@ -1,6 +1,7 @@
 
 export interface EddiSettings {
   powerCalculationMode?: string;
+  energyRole?: string;
   includeCT1?: boolean;
   includeCT2?: boolean;
   includeCT3?: boolean;
