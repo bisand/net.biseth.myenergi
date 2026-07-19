@@ -48,6 +48,42 @@
       "desc": {
         "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
       }
+    },
+    "measure_power": {
+      "title": {
+        "en": "Measured power",
+        "no": "Målt effekt",
+        "nl": "Gemeten vermogen",
+        "sv": "Uppmätt effekt",
+        "de": "Gemessene Leistung"
+      }
+    },
+    "meter_power": {
+      "title": {
+        "en": "Measured energy",
+        "no": "Målt energi",
+        "nl": "Gemeten energie",
+        "sv": "Uppmätt energi",
+        "de": "Gemessene Energie"
+      }
+    },
+    "meter_power.imported": {
+      "title": {
+        "en": "Energy imported",
+        "no": "Energi importert",
+        "nl": "Geïmporteerde energie",
+        "sv": "Importerad energi",
+        "de": "Importierte Energie"
+      }
+    },
+    "meter_power.exported": {
+      "title": {
+        "en": "Energy exported",
+        "no": "Energi eksportert",
+        "nl": "Geëxporteerde energie",
+        "sv": "Exporterad energi",
+        "de": "Exportierte Energie"
+      }
     }
   },
   "platforms": [

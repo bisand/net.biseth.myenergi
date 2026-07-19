@@ -81,6 +81,24 @@
       "desc": {
         "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
       }
+    },
+    "measure_power": {
+      "title": {
+        "en": "Charging power",
+        "no": "Ladeeffekt",
+        "nl": "Laadvermogen",
+        "sv": "Laddeffekt",
+        "de": "Ladeleistung"
+      }
+    },
+    "meter_power": {
+      "title": {
+        "en": "Charging energy",
+        "no": "Ladeenergi",
+        "nl": "Laadenergie",
+        "sv": "Laddenergi",
+        "de": "Ladeenergie"
+      }
     }
   },
   "platforms": [

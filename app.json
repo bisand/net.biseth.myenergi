@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "net.biseth.myenergi",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "compatibility": ">=12.4.5",
   "sdk": 3,
   "brandColor": "#2bcc64",
@@ -1143,6 +1143,24 @@
           "desc": {
             "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
           }
+        },
+        "measure_power": {
+          "title": {
+            "en": "Grid power",
+            "no": "Netteffekt",
+            "nl": "Netvermogen",
+            "sv": "Näteffekt",
+            "de": "Netzleistung"
+          }
+        },
+        "meter_power": {
+          "title": {
+            "en": "Energy (Total)",
+            "no": "Energi (totalt)",
+            "nl": "Energie (totaal)",
+            "sv": "Energi (totalt)",
+            "de": "Energie (gesamt)"
+          }
         }
       },
       "platforms": [
@@ -1498,6 +1516,42 @@
           "desc": {
             "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
           }
+        },
+        "measure_power": {
+          "title": {
+            "en": "Measured power",
+            "no": "Målt effekt",
+            "nl": "Gemeten vermogen",
+            "sv": "Uppmätt effekt",
+            "de": "Gemessene Leistung"
+          }
+        },
+        "meter_power": {
+          "title": {
+            "en": "Measured energy",
+            "no": "Målt energi",
+            "nl": "Gemeten energie",
+            "sv": "Uppmätt energi",
+            "de": "Gemessene Energie"
+          }
+        },
+        "meter_power.imported": {
+          "title": {
+            "en": "Energy imported",
+            "no": "Energi importert",
+            "nl": "Geïmporteerde energie",
+            "sv": "Importerad energi",
+            "de": "Importierte Energie"
+          }
+        },
+        "meter_power.exported": {
+          "title": {
+            "en": "Energy exported",
+            "no": "Energi eksportert",
+            "nl": "Geëxporteerde energie",
+            "sv": "Exporterad energi",
+            "de": "Exportierte Energie"
+          }
         }
       },
       "platforms": [
@@ -1803,6 +1857,15 @@
           "desc": {
             "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
           }
+        },
+        "measure_power": {
+          "title": {
+            "en": "Battery power",
+            "no": "Batterieffekt",
+            "nl": "Batterijvermogen",
+            "sv": "Batterieffekt",
+            "de": "Batterieleistung"
+          }
         }
       },
       "platforms": [
@@ -1815,9 +1878,6 @@
           "template": "list_devices",
           "navigation": {
             "next": "add_devices"
-          },
-          "options": {
-            "singular": true
           }
         },
         {
@@ -1830,71 +1890,6 @@
         "large": "/drivers/libbi/assets/images/large.png"
       },
       "id": "libbi"
-    },
-    {
-      "name": {
-        "en": "Libbi Solar"
-      },
-      "class": "solarpanel",
-      "capabilities": [
-        "measure_power",
-        "meter_power",
-        "button.reset_meter",
-        "button.reload_capabilities"
-      ],
-      "capabilitiesOptions": {
-        "button.reset_meter": {
-          "maintenanceAction": true,
-          "title": {
-            "en": "Reset energy meter",
-            "no": "Tilbakestill strømmåler",
-            "nl": "Reset energiemeter",
-            "sv": "Återställ energimätaren",
-            "de": "Energiezähler zurücksetzen"
-          },
-          "desc": {
-            "en": "Reset the accumulated generated energy (kWh), this can not be restored.",
-            "no": "Tilbakestill akkumulert produsert energi (kWh), dette kan ikke gjenopprettes.",
-            "nl": "Reset de geaccumuleerde opgewekte energie (kWh), dit kan niet worden hersteld.",
-            "sv": "Återställ den ackumulerade producerade energin (kWh), detta kan inte återställas.",
-            "de": "Setzt die kumulierte erzeugte Energie zurück (kWh), diese kann nicht wiederhergestellt werden."
-          }
-        },
-        "button.reload_capabilities": {
-          "maintenanceAction": true,
-          "title": {
-            "en": "Reload capabilities"
-          },
-          "desc": {
-            "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
-          }
-        }
-      },
-      "platforms": [
-        "local"
-      ],
-      "connectivity": [],
-      "pair": [
-        {
-          "id": "list_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          },
-          "options": {
-            "singular": true
-          }
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ],
-      "images": {
-        "small": "/drivers/libbi_solar/assets/images/small.png",
-        "large": "/drivers/libbi_solar/assets/images/large.png"
-      },
-      "id": "libbi_solar"
     },
     {
       "name": {
@@ -1978,6 +1973,24 @@
           },
           "desc": {
             "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
+          }
+        },
+        "measure_power": {
+          "title": {
+            "en": "Charging power",
+            "no": "Ladeeffekt",
+            "nl": "Laadvermogen",
+            "sv": "Laddeffekt",
+            "de": "Ladeleistung"
+          }
+        },
+        "meter_power": {
+          "title": {
+            "en": "Charging energy",
+            "no": "Ladeenergi",
+            "nl": "Laadenergie",
+            "sv": "Laddenergi",
+            "de": "Ladeenergie"
           }
         }
       },

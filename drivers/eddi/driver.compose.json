@@ -154,6 +154,24 @@
       "desc": {
         "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
       }
+    },
+    "measure_power": {
+      "title": {
+        "en": "Grid power",
+        "no": "Netteffekt",
+        "nl": "Netvermogen",
+        "sv": "Näteffekt",
+        "de": "Netzleistung"
+      }
+    },
+    "meter_power": {
+      "title": {
+        "en": "Energy (Total)",
+        "no": "Energi (totalt)",
+        "nl": "Energie (totaal)",
+        "sv": "Energi (totalt)",
+        "de": "Energie (gesamt)"
+      }
     }
   },
   "platforms": [

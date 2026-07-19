@@ -29,9 +29,25 @@ export class LibbiDriver extends Driver {
     new Capability('meter_power.discharged', CapabilityType.Sensor, 13),
   ];
 
+  /**
+   * The solar generation of the Libbi's built-in hybrid inverter is exposed
+   * as a second pairable device, since Homey Energy does not allow one
+   * device to be both a home battery and a solar producer.
+   */
+  private readonly _solarCapabilities: Capability[] = [
+    new Capability('button.reset_meter', CapabilityType.Control, 1),
+    new Capability('button.reload_capabilities', CapabilityType.Control, 2),
+    new Capability('measure_power', CapabilityType.Sensor, 3),
+    new Capability('meter_power', CapabilityType.Sensor, 4),
+  ];
+
   public libbiDevices: LibbiData[] = [];
   public get capabilities(): string[] {
     return this._capabilities.sort((x, y) => x.order - y.order).map(value => value.name);
+  }
+
+  public get solarCapabilities(): string[] {
+    return this._solarCapabilities.sort((x, y) => x.order - y.order).map(value => value.name);
   }
 
   public get capabilityObjects(): Capability[] {
@@ -114,7 +130,7 @@ export class LibbiDriver extends Driver {
 
   private async getLibbiDevices(): Promise<PairDevice[]> {
     const libbiDevices = await this.loadLibbiDevices().catch(this.error) as LibbiData[];
-    return await Promise.all(libbiDevices.map(async (v: LibbiData): Promise<PairDevice> => {
+    const pairDevices = await Promise.all(libbiDevices.map(async (v: LibbiData): Promise<PairDevice[]> => {
       let deviceName = `Libbi ${v.sno}`;
       let hubSerial = "";
       let siteName = "";
@@ -130,23 +146,56 @@ export class LibbiDriver extends Driver {
         this.error(error);
       }
       this.log(`Found: ${deviceName}`)
-      return {
-        name: deviceName,
-        data: { id: v.sno },
-        icon: 'icon.svg', // relative to: /drivers/<driver_id>/assets/
-        store: {
-          myenergiClientId: v.myenergiClientId,
-        },
-        capabilities: this.capabilities,
-        capabilitiesOptions: {
-        },
-        settings: {
-          hubSerial: hubSerial,
-          siteName: siteName,
-          libbiSerial: libbiSerial,
-        },
-      } as PairDevice;
-    })).catch(this.error) as PairDevice[];
+      const store = {
+        myenergiClientId: v.myenergiClientId,
+      };
+      const settings = {
+        hubSerial: hubSerial,
+        siteName: siteName,
+        libbiSerial: libbiSerial,
+      };
+      return [
+        {
+          name: deviceName,
+          data: { id: v.sno },
+          icon: 'icon.svg', // relative to: /drivers/<driver_id>/assets/
+          store: store,
+          capabilities: this.capabilities,
+          capabilitiesOptions: {
+          },
+          settings: settings,
+        } as PairDevice,
+        {
+          name: `${deviceName} Solar`,
+          data: { id: v.sno, type: 'solar' },
+          icon: 'icon.svg',
+          store: store,
+          capabilities: this.solarCapabilities,
+          capabilitiesOptions: {
+            "measure_power": {
+              "title": {
+                "en": "Solar power",
+                "no": "Soleffekt",
+                "nl": "Zonnevermogen",
+                "sv": "Soleffekt",
+                "de": "Solarleistung"
+              }
+            },
+            "meter_power": {
+              "title": {
+                "en": "Solar energy",
+                "no": "Solenergi",
+                "nl": "Zonne-energie",
+                "sv": "Solenergi",
+                "de": "Solarenergie"
+              }
+            }
+          },
+          settings: settings,
+        } as PairDevice,
+      ];
+    })).catch(this.error) as PairDevice[][];
+    return pairDevices.flat();
   }
 
   /**

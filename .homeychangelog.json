@@ -115,5 +115,8 @@
   },
   "2.2.0": {
     "en": "Libbi: live battery charge/discharge power and cumulative charged/discharged energy in the Energy tab, plus a new Libbi Solar device exposing the built-in inverter's solar generation."
+  },
+  "2.3.0": {
+    "en": "The Libbi's solar generation is now paired from the Libbi entry (pick the Solar device while pairing) instead of a separate listing. Power and energy values now have distinct names per device type (charging power, battery power, solar power, ...), making flow tags easier to tell apart."
   }
 }

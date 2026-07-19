@@ -71,6 +71,15 @@
       "desc": {
         "en": "Reload sensor capabilities. Use this to reload sensor capabilities in case some of them are missing or are out of order."
       }
+    },
+    "measure_power": {
+      "title": {
+        "en": "Battery power",
+        "no": "Batterieffekt",
+        "nl": "Batterijvermogen",
+        "sv": "Batterieffekt",
+        "de": "Batterieleistung"
+      }
     }
   },
   "platforms": [
@@ -83,9 +92,6 @@
       "template": "list_devices",
       "navigation": {
         "next": "add_devices"
-      },
-      "options": {
-        "singular": true
       }
     },
     {

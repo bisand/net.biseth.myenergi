@@ -40,6 +40,7 @@ const DISCHARGING_STATES = [6, 8];
 export class LibbiDevice extends Device {
 
   private _callbackId = -1;
+  private _isSolar = false;
   private _stateOfCharge = 0;
   private _state = 0;
   private _mode: LibbiModeText = LibbiModeText.Normal;
@@ -60,6 +61,16 @@ export class LibbiDevice extends Device {
    * onInit is called when the device is initialized.
    */
   public async onInit(): Promise<void> {
+    this._isSolar = this.getData().type === 'solar';
+
+    // The solar device pairs with the driver's battery class and switches
+    // itself over on first init. Homey Energy does not allow one device to
+    // be both a home battery and a solar producer.
+    if (this._isSolar && this.getClass() !== 'solarpanel') {
+      await this.setClass('solarpanel').catch(this.error);
+      await this.setEnergy({}).catch(this.error);
+    }
+
     // Make sure capabilities are up to date.
     if (this.detectCapabilityChanges()) {
       await this.InitializeCapabilities().catch(this.error);
@@ -80,16 +91,22 @@ export class LibbiDevice extends Device {
       this.error(error);
     }
 
-    this.registerCapabilityListener('libbi_mode_selector', this.onCapabilityMode.bind(this));
-    this.registerCapabilityListener('button.reset_meter', async () => {
-      this.setCapabilityValue('meter_power.charged', 0).catch(this.error);
-      this.setCapabilityValue('meter_power.discharged', 0).catch(this.error);
-    });
+    if (this._isSolar) {
+      this.registerCapabilityListener('button.reset_meter', async () => {
+        this.setCapabilityValue('meter_power', 0).catch(this.error);
+      });
+    } else {
+      this.registerCapabilityListener('libbi_mode_selector', this.onCapabilityMode.bind(this));
+      this.registerCapabilityListener('button.reset_meter', async () => {
+        this.setCapabilityValue('meter_power.charged', 0).catch(this.error);
+        this.setCapabilityValue('meter_power.discharged', 0).catch(this.error);
+      });
+    }
     this.registerCapabilityListener('button.reload_capabilities', async () => {
       this.InitializeCapabilities();
     });
 
-    this.log(`LibbiDevice ${this.deviceId} has been initialized`);
+    this.log(`LibbiDevice ${this.deviceId}${this._isSolar ? ' (solar)' : ''} has been initialized`);
   }
 
   /**
@@ -111,7 +128,7 @@ export class LibbiDevice extends Device {
       }
     }
     // Re-apply all capabilities.
-    for (const cap of (this.driver as LibbiDriver).capabilities) {
+    for (const cap of this.driverCapabilities()) {
       try {
         if (this.hasCapability(cap))
           continue;
@@ -134,13 +151,14 @@ export class LibbiDevice extends Device {
     let result = false;
     this.log(`Detecting Libbi capability changes...`);
     const caps = this.getCapabilities();
+    const driverCaps = this.driverCapabilities();
     for (const cap of caps) {
-      if (!(this.driver as LibbiDriver).capabilities.includes(cap)) {
+      if (!driverCaps.includes(cap)) {
         this.log(`Libbi capability ${cap} was removed.`);
         result = true;
       }
     }
-    for (const cap of (this.driver as LibbiDriver).capabilities) {
+    for (const cap of driverCaps) {
       if (!this.hasCapability(cap)) {
         this.log(`Libbi capability ${cap} was added.`);
         result = true;
@@ -149,7 +167,6 @@ export class LibbiDevice extends Device {
     if (!result) {
       // The Homey app derives the default picker from the capability order,
       // so an order change must also trigger a rebuild.
-      const driverCaps = (this.driver as LibbiDriver).capabilities;
       if (caps.some((cap, i) => cap !== driverCaps[i])) {
         this.log('Libbi capability order changed.');
         result = true;
@@ -158,6 +175,15 @@ export class LibbiDevice extends Device {
     if (!result)
       this.log('No changes in capabilities.');
     return result;
+  }
+
+  /**
+   * The capability set this device should have, depending on whether it is
+   * the battery or the solar generation device of the Libbi.
+   */
+  private driverCapabilities(): string[] {
+    const driver = this.driver as LibbiDriver;
+    return this._isSolar ? driver.solarCapabilities : driver.capabilities;
   }
 
   private calculateValues(libbi: Libbi) {
@@ -175,6 +201,10 @@ export class LibbiDevice extends Device {
   }
 
   private setCapabilityValues() {
+    if (this._isSolar) {
+      this.setSolarCapabilityValues();
+      return;
+    }
     this.setCapabilityValue('measure_battery', this._stateOfCharge).catch(this.error);
     this.setCapabilityValue('battery_charging_state', this.getBatteryChargingState()).catch(this.error);
     this.setCapabilityValue('libbi_mode_selector', `${this._mode}`).catch(this.error);
@@ -198,6 +228,20 @@ export class LibbiDevice extends Device {
       }
     }
     this._lastPowerMeasurement = this._batteryPower;
+    this._lastEnergyCalculation = new Date();
+  }
+
+  private setSolarCapabilityValues() {
+    this.setCapabilityValue('measure_power', this._generatedPower).catch(this.error);
+
+    // Accumulate generated energy. The inverter can draw a little power at
+    // night (slightly negative gen), which must not decrease the meter.
+    const generatedPower = Math.max(0, this._generatedPower);
+    const lastGeneratedPower = Math.max(0, this._lastPowerMeasurement);
+    const meterPower = calculateEnergy(this._lastEnergyCalculation, lastGeneratedPower, generatedPower, this.getCapabilityValue('meter_power') || 0);
+    this.setCapabilityValue('meter_power', meterPower).catch(this.error);
+
+    this._lastPowerMeasurement = this._generatedPower;
     this._lastEnergyCalculation = new Date();
   }
 
