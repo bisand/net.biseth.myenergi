@@ -1,6 +1,23 @@
 {
     "actions": [
         {
+            "id": "unlock_charger",
+            "title": {
+                "en": "Unlock the charger",
+                "no": "Lås opp laderen",
+                "nl": "Ontgrendel de lader",
+                "sv": "Lås upp laddaren",
+                "de": "Ladegerät entsperren"
+            },
+            "hint": {
+                "en": "Allow a charge session on a locked Zappi, the same as the unlock in the myenergi app.",
+                "no": "Tillat en ladeøkt på en låst Zappi, det samme som opplåsing i myenergi-appen.",
+                "nl": "Sta een laadsessie toe op een vergrendelde Zappi, hetzelfde als ontgrendelen in de myenergi-app.",
+                "sv": "Tillåt en laddningssession på en låst Zappi, samma som upplåsningen i myenergi-appen.",
+                "de": "Erlaubt eine Ladesitzung an einem gesperrten Zappi, wie das Entsperren in der myenergi-App."
+            }
+        },
+        {
             "id": "start_charging",
             "title": {
                 "en": "Start charging the car",
@@ -294,6 +311,23 @@
                 "nl": "Controleert of er een EV op de Zappi is aangesloten",
                 "sv": "Kontrollerar om en elbil är ansluten till Zappi",
                 "de": "Überprüft, ob ein EV mit dem Zappi verbunden ist"
+            }
+        },
+        {
+            "id": "charger_is_locked",
+            "title": {
+                "en": "The charger !{{is|isn't}} locked",
+                "no": "Laderen !{{er|er ikke}} låst",
+                "nl": "De lader !{{is|is niet}} vergrendeld",
+                "sv": "Laddaren !{{är|är inte}} låst",
+                "de": "Das Ladegerät !{{ist|ist nicht}} gesperrt"
+            },
+            "hint": {
+                "en": "Checks if the Zappi is currently locked",
+                "no": "Sjekker om Zappi er låst",
+                "nl": "Controleert of de Zappi momenteel is vergrendeld",
+                "sv": "Kontrollerar om Zappi är låst",
+                "de": "Überprüft, ob der Zappi derzeit gesperrt ist"
             }
         },
         {

@@ -39,6 +39,10 @@ export class ZappiDevice extends Device {
   public set chargerStatus(value: ZappiStatus) {
     this._chargerStatus = value;
   }
+  private _chargerLocked = false;
+  public get chargerLocked(): boolean {
+    return this._chargerLocked;
+  }
   private _deviceState: ZappiDeviceState = ZappiDeviceState.Unknown;
   public get deviceState(): ZappiDeviceState {
     return this._deviceState;
@@ -278,6 +282,7 @@ export class ZappiDevice extends Device {
     this.setCapabilityValue('zappi_boost_kwh_remaining', (this._boostMode === ZappiBoostMode.Manual ? this._boostManualKwhRemaining : (this._boostMode === ZappiBoostMode.Smart ? this._boostSmartKwhRemaining : 0))).catch(this.error);
     this.setCapabilityValue('zappi_boost_time', `${this._boostSmartTime}`).catch(this.error);
     this.setCapabilityValue('ev_connected', this._chargerStatus !== ZappiStatus.EvDisconnected).catch(this.error);
+    this.setCapabilityValue('charger_locked', this._chargerLocked).catch(this.error);
     if (this._phaseSetting !== null) {
       this.setCapabilityValue('zappi_phase_setting', `${this._phaseSetting}`).catch(this.error);
     }
@@ -350,6 +355,9 @@ export class ZappiDevice extends Device {
   private async calculateValues(zappi: Zappi, initializing = false): Promise<void> {
     this._chargeMode = zappi.zmo;
     this._chargerStatus = zappi.pst as ZappiStatus;
+    // Bit 0 of the lck bit field is "locked now"; the remaining bits are
+    // lock settings (lock when plugged/unplugged, charge when locked).
+    this._chargerLocked = ((zappi.lck ?? 0) & 1) === 1;
     this._deviceState = (zappi.sta !== undefined && zappi.sta !== null) ? zappi.sta as ZappiDeviceState : ZappiDeviceState.Unknown;
     this._phaseSetting = this.getPhaseSettingText(zappi.phaseSetting) ?? this._phaseSetting;
     this._chargingPower = 0;
@@ -641,6 +649,24 @@ export class ZappiDevice extends Device {
       this.log(`Zappi was switched ${isOn ? 'on' : 'off'}`);
     } catch (error) {
       this.error(`Switching the Zappi ${isOn ? 'on' : 'off'} failed:\n${error}`);
+    }
+  }
+
+  /**
+   * Unlock the charger so a charge session is allowed, the same as the
+   * unlock in the myenergi app. The lock state itself is updated on the
+   * next data refresh from the hub.
+   */
+  public async unlockCharger(): Promise<void> {
+    try {
+      const result = await this.myenergiClient?.unlockZappi(this.deviceId);
+      if (!isCommandSuccessful(result)) {
+        throw new Error(JSON.stringify(result));
+      }
+      this.log('Zappi was unlocked');
+    } catch (error) {
+      this.error(`Unlocking the Zappi failed:\n${error}`);
+      throw new Error('Unlocking the Zappi failed.', { cause: error });
     }
   }
 

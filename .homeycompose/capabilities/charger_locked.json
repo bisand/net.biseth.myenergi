@@ -1,0 +1,14 @@
+{
+    "type": "boolean",
+    "title": {
+        "en": "Charger locked",
+        "no": "Lader låst",
+        "nl": "Lader vergrendeld",
+        "sv": "Laddare låst",
+        "de": "Ladegerät gesperrt"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "icon": "/assets/accessories.svg"
+}

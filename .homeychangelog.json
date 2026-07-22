@@ -121,5 +121,8 @@
   },
   "2.4.0": {
     "en": "Eddi: new cumulative Diverted energy meter showing how much energy went into heating, and an optional Homey Energy role setting to report the Eddi as a heater (its own consumption) instead of a house meter."
+  },
+  "2.4.1": {
+    "en": "Zappi: unlock the charger from a flow (same as the unlock in the myenergi app), plus a new locked sensor and flow condition."
   }
 }

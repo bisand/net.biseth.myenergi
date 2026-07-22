@@ -29,6 +29,7 @@
     "zappi_boost_time",
     "zappi_boost_kwh_remaining",
     "ev_connected",
+    "charger_locked",
     "measure_power_house",
     "ct1_type",
     "measure_power_ct1",

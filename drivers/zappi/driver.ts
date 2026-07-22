@@ -45,6 +45,7 @@ export class ZappiDriver extends Driver {
     new Capability('zappi_boost_time', CapabilityType.Sensor, 19),
     new Capability('zappi_boost_kwh_remaining', CapabilityType.Sensor, 20),
     new Capability('ev_connected', CapabilityType.Sensor, 21),
+    new Capability('charger_locked', CapabilityType.Sensor, 22),
     new Capability('zappi_phase_setting', CapabilityType.Control, 2),
     new Capability('measure_power_house', CapabilityType.Sensor, 23),
     new Capability('ct1_type', CapabilityType.Sensor, 24),
@@ -110,6 +111,28 @@ export class ZappiDriver extends Driver {
       }
       dev.log(`EV Is Connected: ${args} - ${state}`);
       return dev.chargerStatus !== ZappiStatus.EvDisconnected;
+    });
+
+    const chargerLockedCondition = this.homey.flow.getConditionCard('charger_is_locked');
+    chargerLockedCondition.registerRunListener(async (args, state) => {
+      const dev: ZappiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: charger_is_locked');
+        return;
+      }
+      dev.log(`Charger Is Locked: ${args} - ${state}`);
+      return dev.chargerLocked;
+    });
+
+    const unlockChargerAction = this.homey.flow.getActionCard('unlock_charger');
+    unlockChargerAction.registerRunListener(async (args, state) => {
+      const dev: ZappiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: unlock_charger');
+        return;
+      }
+      dev.log(`Unlock Charger: ${args} - ${state}`);
+      await dev.unlockCharger();
     });
 
     const chargeModeCondition = this.homey.flow.getConditionCard('charge_mode_is');
