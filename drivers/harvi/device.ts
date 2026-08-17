@@ -49,37 +49,22 @@ class HarviDevice extends Device {
   private async applyEnergyRole(): Promise<void> {
     const isSolar = this.isSolarRole();
     const deviceClass = isSolar ? 'solarpanel' : 'sensor';
-    // setEnergy overwrites the whole energy object, so the house meter role has to
-    // restore the full definition. These values mirror driver.compose.json and have to
-    // be kept in step with it. The solar role must not be cumulative, so it leaves the
-    // property out rather than setting it to false.
-    const energy = isSolar
-      ? { meterPowerExportedCapability: 'meter_power' }
-      : {
-        cumulative: true,
-        cumulativeImportedCapability: 'meter_power.imported',
-        cumulativeExportedCapability: 'meter_power.exported',
-      };
     try {
-      const classChanged = this.getClass() !== deviceClass;
-      if (classChanged) {
+      if (this.getClass() !== deviceClass) {
         await this.setClass(deviceClass);
         this.log(`Device class set to '${deviceClass}'`);
       }
-      // A role change is the only path that calls setClass, and it is also the only path
-      // where the energy object fails to stick: on hardware (v2.4.3) a Harvi switched to
-      // Solar panels and back kept losing its cumulative configuration even though
-      // setEnergy ran, while the same call from onInit — where the class already matches
-      // and setClass is skipped — applied cleanly. So re-apply after a class change and
-      // check the read-back instead of trusting a single write. The read-back is logged
-      // either way, which is what will finally pin the behaviour down.
-      if (classChanged || stableStringify(this.getEnergy()) !== stableStringify(energy)) {
+      // setEnergy overwrites the whole energy object, so the house meter role has to
+      // restore the manifest definition. The solar role must not be cumulative, so it
+      // simply leaves the property out.
+      const energy = isSolar
+        ? { meterPowerExportedCapability: 'meter_power' }
+        : this.driver?.manifest.energy;
+      // getEnergy only returns a previously set override, so this also picks up devices
+      // that have never had one and still run on the manifest definition.
+      if (stableStringify(this.getEnergy()) !== stableStringify(energy)) {
         await this.setEnergy(energy);
-        if (stableStringify(this.getEnergy()) !== stableStringify(energy)) {
-          this.log('Energy object did not survive the class change, re-applying.');
-          await this.setEnergy(energy);
-        }
-        this.log(`Energy object set to`, this.getEnergy());
+        this.log(`Energy object set to`, energy);
       }
     } catch (error) {
       this.error(`Failed to apply energy role '${deviceClass}':`, error);

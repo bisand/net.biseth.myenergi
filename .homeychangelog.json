@@ -133,5 +133,8 @@
   },
   "2.4.4": {
     "en": "Harvi: changing the Homey Energy role now applies the new role straight away, instead of needing an app restart to settle."
+  },
+  "2.4.5": {
+    "en": "Harvi: internal cleanup of the Homey Energy role handling. The two previous releases changed it to chase a problem that turned out not to exist; this restores the original, simpler behaviour."
   }
 }
