@@ -55,13 +55,19 @@ class HarviDevice extends Device {
         this.log(`Device class set to '${deviceClass}'`);
       }
       // setEnergy overwrites the whole energy object, so the house meter role has to
-      // restore the manifest definition. The solar role must not be cumulative, so it
-      // simply leaves the property out.
+      // restore the full definition. Spelling it out here rather than reading
+      // driver.manifest.energy: the manifest lookup came back empty at runtime and left
+      // the device with no energy object at all when switching back from solar. The
+      // solar role must not be cumulative, so it simply leaves the property out.
       const energy = isSolar
         ? { meterPowerExportedCapability: 'meter_power' }
-        : this.driver?.manifest.energy;
-      // getEnergy only returns a previously set override, so this also picks up devices
-      // that have never had one and still run on the manifest definition.
+        : {
+          cumulative: true,
+          cumulativeImportedCapability: 'meter_power.imported',
+          cumulativeExportedCapability: 'meter_power.exported',
+        };
+      // getEnergy only returns a previously set override, so a device that has never had
+      // one compares as empty and gets the object applied on first init.
       if (stableStringify(this.getEnergy()) !== stableStringify(energy)) {
         await this.setEnergy(energy);
         this.log(`Energy object set to`, energy);
