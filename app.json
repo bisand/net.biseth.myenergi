@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "net.biseth.myenergi",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "compatibility": ">=12.4.5",
   "sdk": 3,
   "brandColor": "#2bcc64",
@@ -1871,6 +1871,59 @@
                 "de": "Beziehen Sie CT 3 in die Leistungsberechnung ein.",
                 "sv": "Inkludera CT 3 i effektberäkningen."
               }
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Homey Energy",
+            "no": "Homey Energy",
+            "nl": "Homey Energy",
+            "de": "Homey Energy",
+            "sv": "Homey Energy"
+          },
+          "children": [
+            {
+              "id": "energyRole",
+              "type": "dropdown",
+              "value": "house_meter",
+              "label": {
+                "en": "Role in Homey Energy",
+                "no": "Rolle i Homey Energy",
+                "nl": "Rol in Homey Energy",
+                "de": "Rolle in Homey Energy",
+                "sv": "Roll i Homey Energy"
+              },
+              "hint": {
+                "en": "House meter: the Harvi's measured power counts as the home's total consumption in Homey Energy (the behavior since 2022). Solar panels: the Harvi reports generation instead, for a Harvi whose CT clamps sit on solar inverters. Note that this changes how the Power value is booked, not the value itself.",
+                "no": "Husmåler: Harvi-ens målte effekt teller som husets totale forbruk i Homey Energy (oppførselen siden 2022). Solcellepanel: Harvi-en rapporterer produksjon i stedet, for en Harvi der CT-klemmene sitter på solcelleinvertere. Merk at dette endrer hvordan effekten føres, ikke selve verdien.",
+                "nl": "Huismeter: het gemeten vermogen van de Harvi telt als het totale verbruik van je woning in Homey Energy (het gedrag sinds 2022). Zonnepanelen: de Harvi rapporteert in plaats daarvan opwek, voor een Harvi waarvan de CT-klemmen op zonne-omvormers zitten. Let op: dit verandert hoe het vermogen wordt geboekt, niet de waarde zelf.",
+                "de": "Hauszähler: Die gemessene Leistung des Harvi zählt als Gesamtverbrauch deines Hauses in Homey Energy (das Verhalten seit 2022). Solarpanele: Der Harvi meldet stattdessen Erzeugung, für einen Harvi, dessen CT-Klemmen an Solarwechselrichtern sitzen. Beachte, dass sich dadurch die Verbuchung der Leistung ändert, nicht der Wert selbst.",
+                "sv": "Husmätare: Harvins uppmätta effekt räknas som hemmets totala förbrukning i Homey Energy (beteendet sedan 2022). Solpaneler: Harvin rapporterar i stället produktion, för en Harvi vars CT-klämmor sitter på solväxelriktare. Observera att detta ändrar hur effekten bokförs, inte själva värdet."
+              },
+              "values": [
+                {
+                  "id": "house_meter",
+                  "label": {
+                    "en": "House meter (grid power, current behavior)",
+                    "no": "Husmåler (netteffekt, nåværende oppførsel)",
+                    "nl": "Huismeter (netvermogen, huidig gedrag)",
+                    "de": "Hauszähler (Netzleistung, aktuelles Verhalten)",
+                    "sv": "Husmätare (näteffekt, nuvarande beteende)"
+                  }
+                },
+                {
+                  "id": "solarpanel",
+                  "label": {
+                    "en": "Solar panels (generated power)",
+                    "no": "Solcellepanel (produsert effekt)",
+                    "nl": "Zonnepanelen (opgewekt vermogen)",
+                    "de": "Solarpanele (erzeugte Leistung)",
+                    "sv": "Solpaneler (producerad effekt)"
+                  }
+                }
+              ]
             }
           ]
         },
