@@ -130,5 +130,8 @@
   },
   "2.4.3": {
     "en": "Harvi: switching the Homey Energy role back from Solar panels to House meter now restores the house meter settings properly."
+  },
+  "2.4.4": {
+    "en": "Harvi: changing the Homey Energy role now applies the new role straight away, instead of needing an app restart to settle."
   }
 }
