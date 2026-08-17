@@ -7,6 +7,13 @@ import { calculateEnergy, isDataStale } from '../../tools';
 import { HarviDriver } from './driver';
 import { HarviData } from "./HarviData";
 
+/**
+ * Key-order independent comparison of two energy objects.
+ */
+function stableStringify(obj?: Record<string, unknown>): string {
+  return JSON.stringify(Object.entries(obj ?? {}).sort(([a], [b]) => a.localeCompare(b)));
+}
+
 class HarviDevice extends Device {
 
   private _callbackId = -1;
@@ -29,6 +36,41 @@ class HarviDevice extends Device {
   public myenergiClientId!: string;
   public myenergiClient!: MyEnergi;
 
+  private isSolarRole(): boolean {
+    return this._settings.energyRole === 'solarpanel';
+  }
+
+  /**
+   * A Harvi can clamp the grid feed or a solar inverter, and Homey Energy treats those
+   * as opposites: a `cumulative` sensor is always booked as household consumption, while
+   * generation requires the `solarpanel` class with a positive measure_power. Apply the
+   * user's choice at runtime so existing devices switch over without re-pairing.
+   */
+  private async applyEnergyRole(): Promise<void> {
+    const isSolar = this.isSolarRole();
+    const deviceClass = isSolar ? 'solarpanel' : 'sensor';
+    try {
+      if (this.getClass() !== deviceClass) {
+        await this.setClass(deviceClass);
+        this.log(`Device class set to '${deviceClass}'`);
+      }
+      // setEnergy overwrites the whole energy object, so the house meter role has to
+      // restore the manifest definition. The solar role must not be cumulative, so it
+      // simply leaves the property out.
+      const energy = isSolar
+        ? { meterPowerExportedCapability: 'meter_power' }
+        : this.driver?.manifest.energy;
+      // getEnergy only returns a previously set override, so this also picks up devices
+      // that have never had one and still run on the manifest definition.
+      if (stableStringify(this.getEnergy()) !== stableStringify(energy)) {
+        await this.setEnergy(energy);
+        this.log(`Energy object set to`, energy);
+      }
+    } catch (error) {
+      this.error(`Failed to apply energy role '${deviceClass}':`, error);
+    }
+  }
+
   /**
    * onInit is called when the device is initialized.
    */
@@ -40,6 +82,7 @@ class HarviDevice extends Device {
     }
 
     this._settings = this.getSettings();
+    await this.applyEnergyRole();
     this._callbackId = (this.driver as HarviDriver).registerDataUpdateCallback((data: HarviData[]) => this.dataUpdated(data)) - 1;
     this.deviceId = this.getData().id;
     this.log(`Device ID: ${this.deviceId}`);
@@ -300,6 +343,10 @@ class HarviDevice extends Device {
     this.log(`HarviDevice settings where changed: ${changedKeys} - ${oldSettings} - ${newSettings}`);
     if (changedKeys.includes('showNegativeValues')) {
       this._settings.showNegativeValues = newSettings.showNegativeValues;
+    }
+    if (changedKeys.includes('energyRole')) {
+      this._settings.energyRole = newSettings.energyRole;
+      await this.applyEnergyRole();
     }
     if (changedKeys.includes('powerCalculationMode')) {
       this._settings.powerCalculationMode = newSettings.powerCalculationMode;

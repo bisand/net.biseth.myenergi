@@ -124,5 +124,8 @@
   },
   "2.4.1": {
     "en": "Zappi: unlock the charger from a flow (same as the unlock in the myenergi app), plus a new locked sensor and flow condition."
+  },
+  "2.4.2": {
+    "en": "Harvi: a new Homey Energy role setting lets a Harvi whose CT clamps sit on solar inverters count as generation instead of household consumption."
   }
 }
