@@ -136,5 +136,8 @@
   },
   "2.4.5": {
     "en": "Harvi: internal cleanup of the Homey Energy role handling. The two previous releases changed it to chase a problem that turned out not to exist; this restores the original, simpler behaviour."
+  },
+  "2.4.6": {
+    "en": "Harvi: a new Homey Energy role setting lets a Harvi whose CT clamps sit on solar inverters count as generation instead of household consumption."
   }
 }
