@@ -127,5 +127,8 @@
   },
   "2.4.2": {
     "en": "Harvi: a new Homey Energy role setting lets a Harvi whose CT clamps sit on solar inverters count as generation instead of household consumption."
+  },
+  "2.4.3": {
+    "en": "Harvi: switching the Homey Energy role back from Solar panels to House meter now restores the house meter settings properly."
   }
 }
