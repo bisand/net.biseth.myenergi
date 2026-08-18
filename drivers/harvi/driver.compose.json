@@ -23,6 +23,24 @@
     "cumulativeExportedCapability": "meter_power.exported"
   },
   "capabilitiesOptions": {
+    "meter_power.imported": {
+      "title": {
+        "en": "Energy imported",
+        "no": "Energi importert",
+        "nl": "Geïmporteerde energie",
+        "sv": "Importerad energi",
+        "de": "Importierte Energie"
+      }
+    },
+    "meter_power.exported": {
+      "title": {
+        "en": "Energy exported",
+        "no": "Energi eksportert",
+        "nl": "Geëxporteerde energie",
+        "sv": "Exporterad energi",
+        "de": "Exportierte Energie"
+      }
+    },
     "button.reset_meter": {
       "maintenanceAction": true,
       "title": {
