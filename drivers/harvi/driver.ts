@@ -14,15 +14,17 @@ export class HarviDriver extends Driver {
   private _dataUpdateCallbacks: DataCallbackFunction[] = [];
   private readonly _capabilities: Capability[] = [
     new Capability('meter_power', CapabilityType.Sensor, 1),
-    new Capability('measure_power', CapabilityType.Sensor, 2),
-    new Capability('ct1_type', CapabilityType.Sensor, 3),
-    new Capability('measure_power_ct1', CapabilityType.Sensor, 4),
-    new Capability('ct2_type', CapabilityType.Sensor, 5),
-    new Capability('measure_power_ct2', CapabilityType.Sensor, 6),
-    new Capability('ct3_type', CapabilityType.Sensor, 7),
-    new Capability('measure_power_ct3', CapabilityType.Sensor, 8),
-    new Capability('button.reset_meter', CapabilityType.Control, 9),
-    new Capability('button.reload_capabilities', CapabilityType.Control, 10),
+    new Capability('meter_power.imported', CapabilityType.Sensor, 2),
+    new Capability('meter_power.exported', CapabilityType.Sensor, 3),
+    new Capability('measure_power', CapabilityType.Sensor, 4),
+    new Capability('ct1_type', CapabilityType.Sensor, 5),
+    new Capability('measure_power_ct1', CapabilityType.Sensor, 6),
+    new Capability('ct2_type', CapabilityType.Sensor, 7),
+    new Capability('measure_power_ct2', CapabilityType.Sensor, 8),
+    new Capability('ct3_type', CapabilityType.Sensor, 9),
+    new Capability('measure_power_ct3', CapabilityType.Sensor, 10),
+    new Capability('button.reset_meter', CapabilityType.Control, 11),
+    new Capability('button.reload_capabilities', CapabilityType.Control, 12),
   ];
 
   public harviDevices: HarviData[] = [];
