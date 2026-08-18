@@ -141,6 +141,6 @@
     "en": "Harvi: a new Homey Energy role setting lets a Harvi whose CT clamps sit on solar inverters count as generation instead of household consumption."
   },
   "2.4.7": {
-    "en": "Harvi: new Energy imported and Energy exported meters, showing grid import and export separately. They were listed in the app but never actually created on the device."
+    "en": "Harvi: new Energy imported and Energy exported meters, showing grid import and export separately. They were listed in the app but never actually created on the device, and the totals are now accurate across the moment power switches between import and export."
   }
 }
