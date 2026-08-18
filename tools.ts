@@ -13,6 +13,34 @@ export function calculateEnergy(lastCalculation: Date, lastPower: number, curren
 }
 
 /**
+ * Splits the energy accumulated between two power measurements into imported
+ * (positive power) and exported (negative power) kWh.
+ *
+ * Power is taken to move linearly between the two samples, so an interval where
+ * it crosses zero is divided at the crossing. Clamping both endpoints to zero
+ * and taking a trapezoid instead would over-count both directions, and crediting
+ * the whole interval to the sign of the latest sample under-counts the other one.
+ */
+export function calculateDirectionalEnergy(lastCalculation: Date, lastPower: number, currentPower: number): { imported: number; exported: number } {
+    const seconds = Math.abs((new Date().getTime() - lastCalculation.getTime()) / 1000);
+    const toKwh = (wattSeconds: number): number => wattSeconds / 3600000;
+
+    // No sign change: the trapezoid over the whole interval is already exact.
+    if (lastPower >= 0 && currentPower >= 0)
+        return { imported: toKwh(((lastPower + currentPower) / 2) * seconds), exported: 0 };
+    if (lastPower <= 0 && currentPower <= 0)
+        return { imported: 0, exported: toKwh(((Math.abs(lastPower) + Math.abs(currentPower)) / 2) * seconds) };
+
+    // Crosses zero: each direction is a triangle either side of the crossing.
+    const crossing = Math.abs(lastPower) / (Math.abs(lastPower) + Math.abs(currentPower));
+    const before = (Math.abs(lastPower) / 2) * (crossing * seconds);
+    const after = (Math.abs(currentPower) / 2) * ((1 - crossing) * seconds);
+    return lastPower > 0
+        ? { imported: toKwh(before), exported: toKwh(after) }
+        : { imported: toKwh(after), exported: toKwh(before) };
+}
+
+/**
  * Generates a fake Zappi EV charger that can be used for testing/debug porposes.
  * @returns A fake Zappi object.
  */
