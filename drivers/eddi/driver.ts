@@ -1,4 +1,5 @@
-import { Driver } from 'homey';
+import { Driver, FlowCardTriggerDevice } from 'homey';
+import { Device } from 'homey/lib/FlowCardTriggerDevice';
 import { MyEnergi } from 'myenergi-api';
 import { AppKeyValues } from 'myenergi-api/dist/src/models/AppKeyValues';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
@@ -13,6 +14,7 @@ import { EddiData } from './EddiData';
 export class EddiDriver extends Driver {
 
   private _dataUpdateCallbacks: DataCallbackFunction[] = [];
+  private _temperatureChanged!: FlowCardTriggerDevice;
   private _capabilities: Capability[] = [
     new Capability('onoff', CapabilityType.Control, 1),
     new Capability('heater_status', CapabilityType.Sensor, 2),
@@ -101,7 +103,19 @@ export class EddiDriver extends Driver {
       await dev.stopBoost(args.heater);
     });
 
+    this._temperatureChanged = this.homey.flow.getDeviceTriggerCard('eddi_temperature_changed');
+    // The card fires once per probe, so only run the flow whose selected
+    // probe matches the one that reported a new temperature.
+    this._temperatureChanged.registerRunListener((args, state) => args.probe === state.probe);
+
     this.log('EddiDriver has been initialized');
+  }
+
+  public triggerTemperatureChangedFlow(device: Device, tokens?: object | undefined, state?: object | undefined) {
+    this._temperatureChanged
+      .trigger(device, tokens, state)
+      .then((x: unknown) => this.log(`triggerTemperatureChangedFlow: ${x}`))
+      .catch(this.error);
   }
 
   public registerDataUpdateCallback(callback: DataCallbackFunction) {

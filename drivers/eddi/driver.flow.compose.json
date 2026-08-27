@@ -136,5 +136,80 @@
                 "de": "Setzt den gesamten kumulierten Energiewert (kWh) auf null. Mit einem Zeitplan verwenden, z. B. jede Mitternacht, für tägliche Energiewerte."
             }
         }
+    ],
+    "triggers": [
+        {
+            "id": "eddi_temperature_changed",
+            "title": {
+                "en": "Temperature probe changed",
+                "no": "Temperaturføler endret",
+                "nl": "Temperatuursensor gewijzigd",
+                "sv": "Temperatursond ändrad",
+                "de": "Temperaturfühler geändert"
+            },
+            "titleFormatted": {
+                "en": "Temperature of [[probe]] changed",
+                "no": "Temperaturen til [[probe]] endret",
+                "nl": "Temperatuur van [[probe]] gewijzigd",
+                "sv": "Temperaturen för [[probe]] ändrades",
+                "de": "Temperatur von [[probe]] geändert"
+            },
+            "hint": {
+                "en": "When the chosen Eddi temperature probe reports a new temperature. Probes that are not connected are ignored.",
+                "no": "Når den valgte temperaturføleren på Eddi rapporterer en ny temperatur. Følere som ikke er tilkoblet, ignoreres.",
+                "nl": "Wanneer de gekozen temperatuursensor van de Eddi een nieuwe temperatuur meldt. Niet-aangesloten sensoren worden genegeerd.",
+                "sv": "När den valda temperatursonden på Eddi rapporterar en ny temperatur. Sonder som inte är anslutna ignoreras.",
+                "de": "Wenn der gewählte Temperaturfühler des Eddi eine neue Temperatur meldet. Nicht angeschlossene Fühler werden ignoriert."
+            },
+            "args": [
+                {
+                    "name": "probe",
+                    "type": "dropdown",
+                    "title": {
+                        "en": "Probe",
+                        "no": "Føler",
+                        "nl": "Sensor",
+                        "sv": "Sond",
+                        "de": "Fühler"
+                    },
+                    "values": [
+                        {
+                            "id": "1",
+                            "label": {
+                                "en": "Probe 1",
+                                "no": "Føler 1",
+                                "nl": "Sensor 1",
+                                "sv": "Sond 1",
+                                "de": "Fühler 1"
+                            }
+                        },
+                        {
+                            "id": "2",
+                            "label": {
+                                "en": "Probe 2",
+                                "no": "Føler 2",
+                                "nl": "Sensor 2",
+                                "sv": "Sond 2",
+                                "de": "Fühler 2"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "tokens": [
+                {
+                    "name": "temperature",
+                    "type": "number",
+                    "title": {
+                        "en": "Temperature",
+                        "no": "Temperatur",
+                        "nl": "Temperatuur",
+                        "sv": "Temperatur",
+                        "de": "Temperatur"
+                    },
+                    "example": 48.5
+                }
+            ]
+        }
     ]
 }

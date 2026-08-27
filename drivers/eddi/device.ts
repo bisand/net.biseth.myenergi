@@ -68,7 +68,7 @@ export class EddiDevice extends Device {
       this.myenergiClient = (this.homey.app as MyEnergiApp).clients[this.myenergiClientId];
       const eddi: Eddi | null = await this.myenergiClient.getStatusEddi(this.deviceId);
       if (eddi) {
-        this.calculateValues(eddi); // P=U*I -> I=P/U
+        this.calculateValues(eddi, true); // P=U*I -> I=P/U
         this._lastHeaterStatus = this._heaterStatus;
       }
     } catch (error) {
@@ -190,7 +190,7 @@ export class EddiDevice extends Device {
     return result;
   }
 
-  private calculateValues(eddi: Eddi) {
+  private calculateValues(eddi: Eddi, initializing = false) {
     this._onOff = (eddi.sta === EddiHeaterStatus.Stopped) ? EddiMode.Off : EddiMode.On;
     this._heaterStatus = eddi.sta;
     this._ct1Power = eddi.ectp1 ? eddi.ectp1 : 0;
@@ -214,8 +214,14 @@ export class EddiDevice extends Device {
     this._ct1Current = (this._systemVoltage > 0) ? (this._ct1Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
     this._ct2Current = (this._systemVoltage > 0) ? (this._ct2Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
     this._ct3Current = (this._systemVoltage > 0) ? (this._ct3Power / this._systemVoltage) : 0; // P=U*I -> I=P/U
+    const lastTp1 = this._tp1;
+    const lastTp2 = this._tp2;
     this._tp1 = this.getValidTemperature(eddi.tp1);
     this._tp2 = this.getValidTemperature(eddi.tp2);
+    if (!initializing) {
+      this.triggerTemperatureChangedFlow('1', this._tp1, lastTp1);
+      this.triggerTemperatureChangedFlow('2', this._tp2, lastTp2);
+    }
 
     if (this._powerCalculationModeSetToAuto) {
       this._powerCalculationModeSetToAuto = false;
@@ -292,6 +298,26 @@ export class EddiDevice extends Device {
    */
   private getValidTemperature(value?: number): number | null {
     return (value === undefined || value === null || value <= -1 || value >= 127) ? null : value;
+  }
+
+  /**
+   * Trigger the temperature probe flow when a probe reports a new reading.
+   * A probe that is not connected reads as null, so only actual readings
+   * are relayed to flows.
+   * @param probe Probe number ('1' or '2'), matching the flow card dropdown
+   * @param temperature The new temperature, or null when no probe is connected
+   * @param lastTemperature The previously reported temperature
+   */
+  private triggerTemperatureChangedFlow(probe: string, temperature: number | null, lastTemperature: number | null): void {
+    if (temperature === null || temperature === lastTemperature) {
+      return;
+    }
+    const tokens = { temperature: temperature };
+    const state = { probe: probe };
+
+    this.driver.ready().then(() => {
+      (this.driver as EddiDriver).triggerTemperatureChangedFlow(this, tokens, state);
+    }).catch(this.error);
   }
 
   private setCapabilityValues() {
