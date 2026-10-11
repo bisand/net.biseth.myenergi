@@ -142,7 +142,9 @@ export class MyEnergiApp extends Homey.App {
       if (key === 'myenergiHubs') {
         this.log(`Saved myenergiHubs ${JSON.stringify(hubs, (k, v) => (k === 'password' || k === 'accountPassword') ? '***' : v)}`);
       }
-      this.initClients(hubs);
+      // Other settings, like the signed-in account of the settings page, do not affect the clients.
+      if (key === 'apiBaseUrl' || key === 'myenergiHubs')
+        this.initClients(hubs);
     });
 
     this.log('myenergi app has been initialized');
