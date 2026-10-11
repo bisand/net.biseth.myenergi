@@ -161,7 +161,7 @@
                     <p class="signed-in-as">Signed in as <b id="signedInEmail"></b></p>
                     <button id="signOut" class="homey-button-secondary-shadow homey-button-small" type="button">Sign out</button>
                 </div>
-                <p class="hint">You stay signed in until you sign out. This lets Homey find your hubs and control Libbi charge from grid.</p>
+                <p class="hint">You stay signed in until you sign out. This lets Homey find your hubs, control Libbi charge from grid and set a Zappi single charge.</p>
                 <div class="button-row">
                     <button id="refreshHubs" class="homey-button-secondary-shadow" type="button">Look for new hubs</button>
                 </div>
@@ -243,14 +243,15 @@
                     </p>
                 </div>
                 <div class="homey-form-group">
-                    <label class="homey-form-label">myenergi account email (optional)</label>
+                    <label class="homey-form-label">Different myenergi account: email (optional)</label>
                     <input class="homey-form-input" data-field="accountEmail" type="text" inputmode="email" value="" autocomplete="off" />
                 </div>
                 <div class="homey-form-group">
-                    <label class="homey-form-label">myenergi account password (optional)</label>
+                    <label class="homey-form-label">Different myenergi account: password (optional)</label>
                     <input class="homey-form-input" data-field="accountPassword" type="password" value="" autocomplete="new-password" />
                     <p class="hint">
-                        Only needed to control Libbi charge from grid. Filled in for you when you sign in above.
+                        Leave these empty to use the account you are signed in with above. Only fill them in
+                        if this hub belongs to a different myenergi account.
                     </p>
                 </div>
             </details>
@@ -360,7 +361,7 @@
                 if (hubs.some(other => other !== hub && sanitizeName(other.hubname) === hub.hubname && ('' + other.username).trim() === hub.username))
                     return 'This hub is listed twice.';
                 if (!hub.accountEmail !== !hub.accountPassword)
-                    return 'Fill in both the myenergi account email and password under More options, or leave both empty.';
+                    return 'Fill in both the email and password of the different myenergi account under More options, or leave both empty.';
 
                 let res;
                 try {
@@ -397,6 +398,8 @@
             // The myenergi account that is signed in. Stored in its own setting, so it
             // does not depend on any hub being listed.
             let savedAccount = null;
+            // False when the sign-in only comes from a hub saved by an older version.
+            let accountStored = false;
 
             // Show who is signed in, or the sign-in form when nobody is.
             function showSignIn() {
@@ -437,8 +440,9 @@
                     return;
                 }
                 // Signed in: remember the account, also when it has no hubs.
-                if (!savedAccount || savedAccount.email !== email || savedAccount.password !== password) {
+                if (!accountStored || !savedAccount || savedAccount.email !== email || savedAccount.password !== password) {
                     savedAccount = { email: email, password: password };
+                    accountStored = true;
                     Homey.set('myenergiAccount', savedAccount, err => {
                         if (err) Homey.alert(err);
                     });
@@ -461,8 +465,11 @@
                         hubs.push(hub);
                     }
                     hub.password = found.apiKey;
-                    hub.accountEmail = email;
-                    hub.accountPassword = password;
+                    // The hub uses the signed-in account, so it needs no copy of its own.
+                    if (!hub.accountEmail || hub.accountEmail === email) {
+                        hub.accountEmail = '';
+                        hub.accountPassword = '';
+                    }
                     hub.error = '';
                 }
                 renderHubs();
@@ -489,6 +496,7 @@
                             if (err) return Homey.alert(err);
                             hubs.forEach(forget);
                             savedAccount = null;
+                            accountStored = false;
                             $('signInEmail').value = '';
                             $('signInPassword').value = '';
                             showSignIn();
@@ -561,8 +569,10 @@
 
             Homey.get('myenergiAccount', (err, account) => {
                 if (err) return Homey.alert(err);
-                if (account && account.email && account.password)
+                if (account && account.email && account.password) {
                     savedAccount = { email: account.email, password: account.password };
+                    accountStored = true;
+                }
                 Homey.get('myenergiHubs', (err, savedHubs) => {
                     if (err) return Homey.alert(err);
                     hubs = (savedHubs || []).map(hub => ({

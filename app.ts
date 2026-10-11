@@ -10,6 +10,7 @@ import { Response } from './models/Result';
 import { MyEnergiAccountFake } from './services/MyEnergiAccountFake';
 import { MyEnergiFake } from './services/MyEnergiFake';
 import { SchedulerService } from './services/SchedulerService';
+import { resolveHubAccount } from './tools';
 
 export class MyEnergiApp extends Homey.App {
 
@@ -32,6 +33,8 @@ export class MyEnergiApp extends Homey.App {
       });
     }
     this.accountClients = {};
+    const signedInAccount = this.homey.settings.get('myenergiAccount');
+    const accountClientsByAccount: { [key: string]: MyEnergiAccount } = {};
     if (hubs) {
       this.clients = {};
       if (process.env.DEBUG === '1') {
@@ -45,8 +48,13 @@ export class MyEnergiApp extends Homey.App {
       hubs.forEach((hub: MyEnergiHub, index: number) => {
         // this.log(hub);
         this.clients[`${hub.hubname}_${hub.username}`] = new MyEnergi(hub.username, hub.password, this._apiBaseUrl);
-        if (hub.accountEmail && hub.accountPassword) {
-          this.accountClients[`${hub.hubname}_${hub.username}`] = new MyEnergiAccount(hub.accountEmail, hub.accountPassword);
+        const account = resolveHubAccount(hub, signedInAccount);
+        if (account) {
+          // Hubs on the same account share one client, and with it one sign in.
+          const accountKey = `${account.email}\n${account.password}`;
+          if (!accountClientsByAccount[accountKey])
+            accountClientsByAccount[accountKey] = new MyEnergiAccount(account.email, account.password);
+          this.accountClients[`${hub.hubname}_${hub.username}`] = accountClientsByAccount[accountKey];
         }
         if (index === 0) {
           this._dataUpdateInterval = hub.pollInterval * 1000;
@@ -142,9 +150,14 @@ export class MyEnergiApp extends Homey.App {
       if (key === 'myenergiHubs') {
         this.log(`Saved myenergiHubs ${JSON.stringify(hubs, (k, v) => (k === 'password' || k === 'accountPassword') ? '***' : v)}`);
       }
-      // Other settings, like the signed-in account of the settings page, do not affect the clients.
-      if (key === 'apiBaseUrl' || key === 'myenergiHubs')
+      if (key === 'apiBaseUrl' || key === 'myenergiHubs' || key === 'myenergiAccount')
         this.initClients(hubs);
+    });
+
+    // Signing out removes the signed-in account.
+    this.homey.settings.on('unset', async key => {
+      if (key === 'myenergiAccount')
+        this.initClients(this.homey.settings.get('myenergiHubs'));
     });
 
     this.log('myenergi app has been initialized');

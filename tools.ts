@@ -205,6 +205,26 @@ export function getFakeLibbiData(serialNumber = 99999996, mode: string | number 
 }
 
 /**
+ * Which myenergi account sign-in a hub uses. That is the account signed in
+ * on the settings page, unless the hub has its own, different account
+ * filled in. A hub's copy of the signed-in account is ignored, since the
+ * signed-in one is the one kept up to date.
+ * @param hub The hub's own account fields
+ * @param signedIn The account signed in on the settings page, if any
+ */
+export function resolveHubAccount(
+    hub: { accountEmail?: string; accountPassword?: string },
+    signedIn?: { email?: string; password?: string } | null,
+): { email: string; password: string } | null {
+    const hasSignedIn = !!(signedIn && signedIn.email && signedIn.password);
+    if (hub.accountEmail && hub.accountPassword && !(hasSignedIn && hub.accountEmail === signedIn?.email))
+        return { email: hub.accountEmail, password: hub.accountPassword };
+    if (hasSignedIn)
+        return { email: signedIn?.email as string, password: signedIn?.password as string };
+    return null;
+}
+
+/**
  * Check whether a myenergi control command succeeded. The server reports
  * status 0 for success, but some endpoints (e.g. the Zappi phase setting)
  * return it as the string "0" instead of a number, so compare numerically.
