@@ -5,3 +5,5 @@ Starten und stoppen Sie das Aufladen Ihres E-Auto manuell, nach einem Zeitplan o
 Steuern Sie Ihren Warmwasserbereiter oder andere Wärmequellen mit dem Eddi Überschussenergie verteiler und stellen Sie die Menge an Sonnenenergie ein, die Sie zum Erwärmen Ihres Wassers oder zum Laden Ihres Autos verwenden möchten.
 
 Überwachen Sie Strom und Energieverbrauch direkt an jedem Gerät oder über einen externen Harvi-Energiesensor.
+
+Verfolgen Sie Ihre Libbi-Hausbatterie in Homey Energy, ändern Sie den Modus und lassen Sie sie aus dem Netz laden, wenn der Strom günstig ist.

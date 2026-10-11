@@ -4,4 +4,6 @@ Starta och sluta ladda din bil manuellt, enligt ett schema, eller av andra förh
 
 Styr din varmvattenberedare eller andra värmekällor med Eddi power diverter och ställ in mängden solenergi du vill använda för att värma ditt vatten eller ladda din bil.
 
-Övervaka ström och energiförbrukning direkt på varje enhet eller via en extern Harvi energisensor. 
+Övervaka ström och energiförbrukning direkt på varje enhet eller via en extern Harvi energisensor.
+
+Följ ditt Libbi-hembatteri i Homey Energy, ändra läge och låt det ladda från elnätet när elen är billig.

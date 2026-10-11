@@ -5,3 +5,5 @@ Start en stop het laden van je EV handmatig, met een schema, of volgens de voorw
 Bedien je warmwater of ander verwarming met Eddi energie-omleider. Of gebruik de energie uit je zonnepanelen voor warmwater of om je EV op te laden.
 
 Monitor stroom en energie verbruik direct van elke myenergi apparaat of van een extern apparaat met een Harvi energie sensor.
+
+Volg je Libbi thuisbatterij in Homey Energy, wijzig de modus en laat hem vanaf het net laden wanneer stroom goedkoop is.

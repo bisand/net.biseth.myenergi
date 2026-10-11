@@ -5,3 +5,5 @@ Start and stop charging your car manually, on a schedule, or by other conditions
 Control your water heater or other heating sources with Eddi power diverter, and set the amount of solar energy you want to use to heat your water or charge your car.
 
 Monitor power and energy consumption directly on each device or via an external Harvi energy sensor.
+
+Follow your Libbi home battery in Homey Energy, change its mode, and let it charge from the grid when electricity is cheap.
