@@ -1,5 +1,5 @@
 import { Device } from 'homey';
-import { Libbi, LibbiMode, MyEnergi } from 'myenergi-api';
+import { Libbi, LibbiMode, MyEnergi, MyEnergiAccount } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
 import { calculateEnergy, isCommandSuccessful } from '../../tools';
 import { LibbiDriver } from './driver';
@@ -37,6 +37,10 @@ const LIBBI_STATES: { [key: number]: string } = {
 const CHARGING_STATES = [5, 7, 12, 51, 53, 55, 234];
 const DISCHARGING_STATES = [6, 8];
 
+// The charge from grid setup rarely changes, and comes from a separate API.
+const CHARGE_SETUP_REFRESH_INTERVAL = 5 * 60 * 1000;
+const ACCOUNT_REQUIRED_MESSAGE = 'Charge from grid needs your myenergi account email and password. Add them under the myenergi app settings.';
+
 export class LibbiDevice extends Device {
 
   private _callbackId = -1;
@@ -52,6 +56,8 @@ export class LibbiDevice extends Device {
 
   private _lastPowerMeasurement = 0;
   private _lastEnergyCalculation: Date = new Date();
+  private _lastChargeSetupRefresh = 0;
+  private _syncingAccountCapabilities = false;
 
   public deviceId!: string;
   public myenergiClientId!: string;
@@ -71,14 +77,16 @@ export class LibbiDevice extends Device {
       await this.setEnergy({}).catch(this.error);
     }
 
+    this.deviceId = this.getData().id;
+    this.myenergiClientId = this.getStoreValue('myenergiClientId');
+
     // Make sure capabilities are up to date.
     if (this.detectCapabilityChanges()) {
       await this.InitializeCapabilities().catch(this.error);
     }
+    await this.syncAccountCapabilities().catch(this.error);
 
     this._callbackId = (this.driver as LibbiDriver).registerDataUpdateCallback((data: LibbiData[]) => this.dataUpdated(data)) - 1;
-    this.deviceId = this.getData().id;
-    this.myenergiClientId = this.getStoreValue('myenergiClientId');
 
     try {
       this.myenergiClient = (this.homey.app as MyEnergiApp).clients[this.myenergiClientId];
@@ -101,6 +109,10 @@ export class LibbiDevice extends Device {
         this.setCapabilityValue('meter_power.charged', 0).catch(this.error);
         this.setCapabilityValue('meter_power.discharged', 0).catch(this.error);
       });
+      if (this.hasCapability('libbi_charge_from_grid')) {
+        this.registerCapabilityListener('libbi_charge_from_grid', this.setChargeFromGrid.bind(this));
+        this.refreshChargeSetup().catch(this.error);
+      }
     }
     this.registerCapabilityListener('button.reload_capabilities', async () => {
       this.InitializeCapabilities();
@@ -150,8 +162,11 @@ export class LibbiDevice extends Device {
   private detectCapabilityChanges(): boolean {
     let result = false;
     this.log(`Detecting Libbi capability changes...`);
-    const caps = this.getCapabilities();
-    const driverCaps = this.driverCapabilities();
+    // The account capabilities are added and removed on their own by
+    // syncAccountCapabilities, without rebuilding the whole capability set.
+    const accountCaps = (this.driver as LibbiDriver).accountCapabilities;
+    const caps = this.getCapabilities().filter(cap => !accountCaps.includes(cap));
+    const driverCaps = this.driverCapabilities().filter(cap => !accountCaps.includes(cap));
     for (const cap of caps) {
       if (!driverCaps.includes(cap)) {
         this.log(`Libbi capability ${cap} was removed.`);
@@ -183,7 +198,62 @@ export class LibbiDevice extends Device {
    */
   private driverCapabilities(): string[] {
     const driver = this.driver as LibbiDriver;
-    return this._isSolar ? driver.solarCapabilities : driver.capabilities;
+    if (this._isSolar)
+      return driver.solarCapabilities;
+    return this.accountClient ? [...driver.capabilities, ...driver.accountCapabilities] : driver.capabilities;
+  }
+
+  /**
+   * The myenergi account API client of this device's hub. Only available
+   * when an account email and password are set in the app settings.
+   */
+  private get accountClient(): MyEnergiAccount | undefined {
+    return (this.homey.app as MyEnergiApp).accountClients[this.myenergiClientId];
+  }
+
+  /**
+   * Add or remove the charge from grid capabilities when the account
+   * credentials are added to or removed from the app settings.
+   */
+  private async syncAccountCapabilities(): Promise<void> {
+    if (this._isSolar || this._syncingAccountCapabilities)
+      return;
+    const enabled = !!this.accountClient;
+    const accountCapabilities = (this.driver as LibbiDriver).accountCapabilities;
+    if (accountCapabilities.every(cap => this.hasCapability(cap) === enabled))
+      return;
+    this._syncingAccountCapabilities = true;
+    try {
+      for (const cap of accountCapabilities) {
+        if (enabled && !this.hasCapability(cap)) {
+          await this.addCapability(cap);
+          this.log(`*** ${cap} - Added`);
+        } else if (!enabled && this.hasCapability(cap)) {
+          await this.removeCapability(cap);
+          this.log(`*** ${cap} - Removed`);
+        }
+      }
+      if (enabled) {
+        this.registerCapabilityListener('libbi_charge_from_grid', this.setChargeFromGrid.bind(this));
+        this._lastChargeSetupRefresh = 0;
+      }
+    } finally {
+      this._syncingAccountCapabilities = false;
+    }
+  }
+
+  /**
+   * Read the charge from grid setting and charge target from the
+   * myenergi account API.
+   */
+  private async refreshChargeSetup(): Promise<void> {
+    const accountClient = this.accountClient;
+    if (!accountClient || !this.hasCapability('libbi_charge_from_grid'))
+      return;
+    this._lastChargeSetupRefresh = Date.now();
+    const setup = await accountClient.getLibbiChargeSetup(`${this.deviceId}`);
+    this.setCapabilityValue('libbi_charge_from_grid', !!setup.chargeFromGrid).catch(this.error);
+    this.setCapabilityValue('libbi_charge_target', (setup.energyTarget || 0) / 1000).catch(this.error);
   }
 
   private calculateValues(libbi: Libbi) {
@@ -321,6 +391,50 @@ export class LibbiDevice extends Device {
   }
 
   /**
+   * Allow or disallow the Libbi to charge from the grid. The Libbi only
+   * charges during the cheap periods of the tariff set in the myenergi app.
+   * @param enabled Charge from grid on or off
+   */
+  public async setChargeFromGrid(enabled: boolean): Promise<void> {
+    const accountClient = this.accountClient;
+    if (!accountClient)
+      throw new Error(ACCOUNT_REQUIRED_MESSAGE);
+    try {
+      await accountClient.setLibbiChargeFromGrid(`${this.deviceId}`, enabled);
+      this.setCapabilityValue('libbi_charge_from_grid', enabled).catch(this.error);
+      this.log(`Libbi charge from grid changed to ${enabled}`);
+    } catch (error) {
+      this.error(`Setting Libbi charge from grid to ${enabled} failed:\n${error}`);
+      throw new Error(`Setting charge from grid failed.`, { cause: error });
+    }
+  }
+
+  /**
+   * Whether the Libbi is allowed to charge from the grid.
+   */
+  public isChargeFromGridEnabled(): boolean {
+    return this.getCapabilityValue('libbi_charge_from_grid') === true;
+  }
+
+  /**
+   * Set how much energy the Libbi should hold when charging from the grid.
+   * @param kwh Charge target in kWh
+   */
+  public async setChargeTarget(kwh: number): Promise<void> {
+    const accountClient = this.accountClient;
+    if (!accountClient)
+      throw new Error(ACCOUNT_REQUIRED_MESSAGE);
+    try {
+      await accountClient.setLibbiChargeTarget(`${this.deviceId}`, kwh * 1000);
+      this.setCapabilityValue('libbi_charge_target', kwh).catch(this.error);
+      this.log(`Libbi charge target changed to ${kwh} kWh`);
+    } catch (error) {
+      this.error(`Setting the Libbi charge target to ${kwh} kWh failed:\n${error}`);
+      throw new Error(`Setting the charge target failed.`, { cause: error });
+    }
+  }
+
+  /**
    * Event handler for mode capability listener
    * @param value Libbi mode
    * @param opts Options
@@ -338,6 +452,12 @@ export class LibbiDevice extends Device {
     if (process.env.DEBUG === '1') this.log('Received data from driver.');
     if (!this.getAvailable())
       return;
+    this.syncAccountCapabilities()
+      .then(() => {
+        if (Date.now() - this._lastChargeSetupRefresh >= CHARGE_SETUP_REFRESH_INTERVAL)
+          return this.refreshChargeSetup();
+      })
+      .catch(this.error);
     if (data) {
       data.forEach((libbi: LibbiData) => {
         if (libbi && libbi.sno === this.deviceId) {

@@ -3,4 +3,6 @@ export interface MyEnergiHub {
     username: string;
     password: string;
     pollInterval: number;
+    accountEmail?: string;
+    accountPassword?: string;
 }

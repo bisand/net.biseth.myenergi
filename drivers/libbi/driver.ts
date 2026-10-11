@@ -41,6 +41,12 @@ export class LibbiDriver extends Driver {
     new Capability('meter_power', CapabilityType.Sensor, 4),
   ];
 
+  /**
+   * Capabilities that use the myenergi account API. Only added to devices
+   * whose hub has an account email and password in the app settings.
+   */
+  public readonly accountCapabilities: string[] = ['libbi_charge_from_grid', 'libbi_charge_target'];
+
   public libbiDevices: LibbiData[] = [];
   public get capabilities(): string[] {
     return this._capabilities.sort((x, y) => x.order - y.order).map(value => value.name);
@@ -71,6 +77,38 @@ export class LibbiDriver extends Driver {
       dev.log(`Libbi Mode: ${args.libbi_mode}`);
       dev.log(`State: ${state}`);
       await dev.setMode(args.libbi_mode);
+    });
+
+    const setChargeFromGridAction = this.homey.flow.getActionCard('set_libbi_charge_from_grid');
+    setChargeFromGridAction.registerRunListener(async (args) => {
+      const dev: LibbiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: set_libbi_charge_from_grid');
+        return;
+      }
+      dev.log(`Libbi charge from grid: ${args.charge_from_grid}`);
+      await dev.setChargeFromGrid(args.charge_from_grid === 'on');
+    });
+
+    const setChargeTargetAction = this.homey.flow.getActionCard('set_libbi_charge_target');
+    setChargeTargetAction.registerRunListener(async (args) => {
+      const dev: LibbiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: set_libbi_charge_target');
+        return;
+      }
+      dev.log(`Libbi charge target: ${args.charge_target}`);
+      await dev.setChargeTarget(args.charge_target);
+    });
+
+    const chargeFromGridCondition = this.homey.flow.getConditionCard('libbi_charge_from_grid_enabled');
+    chargeFromGridCondition.registerRunListener(async (args) => {
+      const dev: LibbiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: libbi_charge_from_grid_enabled');
+        return;
+      }
+      return dev.isChargeFromGridEnabled();
     });
 
     this.log('LibbiDriver has been initialized');
@@ -160,7 +198,9 @@ export class LibbiDriver extends Driver {
           data: { id: v.sno },
           icon: 'icon.svg', // relative to: /drivers/<driver_id>/assets/
           store: store,
-          capabilities: this.capabilities,
+          capabilities: (this.homey.app as MyEnergiApp).accountClients[v.myenergiClientId as string]
+            ? [...this.capabilities, ...this.accountCapabilities]
+            : this.capabilities,
           capabilitiesOptions: {
           },
           settings: settings,
