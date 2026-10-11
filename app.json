@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "net.biseth.myenergi",
-  "version": "2.4.12",
+  "version": "2.4.13",
   "compatibility": ">=12.4.5",
   "sdk": 3,
   "brandColor": "#2bcc64",
@@ -1082,6 +1082,151 @@
             "placeholder": {
               "en": "Until (HHMM) 15 min interval"
             }
+          }
+        ]
+      },
+      {
+        "id": "set_single_charge",
+        "title": {
+          "en": "Set a single charge",
+          "no": "Sett en enkeltlading",
+          "nl": "Een eenmalige lading instellen",
+          "sv": "Ställ in en engångsladdning",
+          "de": "Eine Einzelladung einstellen"
+        },
+        "titleFormatted": {
+          "en": "Set a single charge of [[kwh]] kWh for [[vehicle]] [[day]], between [[from_time]] and [[to_time]]",
+          "no": "Sett en enkeltlading på [[kwh]] kWh for [[vehicle]] [[day]], mellom [[from_time]] og [[to_time]]",
+          "nl": "Stel een eenmalige lading in van [[kwh]] kWh voor [[vehicle]] [[day]], tussen [[from_time]] en [[to_time]]",
+          "sv": "Ställ in en engångsladdning på [[kwh]] kWh för [[vehicle]] [[day]], mellan [[from_time]] och [[to_time]]",
+          "de": "Eine Einzelladung von [[kwh]] kWh für [[vehicle]] [[day]] einstellen, zwischen [[from_time]] und [[to_time]]"
+        },
+        "hint": {
+          "en": "A one-off charge where myenergi picks the cheapest times in the window from the tariff on your myenergi account. It replaces the single charge Homey set earlier and keeps the ones made in the myenergi app. Needs the myenergi account sign-in under the app settings, and a Zappi that supports schedules.",
+          "no": "En engangslading der myenergi velger de billigste tidene i tidsrommet ut fra tariffen på myenergi-kontoen din. Den erstatter enkeltladingen Homey satte tidligere og beholder de som er laget i myenergi-appen. Krever innlogging med myenergi-kontoen under appinnstillingene, og en Zappi som støtter tidsplaner.",
+          "nl": "Een eenmalige lading waarbij myenergi de goedkoopste tijden in het tijdvak kiest op basis van het tarief van je myenergi-account. Vervangt de eenmalige lading die Homey eerder instelde en behoudt de ladingen uit de myenergi-app. Vereist aanmelding met het myenergi-account in de app-instellingen en een Zappi die schema's ondersteunt.",
+          "sv": "En engångsladdning där myenergi väljer de billigaste tiderna i tidsfönstret utifrån tariffen på ditt myenergi-konto. Den ersätter engångsladdningen som Homey ställde in tidigare och behåller de som gjorts i myenergi-appen. Kräver inloggning med myenergi-kontot under appinställningarna och en Zappi som stöder scheman.",
+          "de": "Eine einmalige Ladung, bei der myenergi die günstigsten Zeiten im Zeitfenster anhand des Tarifs Ihres myenergi-Kontos wählt. Sie ersetzt die zuvor von Homey eingestellte Einzelladung und behält die in der myenergi-App erstellten. Erfordert die Anmeldung mit dem myenergi-Konto in den App-Einstellungen und einen Zappi, der Zeitpläne unterstützt."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
+          },
+          {
+            "type": "number",
+            "name": "kwh",
+            "title": {
+              "en": "kWh"
+            },
+            "placeholder": {
+              "en": "Energy to add",
+              "no": "Energi som skal lades",
+              "nl": "Toe te voegen energie",
+              "sv": "Energi att ladda",
+              "de": "Zu ladende Energie"
+            },
+            "min": 1,
+            "max": 200,
+            "step": 1
+          },
+          {
+            "type": "autocomplete",
+            "name": "vehicle",
+            "title": {
+              "en": "Vehicle",
+              "no": "Kjøretøy",
+              "nl": "Voertuig",
+              "sv": "Fordon",
+              "de": "Fahrzeug"
+            },
+            "placeholder": {
+              "en": "Vehicle from your myenergi account",
+              "no": "Kjøretøy fra myenergi-kontoen din",
+              "nl": "Voertuig uit je myenergi-account",
+              "sv": "Fordon från ditt myenergi-konto",
+              "de": "Fahrzeug aus Ihrem myenergi-Konto"
+            }
+          },
+          {
+            "type": "dropdown",
+            "name": "day",
+            "title": {
+              "en": "Day",
+              "no": "Dag",
+              "nl": "Dag",
+              "sv": "Dag",
+              "de": "Tag"
+            },
+            "values": [
+              {
+                "id": "today",
+                "label": {
+                  "en": "today",
+                  "no": "i dag",
+                  "nl": "vandaag",
+                  "sv": "i dag",
+                  "de": "heute"
+                }
+              },
+              {
+                "id": "tomorrow",
+                "label": {
+                  "en": "tomorrow",
+                  "no": "i morgen",
+                  "nl": "morgen",
+                  "sv": "i morgon",
+                  "de": "morgen"
+                }
+              }
+            ]
+          },
+          {
+            "type": "time",
+            "name": "from_time",
+            "title": {
+              "en": "From",
+              "no": "Fra",
+              "nl": "Van",
+              "sv": "Från",
+              "de": "Von"
+            }
+          },
+          {
+            "type": "time",
+            "name": "to_time",
+            "title": {
+              "en": "To",
+              "no": "Til",
+              "nl": "Tot",
+              "sv": "Till",
+              "de": "Bis"
+            }
+          }
+        ]
+      },
+      {
+        "id": "remove_single_charge",
+        "title": {
+          "en": "Remove the single charge set by Homey",
+          "no": "Fjern enkeltladingen som Homey satte",
+          "nl": "De door Homey ingestelde eenmalige lading verwijderen",
+          "sv": "Ta bort engångsladdningen som Homey ställde in",
+          "de": "Die von Homey eingestellte Einzelladung entfernen"
+        },
+        "hint": {
+          "en": "Single charges made in the myenergi app are kept.",
+          "no": "Enkeltladinger laget i myenergi-appen beholdes.",
+          "nl": "Eenmalige ladingen uit de myenergi-app blijven behouden.",
+          "sv": "Engångsladdningar som gjorts i myenergi-appen behålls.",
+          "de": "In der myenergi-App erstellte Einzelladungen bleiben erhalten."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=zappi"
           }
         ]
       }

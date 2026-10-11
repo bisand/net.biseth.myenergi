@@ -277,6 +277,38 @@ export class ZappiDriver extends Driver {
       }
     });
 
+    const setSingleChargeAction = this.homey.flow.getActionCard('set_single_charge');
+    setSingleChargeAction.registerRunListener(async (args) => {
+      const dev: ZappiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: set_single_charge');
+        return;
+      }
+      dev.log(`Single charge: ${args.kwh} kWh ${args.day} between ${args.from_time} and ${args.to_time}`);
+      await dev.setSingleCharge(args.kwh, args.vehicle?.id, args.day, args.from_time, args.to_time);
+    });
+    setSingleChargeAction.registerArgumentAutocompleteListener('vehicle', async (query, args) => {
+      const dev: ZappiDevice = args.device;
+      const vehicles = await dev.getVehicles();
+      return vehicles
+        .map(vehicle => ({
+          id: vehicle.id,
+          name: `${vehicle.manufacturer} ${vehicle.model}`.trim(),
+          description: `${vehicle.batterySize} kWh, ${vehicle.chargeRate} kW`,
+        }))
+        .filter(vehicle => vehicle.name.toLowerCase().includes(query.toLowerCase()));
+    });
+
+    const removeSingleChargeAction = this.homey.flow.getActionCard('remove_single_charge');
+    removeSingleChargeAction.registerRunListener(async (args) => {
+      const dev: ZappiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: remove_single_charge');
+        return;
+      }
+      await dev.removeSingleCharge();
+    });
+
     this.log('ZappiDriver has been initialized');
   }
 

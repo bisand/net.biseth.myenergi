@@ -1,4 +1,4 @@
-import { LibbiChargeSetup, MyEnergiAccount } from 'myenergi-api';
+import { AccountDevice, AccountVehicle, LibbiChargeSetup, MyEnergiAccount, ZappiSingleCharge } from 'myenergi-api';
 
 export class MyEnergiAccountFake extends MyEnergiAccount {
     private _fakeChargeFromGrid = false;
@@ -21,5 +21,21 @@ export class MyEnergiAccountFake extends MyEnergiAccount {
     public override async setLibbiChargeTarget(serialNo: string, targetEnergyWh: number): Promise<void> {
         console.log(`MyEnergiAccountFake->setLibbiChargeTarget(${serialNo}, ${targetEnergyWh})`);
         this._fakeEnergyTarget = targetEnergyWh;
+    }
+    public override async getDevice(serialNo: string): Promise<AccountDevice | null> {
+        console.log(`MyEnergiAccountFake->getDevice(${serialNo})`);
+        return { id: `fake-${serialNo}`, deviceName: 'Fake', deviceType: 'zappi', serialNumber: serialNo, firmware: '', status: 2 };
+    }
+    public override async getVehicles(): Promise<AccountVehicle[]> {
+        console.log(`MyEnergiAccountFake->getVehicles()`);
+        return [{ id: 'fake-vehicle', manufacturer: 'Fake', model: 'EV', batterySize: 60, chargeRate: 7.4 }];
+    }
+    public override async setZappiSingleCharge(deviceId: string, charge: ZappiSingleCharge): Promise<unknown> {
+        console.log(`MyEnergiAccountFake->setZappiSingleCharge(${deviceId}, ${JSON.stringify(charge)})`);
+        return {};
+    }
+    public override async removeZappiSingleCharges(deviceId: string, name: string): Promise<unknown> {
+        console.log(`MyEnergiAccountFake->removeZappiSingleCharges(${deviceId}, ${name})`);
+        return {};
     }
 }

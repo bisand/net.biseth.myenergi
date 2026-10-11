@@ -1,5 +1,5 @@
 import { Device } from 'homey';
-import { MyEnergi, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiPhaseSetting, ZappiStatus } from 'myenergi-api';
+import { AccountVehicle, MyEnergi, MyEnergiAccount, Zappi, ZappiBoostMode, ZappiChargeMode, ZappiPhaseSetting, ZappiStatus } from 'myenergi-api';
 import { KeyValue } from 'myenergi-api/dist/src/models/KeyValue';
 import { MyEnergiApp } from '../../app';
 import { ZappiSettings } from '../../models/ZappiSettings';
@@ -12,7 +12,14 @@ import { ZappiDeviceState } from './ZappiDeviceState';
 import { ZappiPhaseSettingText } from './ZappiPhaseSettingText';
 import { ZappiStatusText } from './ZappiStatusText';
 
+// Single charges set from Homey carry this name, so they can be replaced
+// and removed without touching the ones made in the myenergi app.
+const SINGLE_CHARGE_NAME = 'Homey';
+const ACCOUNT_REQUIRED_MESSAGE = 'Single charge needs your myenergi account sign-in. Add it under the myenergi app settings.';
+
 export class ZappiDevice extends Device {
+
+  private _accountDeviceId = '';
 
   private _callbackId = -1;
   private _chargeMode: ZappiChargeMode = ZappiChargeMode.Fast;
@@ -668,6 +675,88 @@ export class ZappiDevice extends Device {
       this.error(`Unlocking the Zappi failed:\n${error}`);
       throw new Error('Unlocking the Zappi failed.', { cause: error });
     }
+  }
+
+  /**
+   * The myenergi account API client of this device's hub. Only available
+   * when an account sign-in is set in the app settings.
+   */
+  private get accountClient(): MyEnergiAccount {
+    const accountClient = (this.homey.app as MyEnergiApp).accountClients[this.myenergiClientId];
+    if (!accountClient)
+      throw new Error(ACCOUNT_REQUIRED_MESSAGE);
+    return accountClient;
+  }
+
+  /**
+   * The account API identifies a device by its account id, not by its
+   * serial number.
+   */
+  private async getAccountDeviceId(): Promise<string> {
+    if (!this._accountDeviceId) {
+      const device = await this.accountClient.getDevice(`${this.deviceId}`);
+      if (!device)
+        throw new Error('This Zappi was not found on your myenergi account.');
+      this._accountDeviceId = device.id;
+    }
+    return this._accountDeviceId;
+  }
+
+  /**
+   * The vehicle profiles of the myenergi account.
+   */
+  public async getVehicles(): Promise<AccountVehicle[]> {
+    return this.accountClient.getVehicles();
+  }
+
+  /**
+   * Set a single charge: a one-off charge where myenergi picks the cheapest
+   * times in the window from the tariff on the account. Replaces the single
+   * charge set from Homey earlier and keeps the ones made in the myenergi app.
+   * @param kWh Energy to add
+   * @param vehicleId Vehicle profile id
+   * @param day 'today' or 'tomorrow'
+   * @param fromTime Start of the window (HH:MM)
+   * @param toTime End of the window (HH:MM)
+   */
+  public async setSingleCharge(kWh: number, vehicleId: string, day: string, fromTime: string, toTime: string): Promise<void> {
+    try {
+      const date = new Date(Date.now() + (day === 'tomorrow' ? 24 * 60 * 60 * 1000 : 0));
+      const parts = new Intl.DateTimeFormat('en-GB', { timeZone: this.homey.clock.getTimezone(), day: '2-digit', month: '2-digit', year: 'numeric' }).formatToParts(date);
+      const part = (type: string) => parts.find(p => p.type === type)?.value;
+      await this.accountClient.setZappiSingleCharge(await this.getAccountDeviceId(), {
+        name: SINGLE_CHARGE_NAME,
+        vehicleId,
+        kWh,
+        date: `${part('day')}-${part('month')}-${part('year')}`,
+        fromTime,
+        toTime,
+      });
+      this.log(`Single charge set: ${kWh} kWh ${day} between ${fromTime} and ${toTime}`);
+    } catch (error) {
+      this.error(`Setting the single charge failed:\n${error}`);
+      throw new Error(this.getSingleChargeErrorMessage(error, 'Setting the single charge failed.'), { cause: error });
+    }
+  }
+
+  /**
+   * Remove the single charge set from Homey.
+   */
+  public async removeSingleCharge(): Promise<void> {
+    try {
+      await this.accountClient.removeZappiSingleCharges(await this.getAccountDeviceId(), SINGLE_CHARGE_NAME);
+      this.log('Single charge removed');
+    } catch (error) {
+      this.error(`Removing the single charge failed:\n${error}`);
+      throw new Error(this.getSingleChargeErrorMessage(error, 'Removing the single charge failed.'), { cause: error });
+    }
+  }
+
+  private getSingleChargeErrorMessage(error: unknown, fallback: string): string {
+    const message = error instanceof Error ? error.message : '';
+    if (message.includes('does not support charge schedules'))
+      return 'This Zappi does not support single charges.';
+    return message ? `${fallback} ${message}` : fallback;
   }
 
   /**
