@@ -6,3 +6,4 @@ Kontrollér varmtvannsberederen eller andre varmekilder med energifordeleren Edd
 
 Monitorér strømforbruket direkte på hver enhet, eller via den eksterne energisensoren Harvi.
 
+Følg Libbi-hjemmebatteriet ditt i Homey Energy, endre modus, og la det lade fra strømnettet når strømmen er billig.
