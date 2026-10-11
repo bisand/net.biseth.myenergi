@@ -2,11 +2,12 @@
 // sourceMapSupport.install();
 
 import Homey from 'homey';
-import { MyEnergi } from 'myenergi-api';
+import { MyEnergi, MyEnergiAccount, MyEnergiAccountError } from 'myenergi-api';
 import { DataCallbackFunction } from './dataCallbackFunction';
 import { Credential } from './models/Credential';
 import { MyEnergiHub } from './models/MyEnergiHub';
 import { Response } from './models/Result';
+import { MyEnergiAccountFake } from './services/MyEnergiAccountFake';
 import { MyEnergiFake } from './services/MyEnergiFake';
 import { SchedulerService } from './services/SchedulerService';
 
@@ -17,6 +18,8 @@ export class MyEnergiApp extends Homey.App {
   private _apiBaseUrl = 'https://s18.myenergi.net';
 
   public clients: { [name: string]: MyEnergi } = {};
+  // myenergi account API clients, only for hubs with an account email and password.
+  public accountClients: { [name: string]: MyEnergiAccount } = {};
   private _schedulerService!: SchedulerService;
   public fakeClientId = '';
 
@@ -28,6 +31,7 @@ export class MyEnergiApp extends Homey.App {
         delete this.clients[key];
       });
     }
+    this.accountClients = {};
     if (hubs) {
       this.clients = {};
       if (process.env.DEBUG === '1') {
@@ -36,10 +40,14 @@ export class MyEnergiApp extends Homey.App {
           this.homey.settings.set('fakeClientId', this.fakeClientId);
         }
         this.clients[this.fakeClientId] = new MyEnergiFake('hub.username', 'hub.password', 'https://fake.url');
+        this.accountClients[this.fakeClientId] = new MyEnergiAccountFake('account.email', 'account.password');
       }
       hubs.forEach((hub: MyEnergiHub, index: number) => {
         // this.log(hub);
         this.clients[`${hub.hubname}_${hub.username}`] = new MyEnergi(hub.username, hub.password, this._apiBaseUrl);
+        if (hub.accountEmail && hub.accountPassword) {
+          this.accountClients[`${hub.hubname}_${hub.username}`] = new MyEnergiAccount(hub.accountEmail, hub.accountPassword);
+        }
         if (index === 0) {
           this._dataUpdateInterval = hub.pollInterval * 1000;
         }
@@ -132,7 +140,7 @@ export class MyEnergiApp extends Homey.App {
           this._apiBaseUrl = apiBaseUrl;
       }
       if (key === 'myenergiHubs') {
-        this.log(`Saved myenergiHubs ${JSON.stringify(hubs)}`);
+        this.log(`Saved myenergiHubs ${JSON.stringify(hubs, (k, v) => (k === 'password' || k === 'accountPassword') ? '***' : v)}`);
       }
       this.initClients(hubs);
     });
@@ -151,6 +159,21 @@ export class MyEnergiApp extends Homey.App {
   public async validateCredentials(body: Credential): Promise<Response> {
     const res = await this.checkCredential(this._apiBaseUrl, body.username, body.password).catch(this.error);
     return res ? { result: 'ok' } : { result: 'error' } as Response;
+  }
+
+  /**
+   * Validate myenergi account credentials API call
+   * @param body Account email (username) and password
+   */
+  public async validateAccountCredentials(body: Credential): Promise<Response> {
+    try {
+      await new MyEnergiAccount(body.username, body.password).login();
+      return { result: 'ok' };
+    } catch (error) {
+      this.log(`Account credential check failed: ${error}`);
+      const authFailed = error instanceof MyEnergiAccountError && error.authFailed;
+      return { result: authFailed ? 'error' : 'unavailable' };
+    }
   }
 }
 

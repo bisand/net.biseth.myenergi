@@ -71,6 +71,130 @@
                     ]
                 }
             ]
+        },
+        {
+            "id": "set_libbi_charge_from_grid",
+            "$filter": "capabilities=libbi_charge_from_grid",
+            "title": {
+                "en": "Turn charge from grid on or off",
+                "no": "Slå lading fra strømnettet på eller av",
+                "nl": "Laden vanaf het net in- of uitschakelen",
+                "sv": "Slå på eller av laddning från elnätet",
+                "de": "Laden aus dem Netz ein- oder ausschalten"
+            },
+            "titleFormatted": {
+                "en": "Turn charge from grid [[charge_from_grid]]",
+                "no": "Slå lading fra strømnettet [[charge_from_grid]]",
+                "nl": "Schakel laden vanaf het net [[charge_from_grid]]",
+                "sv": "Slå [[charge_from_grid]] laddning från elnätet",
+                "de": "Laden aus dem Netz [[charge_from_grid]]schalten"
+            },
+            "hint": {
+                "en": "Allow the Libbi to charge from the grid. It only charges up to the charge target, and only during the cheap periods of the tariff set in the myenergi app.",
+                "no": "La Libbi lade fra strømnettet. Den lader bare opp til lademålet, og bare i de billige periodene i tariffen som er satt i myenergi-appen.",
+                "nl": "Sta de Libbi toe om vanaf het net te laden. Hij laadt alleen tot het laaddoel, en alleen tijdens de goedkope perioden van het tarief dat in de myenergi-app is ingesteld.",
+                "sv": "Låt Libbi ladda från elnätet. Den laddar bara upp till laddmålet, och bara under de billiga perioderna i tariffen som är inställd i myenergi-appen.",
+                "de": "Erlaubt dem Libbi, aus dem Netz zu laden. Er lädt nur bis zum Ladeziel und nur in den günstigen Zeiträumen des in der myenergi-App eingestellten Tarifs."
+            },
+            "args": [
+                {
+                    "type": "dropdown",
+                    "name": "charge_from_grid",
+                    "title": {
+                        "en": "Charge from grid",
+                        "no": "Lad fra strømnettet",
+                        "nl": "Laden vanaf het net",
+                        "sv": "Ladda från elnätet",
+                        "de": "Aus dem Netz laden"
+                    },
+                    "values": [
+                        {
+                            "id": "on",
+                            "label": {
+                                "en": "on",
+                                "no": "på",
+                                "nl": "in",
+                                "sv": "på",
+                                "de": "ein"
+                            }
+                        },
+                        {
+                            "id": "off",
+                            "label": {
+                                "en": "off",
+                                "no": "av",
+                                "nl": "uit",
+                                "sv": "av",
+                                "de": "aus"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "set_libbi_charge_target",
+            "$filter": "capabilities=libbi_charge_from_grid",
+            "title": {
+                "en": "Set charge target",
+                "no": "Sett lademål",
+                "nl": "Laaddoel instellen",
+                "sv": "Ställ in laddmål",
+                "de": "Ladeziel einstellen"
+            },
+            "titleFormatted": {
+                "en": "Set charge target to [[charge_target]] kWh",
+                "no": "Sett lademål til [[charge_target]] kWh",
+                "nl": "Stel laaddoel in op [[charge_target]] kWh",
+                "sv": "Ställ in laddmål till [[charge_target]] kWh",
+                "de": "Ladeziel auf [[charge_target]] kWh einstellen"
+            },
+            "hint": {
+                "en": "How much energy the Libbi should hold when it charges from the grid.",
+                "no": "Hvor mye energi Libbi skal ha når den lader fra strømnettet.",
+                "nl": "Hoeveel energie de Libbi moet bevatten wanneer hij vanaf het net laadt.",
+                "sv": "Hur mycket energi Libbi ska ha när den laddar från elnätet.",
+                "de": "Wie viel Energie der Libbi enthalten soll, wenn er aus dem Netz lädt."
+            },
+            "args": [
+                {
+                    "type": "number",
+                    "name": "charge_target",
+                    "title": {
+                        "en": "Charge target",
+                        "no": "Lademål",
+                        "nl": "Laaddoel",
+                        "sv": "Laddmål",
+                        "de": "Ladeziel"
+                    },
+                    "placeholder": {
+                        "en": "kWh"
+                    },
+                    "min": 0,
+                    "max": 25,
+                    "step": 0.1
+                }
+            ]
+        }
+    ],
+    "conditions": [
+        {
+            "id": "libbi_charge_from_grid_enabled",
+            "$filter": "capabilities=libbi_charge_from_grid",
+            "title": {
+                "en": "Charge from grid !{{is|isn't}} turned on",
+                "no": "Lading fra strømnettet !{{er|er ikke}} slått på",
+                "nl": "Laden vanaf het net !{{is|is niet}} ingeschakeld",
+                "sv": "Laddning från elnätet !{{är|är inte}} påslagen",
+                "de": "Laden aus dem Netz !{{ist|ist nicht}} eingeschaltet"
+            },
+            "hint": {
+                "en": "Checks if the Libbi is allowed to charge from the grid",
+                "no": "Sjekker om Libbi har lov til å lade fra strømnettet",
+                "nl": "Controleert of de Libbi vanaf het net mag laden",
+                "sv": "Kontrollerar om Libbi får ladda från elnätet",
+                "de": "Prüft, ob der Libbi aus dem Netz laden darf"
+            }
         }
     ]
 }

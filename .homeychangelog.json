@@ -151,5 +151,8 @@
   },
   "2.4.10": {
     "en": "Eddi: new flow trigger \"Temperature probe changed\", which fires whenever probe 1 or 2 reports a new temperature and hands the reading to the flow as a tag. Harvi: new Energy imported and Energy exported meters, showing grid import and export separately."
+  },
+  "2.4.11": {
+    "en": "Libbi: charge from grid can now be turned on and off, and the charge target set, from the device and from flows. This needs your myenergi account email and password, which you can add under the app settings."
   }
 }

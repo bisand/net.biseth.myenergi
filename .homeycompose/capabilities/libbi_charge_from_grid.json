@@ -1,0 +1,14 @@
+{
+    "type": "boolean",
+    "title": {
+        "en": "Charge from grid",
+        "no": "Lad fra strømnettet",
+        "nl": "Laden vanaf het net",
+        "sv": "Ladda från elnätet",
+        "de": "Aus dem Netz laden"
+    },
+    "getable": true,
+    "setable": true,
+    "uiComponent": "toggle",
+    "icon": "/assets/charge_mode.svg"
+}

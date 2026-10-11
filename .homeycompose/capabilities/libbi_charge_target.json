@@ -1,0 +1,18 @@
+{
+    "type": "number",
+    "title": {
+        "en": "Charge target",
+        "no": "Lademål",
+        "nl": "Laaddoel",
+        "sv": "Laddmål",
+        "de": "Ladeziel"
+    },
+    "getable": true,
+    "setable": false,
+    "uiComponent": "sensor",
+    "units": {
+        "en": "kWh"
+    },
+    "decimals": 1,
+    "icon": "/assets/charge_mode.svg"
+}
