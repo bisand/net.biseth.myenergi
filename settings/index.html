@@ -495,7 +495,8 @@
                             renderHubs();
                             setNotice($('signInStatus'), 'Signed out. Your hubs are kept.', 'ok');
                         };
-                        Homey.set('myenergiAccount', null, err => {
+                        // A setting cannot be set to an empty value; it has to be removed.
+                        Homey.unset('myenergiAccount', err => {
                             if (err || !changed) return done(err);
                             Homey.set('myenergiHubs', storedHubs, done);
                         });
