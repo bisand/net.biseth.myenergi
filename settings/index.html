@@ -2,6 +2,7 @@
 <html>
 
 <head>
+    <meta charset="utf-8" />
     <!-- The '/homey.js' script must be included in your settings view to work -->
     <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
     <style>
@@ -10,6 +11,10 @@
             line-height: 1.4;
             opacity: 0.75;
             margin: 4px 0 12px 0;
+        }
+
+        #hubs {
+            margin-top: 8px;
         }
 
         .hub-card {
@@ -83,6 +88,40 @@
             margin-top: 16px;
         }
 
+        /* Buttons side by side when there is room, stacked and full width when there is not. */
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .button-row > button {
+            flex: 1 1 180px;
+            width: auto;
+            margin: 0;
+        }
+
+        .signed-in-as {
+            margin: 8px 0 4px 0;
+        }
+
+        /* The email goes on its own line and only breaks when it does not fit there. */
+        .signed-in-as b {
+            display: block;
+            overflow-wrap: anywhere;
+        }
+
+        input,
+        .hub-card {
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+
+        .hub-remove {
+            flex: 0 0 auto;
+        }
+
         button:disabled {
             opacity: 0.5;
         }
@@ -97,7 +136,7 @@
 
     <form class="homey-form" onsubmit="return false;">
         <fieldset class="homey-form-fieldset">
-            <legend class="homey-form-legend">Sign in with your myenergi account</legend>
+            <legend class="homey-form-legend" id="signInLegend">Sign in with your myenergi account</legend>
             <p class="hint" id="signInIntro">
                 The easy way: sign in with the email and password you use on
                 <a href="https://myaccount.myenergi.com" target="_blank">myaccount.myenergi.com</a>
@@ -105,10 +144,12 @@
                 Your sign-in is stored on your Homey and only sent to myenergi.
             </p>
             <div id="signedIn" style="display: none;">
-                <p><b>Signed in as <span id="signedInEmail"></span>.</b></p>
+                <p class="signed-in-as">Signed in as <b id="signedInEmail"></b></p>
                 <p class="hint">Your sign-in is saved with your hubs below, and lets Homey control Libbi charge from grid.</p>
-                <button id="refreshHubs" class="homey-button-secondary-shadow" type="button">Look for new hubs</button>
-                <button id="switchAccount" class="homey-button-transparent" type="button">Use a different account</button>
+                <div class="button-row">
+                    <button id="refreshHubs" class="homey-button-secondary-shadow" type="button">Look for new hubs</button>
+                    <button id="switchAccount" class="homey-button-transparent" type="button">Use a different account</button>
+                </div>
             </div>
             <div id="signInForm">
                 <div class="homey-form-group">
@@ -128,7 +169,9 @@
             <legend class="homey-form-legend">Your hubs</legend>
             <p id="noHubs" class="hint">No hubs yet. Sign in above, or add one by hand.</p>
             <div id="hubs"></div>
-            <button id="addHub" class="homey-button-secondary-shadow" type="button">Add a hub by hand</button>
+            <div class="button-row">
+                <button id="addHub" class="homey-button-secondary-shadow" type="button">Add a hub by hand</button>
+            </div>
         </fieldset>
 
         <details>
@@ -345,6 +388,7 @@
                 $('signedIn').style.display = signedIn ? 'block' : 'none';
                 $('signInForm').style.display = signedIn ? 'none' : 'block';
                 $('signInIntro').style.display = signedIn ? 'none' : 'block';
+                $('signInLegend').textContent = signedIn ? 'Your myenergi account' : 'Sign in with your myenergi account';
                 if (signedIn)
                     $('signedInEmail').textContent = savedAccount.email;
             }
