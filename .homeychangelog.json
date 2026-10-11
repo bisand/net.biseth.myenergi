@@ -163,5 +163,8 @@
   },
   "2.4.14": {
     "en": "Setup: sign in with your myenergi account under the app settings and your hub serial numbers and API keys are filled in for you. Libbi: charge from grid can now be turned on and off, and the charge target set, from the device and from flows. Zappi: new flow cards to set and remove a single charge, where myenergi picks the cheapest times. The Libbi and single charge features need the myenergi account sign-in."
+  },
+  "2.4.15": {
+    "en": "Setup: sign in with your myenergi account under the app settings and your hub serial numbers and API keys are filled in for you. Libbi: charge from grid can now be turned on and off, and the charge target set, from the device and from flows. Zappi: new flow cards to set and remove a single charge, where myenergi picks the cheapest times. The Libbi and single charge features need the myenergi account sign-in."
   }
 }
