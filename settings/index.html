@@ -98,21 +98,29 @@
     <form class="homey-form" onsubmit="return false;">
         <fieldset class="homey-form-fieldset">
             <legend class="homey-form-legend">Sign in with your myenergi account</legend>
-            <p class="hint">
+            <p class="hint" id="signInIntro">
                 The easy way: sign in with the email and password you use on
                 <a href="https://myaccount.myenergi.com" target="_blank">myaccount.myenergi.com</a>
                 and your hubs are filled in for you. This also lets Homey control Libbi charge from grid.
                 Your sign-in is stored on your Homey and only sent to myenergi.
             </p>
-            <div class="homey-form-group">
-                <label class="homey-form-label" for="signInEmail">Email</label>
-                <input class="homey-form-input" id="signInEmail" type="text" inputmode="email" value="" autocomplete="off" />
+            <div id="signedIn" style="display: none;">
+                <p><b>Signed in as <span id="signedInEmail"></span>.</b></p>
+                <p class="hint">Your sign-in is saved with your hubs below, and lets Homey control Libbi charge from grid.</p>
+                <button id="refreshHubs" class="homey-button-secondary-shadow" type="button">Look for new hubs</button>
+                <button id="switchAccount" class="homey-button-transparent" type="button">Use a different account</button>
             </div>
-            <div class="homey-form-group">
-                <label class="homey-form-label" for="signInPassword">Password</label>
-                <input class="homey-form-input" id="signInPassword" type="password" value="" autocomplete="new-password" />
+            <div id="signInForm">
+                <div class="homey-form-group">
+                    <label class="homey-form-label" for="signInEmail">Email</label>
+                    <input class="homey-form-input" id="signInEmail" type="text" inputmode="email" value="" autocomplete="off" />
+                </div>
+                <div class="homey-form-group">
+                    <label class="homey-form-label" for="signInPassword">Password</label>
+                    <input class="homey-form-input" id="signInPassword" type="password" value="" autocomplete="new-password" />
+                </div>
+                <button id="findHubs" class="homey-button-primary-full" type="button">Find my hubs</button>
             </div>
-            <button id="findHubs" class="homey-button-primary-full" type="button">Find my hubs</button>
             <div id="signInStatus" class="notice"></div>
         </fieldset>
 
@@ -328,26 +336,38 @@
                 cards[cards.length - 1].querySelector('[data-field="hubname"]').focus();
             });
 
+            // The saved account sign-in: that of the first saved hub that has one.
+            let savedAccount = null;
+
+            // Show who is signed in, or the sign-in form when nobody is.
+            function showSignIn(forceForm) {
+                const signedIn = !!savedAccount && !forceForm;
+                $('signedIn').style.display = signedIn ? 'block' : 'none';
+                $('signInForm').style.display = signedIn ? 'none' : 'block';
+                $('signInIntro').style.display = signedIn ? 'none' : 'block';
+                if (signedIn)
+                    $('signedInEmail').textContent = savedAccount.email;
+            }
+
             // Fill in the hubs of a myenergi account.
-            $('findHubs').addEventListener('click', async () => {
+            async function findHubs(email, password, button) {
                 const status = $('signInStatus');
-                const email = $('signInEmail').value.trim();
-                const password = $('signInPassword').value;
                 if (!email || !password) {
                     setNotice(status, 'Fill in your myenergi account email and password first.', 'error');
                     return;
                 }
+                const buttonText = button.textContent;
                 setNotice(status, '');
-                $('findHubs').disabled = true;
-                $('findHubs').textContent = 'Looking up your hubs...';
+                button.disabled = true;
+                button.textContent = 'Looking up your hubs...';
                 let res;
                 try {
                     res = await api('/account-hubs/', { username: email, password: password });
                 } catch (error) {
                     res = { result: 'unavailable' };
                 }
-                $('findHubs').disabled = false;
-                $('findHubs').textContent = 'Find my hubs';
+                button.disabled = false;
+                button.textContent = buttonText;
                 if (!res || res.result === 'error') {
                     setNotice(status, 'Failed to sign in. Please check the email and password you use on myaccount.myenergi.com.', 'error');
                     return;
@@ -378,7 +398,22 @@
                 }
                 renderHubs();
                 setNotice(status, `Found ${res.hubs.length} hub(s): ${summary.join(', ')}.\nCheck the details below and press Save changes.`, 'ok');
+            }
+
+            $('findHubs').addEventListener('click', () => findHubs($('signInEmail').value.trim(), $('signInPassword').value, $('findHubs')));
+            $('refreshHubs').addEventListener('click', () => findHubs(savedAccount.email, savedAccount.password, $('refreshHubs')));
+            $('switchAccount').addEventListener('click', () => {
+                setNotice($('signInStatus'), '');
+                $('signInEmail').value = '';
+                $('signInPassword').value = '';
+                showSignIn(true);
+                $('signInEmail').focus();
             });
+
+            function updateSavedAccount() {
+                const hub = hubs.find(hub => hub.savedName && hub.accountEmail && hub.accountPassword);
+                savedAccount = hub ? { email: hub.accountEmail, password: hub.accountPassword } : null;
+            }
 
             $('saveHubs').addEventListener('click', async () => {
                 const status = $('saveStatus');
@@ -419,6 +454,9 @@
                         if (err) return Homey.alert(err);
                         hubs.forEach(hub => { hub.savedName = hub.hubname; });
                         renderHubs();
+                        updateSavedAccount();
+                        setNotice($('signInStatus'), '');
+                        showSignIn();
                         setNotice(status, hubs.length ? 'Saved. You can now add your devices in Homey.' : 'Saved. No hubs are configured.', 'ok');
                     });
                 });
@@ -435,10 +473,8 @@
                     accountPassword: hub.accountPassword || '',
                     savedName: hub.hubname,
                 }));
-                // Reuse the sign-in of a hub, so it does not have to be typed again.
-                const withAccount = hubs.find(hub => hub.accountEmail);
-                if (withAccount && !$('signInEmail').value)
-                    $('signInEmail').value = withAccount.accountEmail;
+                updateSavedAccount();
+                showSignIn();
                 renderHubs();
             });
 
