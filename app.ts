@@ -162,6 +162,22 @@ export class MyEnergiApp extends Homey.App {
   }
 
   /**
+   * Look up the hubs of a myenergi account, with their serial numbers and
+   * API keys, so the settings page can fill them in.
+   * @param body Account email (username) and password
+   */
+  public async getAccountHubs(body: Credential): Promise<Response> {
+    try {
+      const hubs = await new MyEnergiAccount(body.username, body.password).getHubs();
+      return { result: 'ok', hubs: hubs.map(hub => ({ hubName: hub.hubName, serialNo: `${hub.serialNo}`, apiKey: hub.hubPassword })) };
+    } catch (error) {
+      this.log(`Account hub lookup failed: ${error}`);
+      const authFailed = error instanceof MyEnergiAccountError && error.authFailed;
+      return { result: authFailed ? 'error' : 'unavailable' };
+    }
+  }
+
+  /**
    * Validate myenergi account credentials API call
    * @param body Account email (username) and password
    */

@@ -4,116 +4,192 @@
 <head>
     <!-- The '/homey.js' script must be included in your settings view to work -->
     <script type="text/javascript" src="/homey.js" data-origin="settings"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <style>
-        .container {
-            /* width: 90%;
-            border: 1px solid rgb(59, 59, 59);
-            padding: 15px 15px 15px 15px;
-            margin: 10px 10px 10px 10px;
-            background: #bedef0;
-            overflow: visible;
-            box-shadow: 2px 2px 2px #adadad; */
-            position: relative;
+        .hint {
+            font-size: var(--homey-font-size-small, 14px);
+            line-height: 1.4;
+            opacity: 0.75;
+            margin: 4px 0 12px 0;
         }
 
-        .deleteHub {
-            position: absolute;
-            font-size: 20pt;
+        .hub-card {
+            border: 1px solid rgba(128, 128, 128, 0.3);
+            border-radius: var(--homey-border-radius, 10px);
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .hub-card.has-error {
+            border-color: var(--homey-color-red, #d81c1d);
+        }
+
+        .hub-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .hub-title {
             font-weight: bold;
-            top: -20px;
-            right: -10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .notice {
+            display: none;
+            border-radius: var(--homey-border-radius-small, 5px);
+            padding: 8px 10px;
+            margin: 10px 0;
+            font-size: var(--homey-font-size-small, 14px);
+            line-height: 1.4;
+            color: #fff;
+            white-space: pre-line;
+        }
+
+        .notice.ok {
+            display: block;
+            background: #2e8b00;
+        }
+
+        .notice.error {
+            display: block;
+            background: var(--homey-color-red, #d81c1d);
+        }
+
+        .notice.warning {
+            display: block;
+            background: #b36b00;
+        }
+
+        details {
+            margin: 12px 0;
+        }
+
+        summary {
+            cursor: pointer;
+            font-size: var(--homey-font-size-small, 14px);
+            opacity: 0.75;
+            padding: 4px 0;
+        }
+
+        details[open] summary {
+            margin-bottom: 8px;
+        }
+
+        .actions {
+            margin-top: 16px;
+        }
+
+        button:disabled {
+            opacity: 0.5;
         }
     </style>
 </head>
 
 <body>
-    <h1 data-i18n="settings.title">
-        <!-- This will be filled with the translated string with key 'settings.title'. -->
-    </h1>
-    <p data-i18n="settings.subtitle">
-        <!-- This field will also be translated -->
-    </p>
+    <header class="homey-header">
+        <h1 class="homey-title">myenergi</h1>
+        <p class="homey-subtitle">Connect your myenergi hub to Homey.</p>
+    </header>
 
-    <fieldset class="fieldset-api">
-        <legend>myenergi API base URI</legend>
-
-        <div class="field row">
-            <label for="apiBaseUrl">API base URL</label>
-            <input id="apiBaseUrl" name="apiBaseUrl" type="text" value="" placeholder="https://s18.myenergi.net" required
-                pattern="/(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g" />
-        </div>
-    </fieldset>
-
-    <fieldset class="fieldset" id="fieldset-1">
-        <legend>myenergi Hub</legend>
-        <div class="container">
-            <p style="font-size: 0.85em;">
-                <i>
-                    <b>Serial no:</b> the serial number of your myenergi <b>hub</b>. If your Zappi/Eddi
-                    connects to the internet without a separate hub (built-in hub), use the serial
-                    number of that device instead. You can find it under "Live products" on
-                    <a href="https://myaccount.myenergi.com" target="_blank">myaccount.myenergi.com</a>.<br />
-                    <b>API key:</b> generate one on
-                    <a href="https://myaccount.myenergi.com" target="_blank">myaccount.myenergi.com</a>
-                    under your device's <b>Advanced settings</b>. Your myenergi account password will
-                    <b>not</b> work here.
-                </i>
+    <form class="homey-form" onsubmit="return false;">
+        <fieldset class="homey-form-fieldset">
+            <legend class="homey-form-legend">Sign in with your myenergi account</legend>
+            <p class="hint">
+                The easy way: sign in with the email and password you use on
+                <a href="https://myaccount.myenergi.com" target="_blank">myaccount.myenergi.com</a>
+                and your hubs are filled in for you. This also lets Homey control Libbi charge from grid.
+                Your sign-in is stored on your Homey and only sent to myenergi.
             </p>
-            <div class="field row">
-                <label for="hubname">Hub name</label>
-                <input id="hubname" name="hubname" type="text" value="" required pattern="[a-zA-Z0-9]+" />
+            <div class="homey-form-group">
+                <label class="homey-form-label" for="signInEmail">Email</label>
+                <input class="homey-form-input" id="signInEmail" type="text" inputmode="email" value="" autocomplete="off" />
             </div>
-            <div class="field row">
-                <label for="username">Hub serial no</label>
-                <input id="username" name="username" type="text" value="" required pattern="[0-9]*" inputmode="numeric" />
+            <div class="homey-form-group">
+                <label class="homey-form-label" for="signInPassword">Password</label>
+                <input class="homey-form-input" id="signInPassword" type="password" value="" autocomplete="new-password" />
             </div>
-            <div class="field row">
-                <label for="password">API key (hub password)</label>
-                <input id="password" name="password" type="password" value="" />
+            <button id="findHubs" class="homey-button-primary-full" type="button">Find my hubs</button>
+            <div id="signInStatus" class="notice"></div>
+        </fieldset>
+
+        <fieldset class="homey-form-fieldset">
+            <legend class="homey-form-legend">Your hubs</legend>
+            <p id="noHubs" class="hint">No hubs yet. Sign in above, or add one by hand.</p>
+            <div id="hubs"></div>
+            <button id="addHub" class="homey-button-secondary-shadow" type="button">Add a hub by hand</button>
+        </fieldset>
+
+        <details>
+            <summary>Advanced</summary>
+            <div class="homey-form-group">
+                <label class="homey-form-label" for="apiBaseUrl">myenergi API base URL</label>
+                <input class="homey-form-input" id="apiBaseUrl" type="url" value="" placeholder="https://s18.myenergi.net" />
+                <p class="hint">Only change this if you know you need to.</p>
             </div>
-            <div class="field row">
-                <label for="pollInterval">Server poll interval (sec)</label>
-                <input id="pollInterval" name="pollInterval" type="number" min="5" max="86400" value="" />
-                <br />
-                <span>
-                    <i>
-                        Note! Be careful not to use too short intervals. (min 5 sec) This could cause
-                        you to be locked out from the myenergi API.
-                    </i>
-                </span>
-            </div>
-            <p style="font-size: 0.85em; margin-top: 1.5em;">
-                <i>
-                    <b>myenergi account (optional):</b> only needed to control <b>Libbi charge from
-                    grid</b>, which is not available with the API key. Use the email and password
-                    you sign in with on
-                    <a href="https://myaccount.myenergi.com" target="_blank">myaccount.myenergi.com</a>.
-                    They are stored on your Homey and only sent to myenergi. Leave both empty if you
-                    do not need this.
-                </i>
-            </p>
-            <div class="field row">
-                <label for="accountEmail">myenergi account email (optional)</label>
-                <input id="accountEmail" name="accountEmail" type="email" value="" autocomplete="off" />
-            </div>
-            <div class="field row">
-                <label for="accountPassword">myenergi account password (optional)</label>
-                <input id="accountPassword" name="accountPassword" type="password" value="" autocomplete="new-password" />
-            </div>
-            <div class="field row">
-                <input type="hidden" name="hubIndex" id="hubIndex" value="0" />
-                <button id="deleteHub" class="right deleteHub" data-hubIndex="0" style="display: none;">X</button>
-            </div>
+        </details>
+
+        <div class="actions">
+            <div id="saveStatus" class="notice"></div>
+            <button id="saveHubs" class="homey-button-primary-full" type="button">Save changes</button>
         </div>
-    </fieldset>
+    </form>
 
-    <div id="statusMessage" style="display: none;"></div>
-
-    <button id="addHub" class="left">Add Hub</button>
-    <button id="saveHubs" class="right">Save changes</button>
-
-    <!-- <textarea id="log" rows="10"></textarea> -->
+    <template id="hubTemplate">
+        <div class="hub-card">
+            <div class="hub-head">
+                <span class="hub-title"></span>
+                <button class="hub-remove homey-button-danger-shadow homey-button-small" type="button">Remove</button>
+            </div>
+            <div class="hub-status notice"></div>
+            <div class="homey-form-group">
+                <label class="homey-form-label">Hub name</label>
+                <input class="homey-form-input" data-field="hubname" type="text" value="" />
+                <div class="hub-rename notice"></div>
+            </div>
+            <div class="homey-form-group">
+                <label class="homey-form-label">Hub serial number</label>
+                <input class="homey-form-input" data-field="username" type="text" value="" inputmode="numeric" />
+                <p class="hint">
+                    The serial number of your myenergi hub. If your Zappi or Eddi connects to the internet
+                    without a separate hub, use the serial number of that device.
+                </p>
+            </div>
+            <div class="homey-form-group">
+                <label class="homey-form-label">API key</label>
+                <input class="homey-form-input" data-field="password" type="password" value="" autocomplete="new-password" />
+                <p class="hint">
+                    Generate one on <a href="https://myaccount.myenergi.com" target="_blank">myaccount.myenergi.com</a>
+                    under the device's Advanced settings. This is not your account password.
+                </p>
+            </div>
+            <details>
+                <summary>More options</summary>
+                <div class="homey-form-group">
+                    <label class="homey-form-label">Update interval (seconds)</label>
+                    <input class="homey-form-input" data-field="pollInterval" type="number" min="5" max="86400" value="" />
+                    <p class="hint">
+                        How often Homey asks myenergi for new values. The interval of the first hub is used
+                        for all hubs. Short intervals can get you locked out of the myenergi API; 60 is a safe choice.
+                    </p>
+                </div>
+                <div class="homey-form-group">
+                    <label class="homey-form-label">myenergi account email (optional)</label>
+                    <input class="homey-form-input" data-field="accountEmail" type="text" inputmode="email" value="" autocomplete="off" />
+                </div>
+                <div class="homey-form-group">
+                    <label class="homey-form-label">myenergi account password (optional)</label>
+                    <input class="homey-form-input" data-field="accountPassword" type="password" value="" autocomplete="new-password" />
+                    <p class="hint">
+                        Only needed to control Libbi charge from grid. Filled in for you when you sign in above.
+                    </p>
+                </div>
+            </details>
+        </div>
+    </template>
 
     <script type="text/javascript">
         // a method named 'onHomeyReady' must be present in your code
@@ -121,234 +197,254 @@
             // Tell Homey we're ready to be displayed
             Homey.ready();
 
-            var myenergiHubs = [];
+            const DEFAULT_API_BASE_URL = 'https://s18.myenergi.net';
+            const DEFAULT_POLL_INTERVAL = 60;
+            const $ = id => document.getElementById(id);
 
-            // Register delete hub buton click.
-            function deleteHub(event) {
-                var hubIndex = event.data.hubIndex;
-                Homey.confirm(`Do you want to delete this hub (${hubIndex})?`, 'warning', (error, result) => {
-                    if (result) {
-                        myenergiHubs.splice(hubIndex, 1);
-                        populateFields();
-                    }
-                });
+            // The hubs as shown on the page. Each entry has the fields stored in the
+            // 'myenergiHubs' setting, plus savedName for hubs that are already saved.
+            let hubs = [];
+
+            function setNotice(element, text, type) {
+                element.textContent = text || '';
+                element.className = element.className.replace(/ (ok|error|warning)\b/g, '') + (text ? ` ${type || 'ok'}` : '');
             }
 
-            function incrementString(str) {
-                // Find the trailing number or it will match the empty string
-                var count = str.match(/\d*$/);
-
-                // Take the substring up until where the integer was matched
-                // Concatenate it to the matched count incremented by 1
-                return str.substr(0, count.index) + (++count[0]);
-            }
-
-            //Function to replicate fields in the form
-            function replicateFields() {
-                var elementToReplicate = $('.fieldset').last(); //Only clone first group of inputs
-                clonedElement = elementToReplicate.clone(); //Cloned the element
-                var hubIndex = elementToReplicate.find('#hubIndex').val();
-                hubIndex++;
-                clonedElement.find('input').val(''); //Clear cloned elements value on each new addition
-                clonedElement.find('.deleteHub').on('click', { hubIndex: hubIndex }, deleteHub);
-                clonedElement.find('.deleteHub').css({ 'display': 'block' });
-                let id = elementToReplicate.attr('id');
-                clonedElement.attr('id', incrementString(id));
-                clonedElement.insertBefore($('#statusMessage'));
-            }
-
-            function removeFields() {
-                var fieldCount = $('.fieldset').length
-                for (let index = fieldCount - 1; index > 0; index--) {
-                    $('.fieldset').last().remove();
-                }
-            }
-
-            function populateFields() {
-                var i = 0;
-                removeFields();
-                for (let i = 1; i < myenergiHubs.length; i++) {
-                    replicateFields();
-                }
-                $('.fieldset').each(function () {
-                    const hub = myenergiHubs[i++];
-                    $(this).find('input[name="hubname"]').val(hub.hubname);
-                    $(this).find('input[name="username"]').val(hub.username);
-                    $(this).find('input[name="password"]').val(hub.password);
-                    $(this).find('input[name="accountEmail"]').val(hub.accountEmail || '');
-                    $(this).find('input[name="accountPassword"]').val(hub.accountPassword || '');
-                    $(this)
-                        .find('input[name="pollInterval"]')
-                        .val(hub.pollInterval ? hub.pollInterval : 60);
-                });
-            }
-
-            function displayStatus(text, success = true) {
-                var backgroundColor = 'green'
-                var color = 'white'
-                if (!success) {
-                    var backgroundColor = 'red'
-                    var color = 'white'
-                }
-                $('#statusMessage').text(text);
-                $('#statusMessage').css({ 'background-color': backgroundColor, 'color': color, 'padding': '5px', 'margin-bottom': '5px' });
-                $('#statusMessage').show(500);
-                setTimeout(() => {
-                    $('#statusMessage').hide(500);
-                    $('#statusMessage').text('');
-                    $('#statusMessage').css({ 'background-color': '' });
-                }, 5000);
+            function sanitizeName(name) {
+                return ('' + (name || '')).trim().replace(/[\W_]+/g, '_');
             }
 
             function isValidURL(string) {
-                var res = string.match(/(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
-                return (res !== null)
+                return /(https?:\/\/)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(string);
             }
 
-            async function validateCredentials(hub) {
-                return await new Promise((resolve, reject) => {
-                    Homey.api('POST', '/login/', { username: hub.username, password: hub.password }, function (err, result) {
-                        if (err)
-                            reject('An error ocurred while validating credentials')
-                        else
-                            resolve(result);
+            function hubTitle(hub) {
+                if (!hub.hubname && !hub.username)
+                    return 'New hub';
+                return [hub.hubname, hub.username].filter(x => x).join(' · ');
+            }
+
+            function renderHubs() {
+                const container = $('hubs');
+                container.innerHTML = '';
+                $('noHubs').style.display = hubs.length ? 'none' : 'block';
+                hubs.forEach((hub, index) => {
+                    const card = $('hubTemplate').content.firstElementChild.cloneNode(true);
+                    const title = card.querySelector('.hub-title');
+                    const rename = card.querySelector('.hub-rename');
+                    const refresh = () => {
+                        title.textContent = hubTitle(hub);
+                        // Paired devices are tied to the hub name and serial number.
+                        const renamed = hub.savedName && sanitizeName(hub.hubname) !== hub.savedName;
+                        setNotice(rename, renamed ? `Devices already added from this hub will stop working if you rename it. The saved name is "${hub.savedName}".` : '', 'warning');
+                    };
+                    card.querySelectorAll('[data-field]').forEach(input => {
+                        const field = input.dataset.field;
+                        input.id = `hub${index}_${field}`;
+                        input.closest('.homey-form-group').querySelector('label').htmlFor = input.id;
+                        input.value = hub[field] === undefined || hub[field] === null ? '' : hub[field];
+                        input.addEventListener('input', () => {
+                            hub[field] = input.value;
+                            refresh();
+                        });
                     });
-                });
-            }
-
-            async function validateAccountCredentials(hub) {
-                return await new Promise((resolve, reject) => {
-                    Homey.api('POST', '/account-login/', { username: hub.accountEmail, password: hub.accountPassword }, function (err, result) {
-                        if (err)
-                            reject('An error ocurred while validating account credentials')
-                        else
-                            resolve(result);
-                    });
-                });
-            }
-
-            $('input[name="apiBaseUrl"]').bind("propertychange change click keyup input paste", function (event) {
-                if (!isValidURL($(this).val())) {
-                    $(this).css({ 'border-color': 'red', 'color': 'red' });
-                }
-                else {
-                    $(this).css({ 'border-color': '', 'color': '' });
-                }
-            });
-
-            //Calling function on click
-            $('#addHub').on('click', function () {
-                myenergiHubs.push({
-                    hubname: '',
-                    username: '',
-                    password: '',
-                    pollInterval: 60,
-                    accountEmail: '',
-                    accountPassword: '',
-                });
-                populateFields();
-            });
-
-            $('.deleteHub').on('click', { hubIndex: 0 }, deleteHub);
-
-            //Go through inputs filling up the array of arrays.
-            $('#saveHubs').on('click', async function () {
-                myenergiHubs = [];
-                $('.fieldset').each(function () {
-                    const hubName = (
-                        '' +
-                        $(this).find('input[name="hubname"]').val() +
-                        ''
-                    ).replace(/[\W_]+/g, '_');
-                    const userName = $(this).find('input[name="username"]').val();
-                    const password = $(this).find('input[name="password"]').val();
-                    const accountEmail = ('' + $(this).find('input[name="accountEmail"]').val()).trim();
-                    const accountPassword = $(this).find('input[name="accountPassword"]').val();
-                    let pollInterval = 60;
-                    try {
-                        pollInterval = Number(
-                            $(this).find('input[name="pollInterval"]').val()
-                        );
-                        if (pollInterval < 5) {
-                            pollInterval = 5;
-                        }
-                    } catch (error) {
-                        pollInterval = 60;
+                    if (hub.error) {
+                        card.classList.add('has-error');
+                        setNotice(card.querySelector('.hub-status'), hub.error, 'error');
                     }
-                    $(this).find('input[name="hubname"]').val(hubName);
-                    myenergiHubs.push({
-                        hubname: hubName,
-                        username: userName,
-                        password: password,
-                        pollInterval: pollInterval,
-                        accountEmail: accountEmail,
-                        accountPassword: accountPassword,
+                    card.querySelector('.hub-remove').addEventListener('click', () => {
+                        if (!hub.username && !hub.password && !hub.hubname) {
+                            hubs.splice(index, 1);
+                            renderHubs();
+                            return;
+                        }
+                        Homey.confirm(`Remove the hub ${hubTitle(hub)}?\n\nIt is removed when you press Save changes.`, 'warning', (error, result) => {
+                            if (result) {
+                                hubs.splice(index, 1);
+                                renderHubs();
+                            }
+                        });
                     });
+                    refresh();
+                    container.appendChild(card);
                 });
-                const apiBaseUrl = $('input[name="apiBaseUrl"]').val();
+            }
 
+            function api(path, body) {
+                return new Promise((resolve, reject) => {
+                    Homey.api('POST', path, body, (err, result) => err ? reject(err) : resolve(result));
+                });
+            }
+
+            // Check one hub and tidy up its values. Returns an error text, or '' when it is fine.
+            async function checkHub(hub) {
+                hub.hubname = sanitizeName(hub.hubname);
+                hub.username = ('' + (hub.username || '')).trim();
+                hub.accountEmail = ('' + (hub.accountEmail || '')).trim();
+                hub.accountPassword = hub.accountPassword || '';
+                const pollInterval = Number(hub.pollInterval);
+                hub.pollInterval = !pollInterval ? DEFAULT_POLL_INTERVAL : Math.max(5, Math.round(pollInterval));
+
+                if (!hub.hubname)
+                    return 'Give the hub a name.';
+                if (!/^[0-9]+$/.test(hub.username))
+                    return 'The hub serial number should only contain digits.';
+                if (!hub.password)
+                    return 'Fill in the API key.';
+                if (hubs.some(other => other !== hub && sanitizeName(other.hubname) === hub.hubname && ('' + other.username).trim() === hub.username))
+                    return 'This hub is listed twice.';
+                if (!hub.accountEmail !== !hub.accountPassword)
+                    return 'Fill in both the myenergi account email and password under More options, or leave both empty.';
+
+                let res;
+                try {
+                    res = await api('/login/', { username: hub.username, password: hub.password });
+                } catch (error) {
+                    return 'Could not check the hub. Please try again.';
+                }
+                if (!res || res.result !== 'ok')
+                    return 'myenergi did not accept this serial number and API key.\n'
+                        + '- The serial number must be that of your hub (or of the Zappi/Eddi itself if it has a built-in hub).\n'
+                        + '- The API key is generated under Advanced settings on myaccount.myenergi.com. Your account password will not work.';
+
+                if (hub.accountEmail) {
+                    try {
+                        res = await api('/account-login/', { username: hub.accountEmail, password: hub.accountPassword });
+                    } catch (error) {
+                        res = { result: 'unavailable' };
+                    }
+                    if (!res || res.result === 'error')
+                        return 'Failed to sign in to the myenergi account. Please check the email and password under More options.';
+                    if (res.result !== 'ok')
+                        return 'Could not reach the myenergi sign-in service to check the account. Please try again later, or clear the account fields under More options.';
+                }
+                return '';
+            }
+
+            $('addHub').addEventListener('click', () => {
+                hubs.push({ hubname: '', username: '', password: '', pollInterval: DEFAULT_POLL_INTERVAL, accountEmail: '', accountPassword: '' });
+                renderHubs();
+                const cards = document.querySelectorAll('.hub-card');
+                cards[cards.length - 1].querySelector('[data-field="hubname"]').focus();
+            });
+
+            // Fill in the hubs of a myenergi account.
+            $('findHubs').addEventListener('click', async () => {
+                const status = $('signInStatus');
+                const email = $('signInEmail').value.trim();
+                const password = $('signInPassword').value;
+                if (!email || !password) {
+                    setNotice(status, 'Fill in your myenergi account email and password first.', 'error');
+                    return;
+                }
+                setNotice(status, '');
+                $('findHubs').disabled = true;
+                $('findHubs').textContent = 'Looking up your hubs...';
+                let res;
+                try {
+                    res = await api('/account-hubs/', { username: email, password: password });
+                } catch (error) {
+                    res = { result: 'unavailable' };
+                }
+                $('findHubs').disabled = false;
+                $('findHubs').textContent = 'Find my hubs';
+                if (!res || res.result === 'error') {
+                    setNotice(status, 'Failed to sign in. Please check the email and password you use on myaccount.myenergi.com.', 'error');
+                    return;
+                }
+                if (res.result !== 'ok') {
+                    setNotice(status, 'Could not reach myenergi to look up your hubs. Please try again later, or add the hub by hand.', 'error');
+                    return;
+                }
+                if (!res.hubs || res.hubs.length < 1) {
+                    setNotice(status, 'No hubs were found on this myenergi account.', 'warning');
+                    return;
+                }
+                // Keep what is already filled in, except hub entries that are still empty.
+                hubs = hubs.filter(hub => hub.username || hub.password);
+                const summary = [];
+                for (const found of res.hubs) {
+                    // A hub that is already listed keeps its name: paired devices are tied to it.
+                    let hub = hubs.find(h => ('' + h.username).trim() === `${found.serialNo}`);
+                    summary.push(`${found.serialNo} (${hub ? 'already listed, updated' : 'added'})`);
+                    if (!hub) {
+                        hub = { hubname: sanitizeName(found.hubName) || 'Hub', username: `${found.serialNo}`, pollInterval: DEFAULT_POLL_INTERVAL };
+                        hubs.push(hub);
+                    }
+                    hub.password = found.apiKey;
+                    hub.accountEmail = email;
+                    hub.accountPassword = password;
+                    hub.error = '';
+                }
+                renderHubs();
+                setNotice(status, `Found ${res.hubs.length} hub(s): ${summary.join(', ')}.\nCheck the details below and press Save changes.`, 'ok');
+            });
+
+            $('saveHubs').addEventListener('click', async () => {
+                const status = $('saveStatus');
+                const apiBaseUrl = $('apiBaseUrl').value.trim() || DEFAULT_API_BASE_URL;
                 if (!isValidURL(apiBaseUrl)) {
-                    Homey.alert(`Invalid API URL (${apiBaseUrl}). Please try again.`);
+                    setNotice(status, `The API base URL under Advanced is not valid (${apiBaseUrl}).`, 'error');
                     return;
                 }
 
-                Homey.set('apiBaseUrl', apiBaseUrl, function (err) {
+                setNotice(status, '');
+                $('saveHubs').disabled = true;
+                $('saveHubs').textContent = 'Checking your hubs...';
+                for (const hub of hubs) {
+                    hub.error = await checkHub(hub);
+                }
+                $('saveHubs').disabled = false;
+                $('saveHubs').textContent = 'Save changes';
+                renderHubs();
+
+                if (hubs.some(hub => hub.error)) {
+                    setNotice(status, 'Nothing was saved. Please fix the hub marked in red.', 'error');
+                    document.querySelector('.hub-card.has-error').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+
+                // Same format as always: only these fields are stored.
+                const myenergiHubs = hubs.map(hub => ({
+                    hubname: hub.hubname,
+                    username: hub.username,
+                    password: hub.password,
+                    pollInterval: hub.pollInterval,
+                    accountEmail: hub.accountEmail,
+                    accountPassword: hub.accountPassword,
+                }));
+                Homey.set('apiBaseUrl', apiBaseUrl, err => {
                     if (err) return Homey.alert(err);
-                });
-
-                let saveHubs = [];
-                let fieldsetId = 1;
-                for (const hub of myenergiHubs) {
-                    try {
-                        const res = await validateCredentials(hub);
-                        saveHubs.push(res.result === 'ok');
-                        if (res.result !== 'ok') {
-                            $(`#fieldset-${fieldsetId}`).css({ 'background-color': 'orange' });
-                            Homey.alert(`Failed to authenticate hub ${hub.hubname} with serial ${hub.username}.\n\nPlease check that:\n- The serial number is that of your hub (or of the Zappi/Eddi itself if it has a built-in hub)\n- The API key was generated under Advanced settings on myaccount.myenergi.com (your account password will not work)`);
-                            return;
-                        }
-                        if (hub.accountEmail || hub.accountPassword) {
-                            if (!hub.accountEmail || !hub.accountPassword) {
-                                $(`#fieldset-${fieldsetId}`).css({ 'background-color': 'orange' });
-                                Homey.alert(`Hub ${hub.hubname}: fill in both the myenergi account email and password, or leave both empty.`);
-                                return;
-                            }
-                            const accountRes = await validateAccountCredentials(hub);
-                            if (accountRes.result !== 'ok') {
-                                $(`#fieldset-${fieldsetId}`).css({ 'background-color': 'orange' });
-                                Homey.alert(accountRes.result === 'error'
-                                    ? `Failed to sign in to the myenergi account for hub ${hub.hubname}.\n\nPlease check the email and password you use on myaccount.myenergi.com.`
-                                    : `Could not reach the myenergi sign in service to check the account for hub ${hub.hubname}. Please try again later, or leave the account fields empty.`);
-                                return;
-                            }
-                        }
-                        $(`#fieldset-${fieldsetId}`).css({ 'background-color': '' });
-                    } catch (error) {
-                        saveHubs.push(false);
-                    }
-                    fieldsetId++;
-                }
-                if (saveHubs && saveHubs.length > 0 && saveHubs.every(x => x === true)) {
-                    Homey.set('myenergiHubs', myenergiHubs, function (err) {
+                    Homey.set('myenergiHubs', myenergiHubs, err => {
                         if (err) return Homey.alert(err);
+                        hubs.forEach(hub => { hub.savedName = hub.hubname; });
+                        renderHubs();
+                        setNotice(status, hubs.length ? 'Saved. You can now add your devices in Homey.' : 'Saved. No hubs are configured.', 'ok');
                     });
-                    displayStatus('Settings successfully saved.');
-                }
+                });
             });
 
-            Homey.get('myenergiHubs', function (err, hubs) {
+            Homey.get('myenergiHubs', (err, savedHubs) => {
                 if (err) return Homey.alert(err);
-                if (!hubs || hubs.length < 1) return;
-                myenergiHubs = hubs;
-                populateFields();
+                hubs = (savedHubs || []).map(hub => ({
+                    hubname: hub.hubname,
+                    username: hub.username,
+                    password: hub.password,
+                    pollInterval: hub.pollInterval ? hub.pollInterval : DEFAULT_POLL_INTERVAL,
+                    accountEmail: hub.accountEmail || '',
+                    accountPassword: hub.accountPassword || '',
+                    savedName: hub.hubname,
+                }));
+                // Reuse the sign-in of a hub, so it does not have to be typed again.
+                const withAccount = hubs.find(hub => hub.accountEmail);
+                if (withAccount && !$('signInEmail').value)
+                    $('signInEmail').value = withAccount.accountEmail;
+                renderHubs();
             });
 
-            Homey.get('apiBaseUrl', function (err, apiBaseUrl) {
+            Homey.get('apiBaseUrl', (err, apiBaseUrl) => {
                 if (err) return Homey.alert(err);
-                if (!apiBaseUrl && apiBaseUrl !== '') {
-                    apiBaseUrl = 'https://s18.myenergi.net';
-                }
-                $('input[name="apiBaseUrl"]').val(apiBaseUrl);
+                $('apiBaseUrl').value = apiBaseUrl || DEFAULT_API_BASE_URL;
             });
         }
     </script>

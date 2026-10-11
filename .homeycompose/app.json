@@ -1,6 +1,6 @@
 {
   "id": "net.biseth.myenergi",
-  "version": "2.4.11",
+  "version": "2.4.12",
   "compatibility": ">=12.4.5",
   "sdk": 3,
   "brandColor": "#2bcc64",
@@ -114,6 +114,10 @@
     "postAccountLogin": {
       "method": "POST",
       "path": "/account-login/"
+    },
+    "postAccountHubs": {
+      "method": "POST",
+      "path": "/account-hubs/"
     },
     "getTest": {
       "method": "GET",

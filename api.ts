@@ -17,6 +17,12 @@ module.exports = {
         return await app.validateAccountCredentials(data.body);
     },
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async postAccountHubs(data: { homey: Homey, body: any }) {
+        const app = data.homey.app as MyEnergiApp;
+        return await app.getAccountHubs(data.body);
+    },
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
     async getTest(data: { homey: Homey, query: any }) {
         // you can access query parameters like "/?foo=bar" through `query.foo`
