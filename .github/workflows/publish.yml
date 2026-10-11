@@ -1,0 +1,64 @@
+# Uploads a build to the Homey App Store when a GitHub release is published,
+# so that every Homey build has a matching release and tag.
+#
+# To release: merge the version bump to master, then publish a GitHub release
+# with the tag v<version>, e.g.
+#   gh release create v2.4.16 --generate-notes --prerelease
+#
+# The upload creates a Draft build. Promoting it to Test and submitting it
+# for certification are done by hand in Homey Developer Tools. Mark the
+# release as a pre-release while the build is on Test, and clear that mark
+# when the build goes Live; editing a release does not run this workflow.
+#
+# Requires the repository secret HOMEY_PAT: the app owner's Personal Access
+# Token from https://tools.developer.homey.app/me
+
+name: Publish to Homey
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+
+      - name: Check that the release tag matches the app version
+        id: version
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+        run: node .github/scripts/check-version.js "$TAG"
+
+      - run: npm run build
+      - run: npm run lint
+
+      - name: Upload the build to the Homey App Store
+        env:
+          HOMEY_HEADLESS: '1'
+          HOMEY_PAT: ${{ secrets.HOMEY_PAT }}
+        run: |
+          if [ -z "$HOMEY_PAT" ]; then
+            echo "::error::The repository secret HOMEY_PAT is not set."
+            exit 1
+          fi
+          npx homey app publish
+
+      - name: Summary
+        run: |
+          {
+            echo "### myenergi v${{ steps.version.outputs.version }} uploaded to the Homey App Store"
+            echo ""
+            echo "The build is a Draft. Promote it to Test in [Homey Developer Tools](https://tools.developer.homey.app/apps/app/net.biseth.myenergi)."
+          } >> "$GITHUB_STEP_SUMMARY"

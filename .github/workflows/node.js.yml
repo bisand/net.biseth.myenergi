@@ -30,6 +30,10 @@ jobs:
 
     - run: npm ci
 
+    # The same check runs before publishing; failing here keeps a version bump
+    # without a changelog entry, or with files out of sync, from being merged.
+    - run: node .github/scripts/check-version.js
+
     - run: npm run build --if-present
     - run: npm run lint
     - run: npm test
