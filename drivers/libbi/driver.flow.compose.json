@@ -175,6 +175,73 @@
                     "step": 0.1
                 }
             ]
+        },
+        {
+            "id": "set_libbi_cheap_tariff_periods",
+            "$filter": "capabilities=libbi_charge_from_grid",
+            "title": {
+                "en": "Set cheap tariff periods",
+                "no": "Sett billige tariffperioder",
+                "nl": "Goedkope tariefperioden instellen",
+                "sv": "Ställ in billiga tariffperioder",
+                "de": "Günstige Tarifzeiträume einstellen"
+            },
+            "titleFormatted": {
+                "en": "Set the price to [[cheap_price]] in [[periods]] and [[normal_price]] the rest of the day",
+                "no": "Sett prisen til [[cheap_price]] i [[periods]] og [[normal_price]] resten av døgnet",
+                "nl": "Stel de prijs in op [[cheap_price]] in [[periods]] en [[normal_price]] de rest van de dag",
+                "sv": "Ställ in priset till [[cheap_price]] under [[periods]] och [[normal_price]] resten av dygnet",
+                "de": "Preis auf [[cheap_price]] in [[periods]] und [[normal_price]] für den Rest des Tages setzen"
+            },
+            "hint": {
+                "en": "Replaces the dual rate tariff in the myenergi app, for all days. The Libbi charges from the grid in the cheapest periods. Periods are written like 23:45-05:00, 13:00-17:00. Use the same price twice to let it charge at any time.",
+                "no": "Erstatter totariffen i myenergi-appen, for alle dager. Libbi lader fra strømnettet i de billigste periodene. Perioder skrives som 23:45-05:00, 13:00-17:00. Bruk samme pris to ganger for å la den lade når som helst.",
+                "nl": "Vervangt het dubbele tarief in de myenergi-app, voor alle dagen. De Libbi laadt vanaf het net in de goedkoopste perioden. Perioden schrijf je als 23:45-05:00, 13:00-17:00. Gebruik twee keer dezelfde prijs om op elk moment te laden.",
+                "sv": "Ersätter den dubbla tariffen i myenergi-appen, för alla dagar. Libbi laddar från elnätet under de billigaste perioderna. Perioder skrivs som 23:45-05:00, 13:00-17:00. Använd samma pris två gånger för att låta den ladda när som helst.",
+                "de": "Ersetzt den Zweitarif in der myenergi-App für alle Tage. Der Libbi lädt in den günstigsten Zeiträumen aus dem Netz. Zeiträume werden wie 23:45-05:00, 13:00-17:00 geschrieben. Verwende zweimal denselben Preis, um jederzeit zu laden."
+            },
+            "args": [
+                {
+                    "type": "text",
+                    "name": "periods",
+                    "title": {
+                        "en": "Cheap periods",
+                        "no": "Billige perioder",
+                        "nl": "Goedkope perioden",
+                        "sv": "Billiga perioder",
+                        "de": "Günstige Zeiträume"
+                    },
+                    "placeholder": {
+                        "en": "23:45-05:00, 13:00-17:00"
+                    }
+                },
+                {
+                    "type": "number",
+                    "name": "cheap_price",
+                    "title": {
+                        "en": "Cheap price",
+                        "no": "Billig pris",
+                        "nl": "Goedkope prijs",
+                        "sv": "Billigt pris",
+                        "de": "Günstiger Preis"
+                    },
+                    "min": 0,
+                    "step": 0.01
+                },
+                {
+                    "type": "number",
+                    "name": "normal_price",
+                    "title": {
+                        "en": "Normal price",
+                        "no": "Normal pris",
+                        "nl": "Normale prijs",
+                        "sv": "Normalt pris",
+                        "de": "Normaler Preis"
+                    },
+                    "min": 0,
+                    "step": 0.01
+                }
+            ]
         }
     ],
     "conditions": [

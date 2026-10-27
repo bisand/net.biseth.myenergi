@@ -101,7 +101,17 @@ export class LibbiDriver extends Driver {
       await dev.setChargeTarget(args.charge_target);
     });
 
-    const chargeFromGridCondition = this.homey.flow.getConditionCard('libbi_charge_from_grid_enabled');
+    const setTariffAction = this.homey.flow.getActionCard('set_libbi_cheap_tariff_periods');
+    setTariffAction.registerRunListener(async (args) => {
+      const dev: LibbiDevice = args.device;
+      if (!dev) {
+        this.error('Unable to detect device on flow: set_libbi_cheap_tariff_periods');
+        return;
+      }
+      await dev.setCheapTariffPeriods(args.periods, args.cheap_price, args.normal_price);
+    });
+
+    const chargeFromGridCondition =this.homey.flow.getConditionCard('libbi_charge_from_grid_enabled');
     chargeFromGridCondition.registerRunListener(async (args) => {
       const dev: LibbiDevice = args.device;
       if (!dev) {

@@ -1,4 +1,45 @@
-import { EddiMode } from 'myenergi-api';
+import { EddiMode, TariffBand } from 'myenergi-api';
+
+/**
+ * Turn cheap periods like "23:45-05:00, 13:00-17:00" into tariff bands that
+ * cover the whole day. Periods may cross midnight and overlap. No periods
+ * gives the normal price all day.
+ * @param periods Comma separated HH:MM-HH:MM periods
+ * @param cheapPrice Price inside the periods
+ * @param normalPrice Price outside the periods
+ */
+export function getTariffBands(periods: string, cheapPrice: number, normalPrice: number): TariffBand[] {
+    const toMinutes = (time: string): number => {
+        const match = /^(\d{1,2}):(\d{2})$/.exec(time.trim());
+        const minutes = match ? Number(match[1]) * 60 + Number(match[2]) : NaN;
+        if (!match || Number(match[2]) > 59 || minutes > 1440)
+            throw new Error(`Invalid time "${time.trim()}". Use HH:MM, e.g. 23:45.`);
+        return minutes;
+    };
+
+    const cheap: boolean[] = new Array(1440).fill(false);
+    for (const period of periods.split(',').filter(p => p.trim())) {
+        const [from, to, extra] = period.split('-');
+        if (to === undefined || extra !== undefined)
+            throw new Error(`Invalid period "${period.trim()}". Use HH:MM-HH:MM, e.g. 23:45-05:00.`);
+        const start = toMinutes(from);
+        // A period ending where it starts, like 00:00-24:00, is the whole day.
+        const length = ((toMinutes(to) - start + 1440) % 1440) || 1440;
+        for (let i = 0; i < length; i++)
+            cheap[(start + i) % 1440] = true;
+    }
+
+    const bands: TariffBand[] = [];
+    for (let m = 0; m < 1440; m++) {
+        const price = cheap[m] ? cheapPrice : normalPrice;
+        const last = bands[bands.length - 1];
+        if (last && last.price === price)
+            last.toMinutes = m + 1;
+        else
+            bands.push({ fromMinutes: m, toMinutes: m + 1, price });
+    }
+    return bands;
+}
 
 /**
  * Calculate accumulated kWh since last power measurement
