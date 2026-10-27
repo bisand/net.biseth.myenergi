@@ -1,7 +1,7 @@
 import { Device } from 'homey';
 import { Libbi, LibbiMode, MyEnergi, MyEnergiAccount } from 'myenergi-api';
 import { MyEnergiApp } from '../../app';
-import { calculateEnergy, isCommandSuccessful } from '../../tools';
+import { calculateEnergy, getTariffBands, isCommandSuccessful } from '../../tools';
 import { LibbiDriver } from './driver';
 import { LibbiData } from './LibbiData';
 import { LibbiModeText } from './LibbiModeText';
@@ -431,6 +431,37 @@ export class LibbiDevice extends Device {
     } catch (error) {
       this.error(`Setting the Libbi charge target to ${kwh} kWh failed:\n${error}`);
       throw new Error(`Setting the charge target failed.`, { cause: error });
+    }
+  }
+
+  /**
+   * Set the cheap periods of the hub's dual rate tariff on the myenergi
+   * account, for all days. The Libbi charges from the grid in the cheapest
+   * periods, so this decides when charge from grid can happen.
+   * @param periods Comma separated HH:MM-HH:MM periods
+   * @param cheapPrice Price inside the periods
+   * @param normalPrice Price outside the periods
+   */
+  public async setCheapTariffPeriods(periods: string, cheapPrice: number, normalPrice: number): Promise<void> {
+    const accountClient = this.accountClient;
+    if (!accountClient)
+      throw new Error(ACCOUNT_REQUIRED_MESSAGE);
+    const tariffs = getTariffBands(periods, cheapPrice, normalPrice);
+    try {
+      // The client id ends with the hub serial number, see MyEnergiApp.
+      const hubSerial = this.myenergiClientId.split('_').pop();
+      const hub = (await accountClient.getHubs()).find(h => `${h.serialNo}` === hubSerial);
+      if (!hub)
+        throw new Error('The hub of this Libbi was not found on your myenergi account.');
+      const current = await accountClient.getDualTariff(hub.hubId);
+      if (!current.length)
+        throw new Error('Choose a dual rate tariff in the myenergi app first.');
+      await accountClient.saveDualTariff([{ energySetupId: current[0].energySetupId, days: [0, 1, 2, 3, 4, 5, 6], tariffs }]);
+      this.log(`Tariff set: ${cheapPrice} in ${periods || 'no periods'}, otherwise ${normalPrice}`);
+    } catch (error) {
+      this.error(`Setting the tariff failed:\n${error}`);
+      const message = error instanceof Error ? error.message : '';
+      throw new Error(message ? `Setting the tariff failed. ${message}` : 'Setting the tariff failed.', { cause: error });
     }
   }
 
